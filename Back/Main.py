@@ -42,17 +42,6 @@ async def login(request: LoginRequest):
         # DB 연결 반납
         await DBConnection.release_db_connection(conn)
 
-# 보호된 페이지 (로그인한 사용자만 접근 가능)
-@app.get("/profile")
-async def profile(session_id: str = Depends()):
-    # 세션 ID를 통해 로그인 상태 확인
-    session = active_sessions.get(session_id)
-    
-    if not session:
-        raise HTTPException(status_code=401, detail="User is not logged in")
-    
-    # 로그인한 사용자의 프로필 정보 반환 (예시)
-    return {"message": f"Welcome, {session['username']}!"}
 
 # 로그아웃 처리
 @app.post("/logout")
