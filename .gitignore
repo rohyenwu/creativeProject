@@ -1,0 +1,14 @@
+# Python 캐시 파일
+__pycache__/
+*.py[cod]
+
+# 가상환경 (나중에 만들 수도 있음)
+venv/
+env/
+
+# VSCode 설정 폴더
+.vscode/
+.idea/
+
+# 환경변수 파일 (만들 경우)
+.env
