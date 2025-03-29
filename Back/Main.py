@@ -22,8 +22,8 @@ async def login(request: LoginRequest):
     try:
         async with conn.cursor(dictionary=True) as cursor:
             # 사용자 인증 쿼리
-            query = "SELECT * FROM users WHERE username = %s AND password = %s"
-            await cursor.execute(query, (request.username, request.password))
+            query = "SELECT * FROM users WHERE userID = %s AND password = %s"
+            await cursor.execute(query, (request.userID, request.password))
             user = await cursor.fetchone()
 
             if not user:
@@ -31,10 +31,10 @@ async def login(request: LoginRequest):
 
             # 로그인 성공 후 세션 ID 생성
             session_id = str(uuid.uuid4())  # 고유 세션 ID 생성
-            active_sessions[session_id] = {"username": request.username}
-
+            active_sessions[session_id] = {"userID": request.userID}
+            userName=user["userName"]
             # 세션 ID를 쿠키로 전달
-            response = JSONResponse(content={"message": "Login successful", "session_id": session_id})
+            response = JSONResponse(content={"message": "Login successful", "session_id": session_id, "userName":userName})
             response.set_cookie(key="session_id", value=session_id)  # 세션 ID를 쿠키에 저장
             return response
 
@@ -42,6 +42,11 @@ async def login(request: LoginRequest):
         # DB 연결 반납
         await DBConnection.release_db_connection(conn)
 
+# 비회원 처리: 비회원이 요청 시
+@app.get("/nonMemberLogin")
+async def nonMemberLogin(session_id: str = Depends()):
+    # 로그인한 사용자의 프로필 정보 반환 (예시)
+    response = JSONResponse(content={"message": "Login successful", "userName": "비회원" })
 
 # 로그아웃 처리
 @app.post("/logout")
