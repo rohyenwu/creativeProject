@@ -8,11 +8,28 @@ app = FastAPI()
 
 # 세션 관리용 임시 저장소 (서버 메모리)
 active_sessions = {}
-
+class MembershipRequest(BaseModel):
+    userID:str
+    password:str
+    username:str
 class LoginRequest(BaseModel):
-    username: str
+    userID: str
     password: str
 
+#회원가입 요청 처리
+@app.post("/membership")
+async def membership(request: MembershipRequest):
+    conn = await DBConnection.get_db_connection()
+    try:
+        query = "INSERT INTO member(userID, password, username) values(%s,%s,%s)"
+        async with conn.cursor(dictionary=True) as cursor:
+            await cursor.execute(query, (request.userID, request.password,request.username))
+        response = JSONResponse(content={"message": True})
+        return response
+    finally:
+        await DBConnection.release_db_connection(conn)
+#ㅇㄻ
+        
 # 로그인 요청 처리
 @app.post("/login")
 async def login(request: LoginRequest):
