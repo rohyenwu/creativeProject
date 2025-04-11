@@ -28,7 +28,7 @@ async def membership(request: MembershipRequest):
         return response
     finally:
         await DBConnection.release_db_connection(conn)
-
+#ㅇㄻ
         
 # 로그인 요청 처리
 @app.post("/login")
