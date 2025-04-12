@@ -11,7 +11,7 @@ active_sessions = {}
 class MembershipRequest(BaseModel):
     userID:str
     password:str
-    username:str
+    userName:str
 class LoginRequest(BaseModel):
     userID: str
     password: str
@@ -21,14 +21,14 @@ class LoginRequest(BaseModel):
 async def membership(request: MembershipRequest):
     conn = await DBConnection.get_db_connection()
     try:
-        query = "INSERT INTO member(userID, password, username) values(%s,%s,%s)"
+        query = "INSERT INTO users(userID, password, userName) values(%s,%s,%s)"
         async with conn.cursor(dictionary=True) as cursor:
-            await cursor.execute(query, (request.userID, request.password,request.username))
+            await cursor.execute(query, (request.userID, request.password,request.userName))
         response = JSONResponse(content={"message": True})
         return response
     finally:
         await DBConnection.release_db_connection(conn)
-#ㅇㄻ
+
         
 # 로그인 요청 처리
 @app.post("/login")
@@ -51,7 +51,7 @@ async def login(request: LoginRequest):
             active_sessions[session_id] = {"userID": request.userID}
             userName=user["userName"]
             # 세션 ID를 쿠키로 전달
-            response = JSONResponse(content={"message": "Login successful", "session_id": session_id, "userName":userName})
+            response = JSONResponse(content={"message": True, "session_id": session_id, "userName":userName})
             response.set_cookie(key="session_id", value=session_id)  # 세션 ID를 쿠키에 저장
             return response
 
@@ -61,9 +61,10 @@ async def login(request: LoginRequest):
 
 # 비회원 처리: 비회원이 요청 시
 @app.get("/nonMemberLogin")
-async def nonMemberLogin(session_id: str = Depends()):
-    # 로그인한 사용자의 프로필 정보 반환 (예시)
-    response = JSONResponse(content={"message": "Login successful", "userName": "비회원" })
+async def nonMemberLogin():
+    # 비회원의 프로필 정보 반환
+    response = JSONResponse(content={"message": True, "userName": "비회원"})
+    return response
 
 # 로그아웃 처리
 @app.post("/logout")
@@ -71,6 +72,6 @@ async def logout(session_id: str):
     # 세션을 종료하고 DB 연결을 반납
     if session_id in active_sessions:
         del active_sessions[session_id]
-        return {"message": "Logged out successfully"}
+        return {"message": True}
     else:
         raise HTTPException(status_code=400, detail="Session not found")
