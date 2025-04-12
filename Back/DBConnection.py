@@ -8,10 +8,10 @@ class DBConnection:
         """DB 연결 풀을 초기화하는 메서드"""
         if cls.pool is None:
             cls.pool = await aiomysql.create_pool(
-                host="localhost",
+                host="address",
                 user="root",
                 password="password",
-                db="test_db",
+                db="dbName",
                 maxsize=10,  # 최대 연결 수
             )
 
