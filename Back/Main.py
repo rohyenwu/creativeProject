@@ -16,6 +16,10 @@ class LoginRequest(BaseModel):
     userID: str
     password: str
 
+# 서버 시작 시 DB 연결 풀 초기화
+@app.on_event("startup")
+async def startup():
+    await DBConnection.init_pool()  # DB 연결 풀 초기화
 #회원가입 요청 처리
 @app.post("/membership")
 async def membership(request: MembershipRequest):
