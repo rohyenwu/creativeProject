@@ -29,7 +29,7 @@ ENGINE = InnoDB;
 -- Table `creativeProject`.`category`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `creativeProject`.`category` (
-  `categoryID` INT NOT NULL,
+  `categoryID` INT NOT NULL AUTO_INCREMENT,
   `categoryName` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`categoryID`))
 ENGINE = InnoDB;
@@ -39,7 +39,7 @@ ENGINE = InnoDB;
 -- Table `creativeProject`.`favorites`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `creativeProject`.`favorites` (
-  `favoritesID` INT NOT NULL,
+  `favoritesID` INT NOT NULL AUTO_INCREMENT,
   `users_userID` VARCHAR(45) NOT NULL,
   `placeID` INT NOT NULL,
   `categoryID` INT NOT NULL,
@@ -57,7 +57,7 @@ ENGINE = InnoDB;
 -- Table `creativeProject`.`Leisure`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `creativeProject`.`Leisure` (
-  `ID` INT NOT NULL,
+  `ID` INT NOT NULL AUTO_INCREMENT,
   `smallLeisure` VARCHAR(45) NOT NULL,
   `address` VARCHAR(45) NULL,
   `latitude` FLOAT NOT NULL,
@@ -79,7 +79,7 @@ ENGINE = InnoDB;
 -- Table `creativeProject`.`public`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `creativeProject`.`public` (
-  `ID` INT NOT NULL,
+  `ID` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NULL,
   `closedDays` VARCHAR(45) NULL,
   `weekOpenTime` TIME NULL,
@@ -108,7 +108,7 @@ ENGINE = InnoDB;
 -- Table `creativeProject`.`outing`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `creativeProject`.`outing` (
-  `ID` INT NOT NULL,
+  `ID` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NULL,
   `address` VARCHAR(45) NULL,
   `latitude` FLOAT NULL,
