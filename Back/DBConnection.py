@@ -1,4 +1,9 @@
 import aiomysql
+import os
+from dotenv import load_dotenv
+
+# .env 파일에서 환경 변수 로드
+load_dotenv()
 
 class DBConnection:
     pool = None
@@ -8,10 +13,10 @@ class DBConnection:
         """DB 연결 풀을 초기화하는 메서드"""
         if cls.pool is None:
             cls.pool = await aiomysql.create_pool(
-                host="localhost",
-                user="root",
-                password="password",
-                db="test_db",
+                host=os.getenv("DB_HOST"),  # 환경 변수에서 DB_HOST 가져오기
+                user=os.getenv("DB_USER"),  # 환경 변수에서 DB_USER 가져오기
+                password=os.getenv("DB_PASSWORD"),  # 환경 변수에서 DB_PASSWORD 가져오기
+                db=os.getenv("DB_NAME"),  # 환경 변수에서 DB_NAME 가져오기
                 maxsize=10,  # 최대 연결 수
             )
 
