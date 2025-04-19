@@ -6,7 +6,6 @@ from contextlib import asynccontextmanager
 import DBConnection  # DBConnection 모듈 임포트
 import aiomysql
 
-app = FastAPI(lifespan=lifespan)
 
 # 세션 관리용 임시 저장소 (서버 메모리)
 active_sessions = {}
@@ -25,7 +24,8 @@ async def lifespan(app: FastAPI):
     yield
     # 서버 종료 시 (cleanup 가능)
     await DBConnection.close_pool()
-    
+app = FastAPI(lifespan=lifespan)
+
 #회원가입 요청 처리
 @app.post("/membership")
 async def membership(request: MembershipRequest):
