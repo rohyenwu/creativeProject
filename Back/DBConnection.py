@@ -13,11 +13,10 @@ class DBConnection:
         """DB 연결 풀을 초기화하는 메서드"""
         if cls.pool is None:
             cls.pool = await aiomysql.create_pool(
-                host=os.getenv("DB_HOST"),  # 예: localhost
-                port=int(os.getenv("DB_PORT")),  # 예: 3306
-                user=os.getenv("DB_USER"),  # 예: root
-                password=os.getenv("DB_PASSWORD"),  # 예: 1234
-                db=os.getenv("DB_NAME"),  # 예: creativeProject
+                host=os.getenv("DB_HOST"),  # 환경 변수에서 DB_HOST 가져오기
+                user=os.getenv("DB_USER"),  # 환경 변수에서 DB_USER 가져오기
+                password=os.getenv("DB_PASSWORD"),  # 환경 변수에서 DB_PASSWORD 가져오기
+                db=os.getenv("DB_NAME"),  # 환경 변수에서 DB_NAME 가져오기
                 maxsize=10,  # 최대 연결 수
             )
 
