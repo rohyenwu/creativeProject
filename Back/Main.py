@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 import uuid
 from fastapi.responses import JSONResponse
+from contextlib import asynccontextmanager
 import DBConnection  # DBConnection 모듈 임포트
 import aiomysql
 
@@ -17,10 +18,14 @@ class LoginRequest(BaseModel):
     userID: str
     password: str
 
-# 서버 시작 시 DB 연결 풀 초기화
-@app.on_event("startup")
-async def startup():
-    await DBConnection.init_pool()  # DB 연결 풀 초기화
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # 서버 시작 시
+    await DBConnection.init_pool()
+    yield
+    # 서버 종료 시 (cleanup 가능)
+    await DBConnection.close_pool()
+    
 #회원가입 요청 처리
 @app.post("/membership")
 async def membership(request: MembershipRequest):
