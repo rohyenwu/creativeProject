@@ -2,7 +2,9 @@ from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 import uuid
 from fastapi.responses import JSONResponse
+from contextlib import asynccontextmanager
 import DBConnection  # DBConnection 모듈 임포트
+import aiomysql
 
 app = FastAPI()
 
@@ -16,17 +18,21 @@ class LoginRequest(BaseModel):
     userID: str
     password: str
 
-# 서버 시작 시 DB 연결 풀 초기화
-@app.on_event("startup")
-async def startup():
-    await DBConnection.init_pool()  # DB 연결 풀 초기화
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # 서버 시작 시
+    await DBConnection.init_pool()
+    yield
+    # 서버 종료 시 (cleanup 가능)
+    await DBConnection.close_pool()
+    
 #회원가입 요청 처리
 @app.post("/membership")
 async def membership(request: MembershipRequest):
     conn = await DBConnection.get_db_connection()
     try:
         query = "INSERT INTO users(userID, password, userName) values(%s,%s,%s)"
-        async with conn.cursor(dictionary=True) as cursor:
+        async with conn.cursor(aiomysql.DictCursor) as cursor:
             await cursor.execute(query, (request.userID, request.password,request.userName))
         response = JSONResponse(content={"message": True})
         return response
@@ -41,7 +47,7 @@ async def login(request: LoginRequest):
     conn = await DBConnection.get_db_connection()
     
     try:
-        async with conn.cursor(dictionary=True) as cursor:
+        async with conn.cursor(aiomysql.DictCursor) as cursor:
             # 사용자 인증 쿼리
             query = "SELECT * FROM users WHERE userID = %s AND password = %s"
             await cursor.execute(query, (request.userID, request.password))
@@ -73,9 +79,5 @@ async def nonMemberLogin():
 # 로그아웃 처리
 @app.post("/logout")
 async def logout(session_id: str):
-    # 세션을 종료하고 DB 연결을 반납
-    if session_id in active_sessions:
-        del active_sessions[session_id]
-        return {"message": True}
-    else:
-        raise HTTPException(status_code=400, detail="Session not found")
+    active_sessions.pop(session_id, None)  # 없으면 그냥 무시
+    return {"message": True}
