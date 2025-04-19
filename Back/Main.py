@@ -10,18 +10,13 @@ app = FastAPI()
 
 # 세션 관리용 임시 저장소 (서버 메모리)
 active_sessions = {}
-
-
 class MembershipRequest(BaseModel):
-    userID: str
-    password: str
-    userName: str
-
-
+    userID:str
+    password:str
+    userName:str
 class LoginRequest(BaseModel):
     userID: str
     password: str
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -30,28 +25,27 @@ async def lifespan(app: FastAPI):
     yield
     # 서버 종료 시 (cleanup 가능)
     await DBConnection.close_pool()
-
-
-# 회원가입 요청 처리
+    
+#회원가입 요청 처리
 @app.post("/membership")
 async def membership(request: MembershipRequest):
     conn = await DBConnection.get_db_connection()
     try:
         query = "INSERT INTO users(userID, password, userName) values(%s,%s,%s)"
         async with conn.cursor(aiomysql.DictCursor) as cursor:
-            await cursor.execute(query, (request.userID, request.password, request.userName))
+            await cursor.execute(query, (request.userID, request.password,request.userName))
         response = JSONResponse(content={"message": True})
         return response
     finally:
         await DBConnection.release_db_connection(conn)
 
-
+        
 # 로그인 요청 처리
 @app.post("/login")
 async def login(request: LoginRequest):
     # DB 연결 가져오기
     conn = await DBConnection.get_db_connection()
-
+    
     try:
         async with conn.cursor(aiomysql.DictCursor) as cursor:
             # 사용자 인증 쿼리
@@ -65,9 +59,9 @@ async def login(request: LoginRequest):
             # 로그인 성공 후 세션 ID 생성
             session_id = str(uuid.uuid4())  # 고유 세션 ID 생성
             active_sessions[session_id] = {"userID": request.userID}
-            userName = user["userName"]
+            userName=user["userName"]
             # 세션 ID를 쿠키로 전달
-            response = JSONResponse(content={"message": True, "session_id": session_id, "userName": userName})
+            response = JSONResponse(content={"message": True, "session_id": session_id, "userName":userName})
             response.set_cookie(key="session_id", value=session_id)  # 세션 ID를 쿠키에 저장
             return response
 
@@ -75,14 +69,12 @@ async def login(request: LoginRequest):
         # DB 연결 반납
         await DBConnection.release_db_connection(conn)
 
-
 # 비회원 처리: 비회원이 요청 시
 @app.get("/nonMemberLogin")
 async def nonMemberLogin():
     # 비회원의 프로필 정보 반환
     response = JSONResponse(content={"message": True, "userName": "비회원"})
     return response
-
 
 # 로그아웃 처리
 @app.post("/logout")
