@@ -24,7 +24,9 @@ async def lifespan(app: FastAPI):
     yield
     # 서버 종료 시 (cleanup 가능)
     await DBConnection.close_pool()
+   
 app = FastAPI(lifespan=lifespan)
+
 
 #회원가입 요청 처리
 @app.post("/membership")
