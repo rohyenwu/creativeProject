@@ -217,8 +217,19 @@
 
         <!-- Kakao 주소 검색 API 및 지도 API 스크립트 추가 -->
         <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_KAKAO_API_KEY&libraries=services"></script>
+        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=7c6d011bf1bdf797c5d0d19956948354&libraries=services"></script>
         <script>
+            var mapContainer = document.getElementById('map');
+            var mapOptions = {
+                center: new kakao.maps.LatLng(37.5665, 126.9780),
+                level: 5
+            };
+            var map = new kakao.maps.Map(mapContainer, mapOptions);
+            var marker = new kakao.maps.Marker({
+                position: map.getCenter(),
+                map: map
+            });
+
             function searchAddress() {
                 var postcode = new daum.Postcode({
                     oncomplete: function(data) {
@@ -227,9 +238,9 @@
 
                         // 팝업 창을 닫음
                         if (window.daum && window.daum.Postcode) {
-                            setTimeout(function() {
-                                window.close();
-                            }, 200);
+                            // setTimeout(function() {
+                            //     window.close();
+                            // }, 200);
                         }
                     }
                 });
@@ -243,25 +254,15 @@
                 if (!address) return;
 
                 var geocoder = new kakao.maps.services.Geocoder();
-                geocoder.addressSearch(address, function(result, status) {
-                    if (status === kakao.maps.services.Status.OK) {
+                geocoder.addressSearch(address,
+                    function(result, status) {
+                        if (status === kakao.maps.services.Status.OK) {
                         var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
                         map.setCenter(coords);
                         marker.setPosition(coords);
-                    }
+                        }
                 });
             }
-
-            var mapContainer = document.getElementById('map');
-            var mapOptions = {
-                center: new kakao.maps.LatLng(37.5665, 126.9780),
-                level: 5
-            };
-            var map = new kakao.maps.Map(mapContainer, mapOptions);
-            var marker = new kakao.maps.Marker({
-                position: map.getCenter(),
-                map: map
-            });
         </script>
     </body>
 </html>
