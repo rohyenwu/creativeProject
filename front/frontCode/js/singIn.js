@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
         //로그인 함수 구현부분
         event.preventDefault(); // 기본 빈칸 제출 동작 막기
 
-        const userID = document.getElementById(userID).value;
+        const userID = document.getElementById("userID").value;
         const password = document.getElementById("password").value;
 
         try {
