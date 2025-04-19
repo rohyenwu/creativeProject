@@ -2,9 +2,18 @@ from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 import uuid
 from fastapi.responses import JSONResponse
-import DBConnection  # DBConnection 모듈 임포트
+from DBConnection import DBConnection
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 또는 ["http://localhost:3000"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # 세션 관리용 임시 저장소 (서버 메모리)
 active_sessions = {}
