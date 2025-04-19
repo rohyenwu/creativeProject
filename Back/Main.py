@@ -3,10 +3,14 @@ from pydantic import BaseModel
 import uuid
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
-import DBConnection  # DBConnection 모듈 임포트
+
+from starlette.middleware.cors import CORSMiddleware
+
+from DBConnection import DBConnection
+      # DBConnection 모듈 임포트
 import aiomysql
 
-app = FastAPI()
+
 
 # 세션 관리용 임시 저장소 (서버 메모리)
 active_sessions = {}
@@ -24,8 +28,17 @@ async def lifespan(app: FastAPI):
     await DBConnection.init_pool()
     yield
     # 서버 종료 시 (cleanup 가능)
-    await DBConnection.close_pool()
-    
+    await DBConnection.release_db_connection()
+app = FastAPI(lifespan=lifespan)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins= ["*"],            # 허용할 origin
+    allow_credentials=True,
+    allow_methods=["*"],              # 허용할 HTTP 메서드 (GET, POST 등)
+    allow_headers=["*"],              # 허용할 헤더
+)
 #회원가입 요청 처리
 @app.post("/membership")
 async def membership(request: MembershipRequest):
@@ -35,6 +48,7 @@ async def membership(request: MembershipRequest):
         async with conn.cursor(aiomysql.DictCursor) as cursor:
             await cursor.execute(query, (request.userID, request.password,request.userName))
         response = JSONResponse(content={"message": True})
+        await conn.commit()
         return response
     finally:
         await DBConnection.release_db_connection(conn)
