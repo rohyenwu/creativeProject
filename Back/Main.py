@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
+
 from Back.Model import DBConnection
 from Back.Controller import userController
 from starlette.middleware.cors import CORSMiddleware
@@ -10,6 +11,7 @@ async def lifespan(app: FastAPI):
     yield
     DBConnection.DBConnection.pool.close()            # 🔒 먼저 pool 종료 요청
     await DBConnection.DBConnection.pool.wait_closed()
+
 
 
 app = FastAPI(lifespan=lifespan)
