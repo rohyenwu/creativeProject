@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const response = await fetch("http://localhost:8000/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify({ userID: userID, password: password })
             });
 
@@ -21,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 // 세션 ID를 localStorage에 저장
                 localStorage.setItem("session_id", data.session_id);
                 localStorage.setItem("userName", data.userName);
-
+                
                 // 메인 페이지로 이동
                 window.location.href = "mainPage.html"; // 일단 비회원 페이지 이동
             } else {
