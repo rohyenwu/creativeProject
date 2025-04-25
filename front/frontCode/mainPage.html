@@ -22,11 +22,15 @@
             <!-- Navigation-->
             <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
                 <div class="container px-5">
-                    <a class="navbar-brand" href="mainPage.html"><span class="fw-bolder text-primary">노인을 위한 나라는 있다.</span></a>
+                    <a class="navbar-brand" href="mainPage.html"><span class="fw-bolder text-primary">돌봄 나침반</span></a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 small fw-bolder">
-                            <li class="nav-item"><a class="nav-link" href="favorites.html">즐겨찾기</a></li>
+                            <!--즐겨찾기 메뉴-->
+                            <li class="nav-item" id="favoriteMenu" style="display: none">
+                                <a class="nav-link" href="favorites.html">즐겨찾기</a></li>
+                            <li class="nav-item" id="nonSignInUser" style="display: none">
+                                <a class="nav-link" href="signIn.html">로그인하기</a></li>
                         </ul>
                     </div>
                 </div>
@@ -191,78 +195,10 @@
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
-        <script src="js/scripts.js"></script>
-
-        <!--드롭박스 활성화 함수-->
-        <script>
-            function toggleDropdowns() {
-                const publicFacility = document.getElementById('publicFacility').checked;
-                const cultureFestival = document.getElementById('cultureFestival').checked;
-
-                const dropdownFacility = document.getElementById('facilityDropdownFacilty');
-                const dropdownCulture = document.getElementById('facilityDropdownCulture');
-
-                // 둘 다 먼저 숨기고
-                dropdownFacility.style.display = 'none';
-                dropdownCulture.style.display = 'none';
-
-                // 체크된거에 따라 보여주기
-                if (publicFacility) {
-                    dropdownFacility.style.display = 'block';
-                } else if (cultureFestival) {
-                    dropdownCulture.style.display = 'block';
-                }
-            }
-        </script>
+        <script src="js/MainPageSetting.js"></script>
 
         <!-- Kakao 주소 검색 API 및 지도 API 스크립트 추가 -->
         <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
         <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=7c6d011bf1bdf797c5d0d19956948354&libraries=services"></script>
-        <script>
-            var mapContainer = document.getElementById('map');
-            var mapOptions = {
-                center: new kakao.maps.LatLng(37.5665, 126.9780),
-                level: 5
-            };
-            var map = new kakao.maps.Map(mapContainer, mapOptions);
-            var marker = new kakao.maps.Marker({
-                position: map.getCenter(),
-                map: map
-            });
-
-            function searchAddress() {
-                var postcode = new daum.Postcode({
-                    oncomplete: function(data) {
-                        document.getElementById("location").value = data.address;
-                        searchLocation();
-
-                        // 팝업 창을 닫음
-                        if (window.daum && window.daum.Postcode) {
-                            // setTimeout(function() {
-                            //     window.close();
-                            // }, 200);
-                        }
-                    }
-                });
-
-                postcode.open({ popupName: 'postcodePopup' }); // 팝업 모드로 열기
-            }
-
-            function searchLocation(event) {
-                if (event) event.preventDefault();
-                var address = document.getElementById("location").value;
-                if (!address) return;
-
-                var geocoder = new kakao.maps.services.Geocoder();
-                geocoder.addressSearch(address,
-                    function(result, status) {
-                        if (status === kakao.maps.services.Status.OK) {
-                        var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-                        map.setCenter(coords);
-                        marker.setPosition(coords);
-                        }
-                });
-            }
-        </script>
     </body>
 </html>
