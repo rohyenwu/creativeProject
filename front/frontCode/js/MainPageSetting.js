@@ -41,6 +41,7 @@ function searchLocation(event) {
         }
     });
 }
+
 function toggleDropdowns() {
     const publicFacility = document.getElementById('publicFacility').checked;
     const cultureFestival = document.getElementById('cultureFestival').checked;
@@ -59,3 +60,15 @@ function toggleDropdowns() {
         dropdownCulture.style.display = 'block';
     }
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const sessionId = sessionStorage.getItem("sessionId");
+
+    if (sessionId) {
+        document.getElementById("favoriteMenu").style.display = "block";
+        document.getElementById("nonSignInUser").style.display = "none";
+    } else {
+        document.getElementById("favoriteMenu").style.display = "none";
+        document.getElementById("nonSignInUser").style.display = "block";
+    }
+});
