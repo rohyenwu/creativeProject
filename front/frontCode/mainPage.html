@@ -235,13 +235,6 @@
                     oncomplete: function(data) {
                         document.getElementById("location").value = data.address;
                         searchLocation();
-
-                        // 팝업 창을 닫음
-                        if (window.daum && window.daum.Postcode) {
-                            // setTimeout(function() {
-                            //     window.close();
-                            // }, 200);
-                        }
                     }
                 });
 
