@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (response.ok) {
                 alert("회원가입이 완료되었습니다!");
-                window.location.href = "login.html"; // 로그인 페이지로 이동
+                window.location.href = "signIn.html"; // 로그인 페이지로 이동
             } else {
                 alert("회원가입 실패: " + (data.detail || "서버 오류"));
             }
