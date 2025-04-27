@@ -32,3 +32,10 @@ class DBConnection:
         """DB 연결을 풀에 반납하는 메서드"""
         if cls.pool:
             await cls.pool.release(conn)
+    @classmethod
+    async def close_pool(cls):
+        """✅ 추가된 메서드: 연결 풀 종료"""
+        if cls.pool:
+            cls.pool.close()
+            await cls.pool.wait_closed()
+            cls.pool = None
