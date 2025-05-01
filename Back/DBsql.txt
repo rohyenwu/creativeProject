@@ -57,13 +57,12 @@ ENGINE = InnoDB;
 -- Table `creativeProject`.`Leisure`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `creativeProject`.`Leisure` (
-  `ID` INT NOT NULL AUTO_INCREMENT,
-  `smallLeisure` VARCHAR(45) NOT NULL,
-  `address` VARCHAR(45) NULL,
+  `ID` VARCHAR(255) NOT NULL,
+  `smallLeisure` VARCHAR(255) NOT NULL,
+  `address` VARCHAR(255) NULL,
   `latitude` FLOAT NOT NULL,
   `longitude` FLOAT NOT NULL,
-  `name` VARCHAR(45) NOT NULL,
-  `call` VARCHAR(45) NULL,
+  `name` VARCHAR(255) NOT NULL,
   `category_categoryID` INT NOT NULL,
   PRIMARY KEY (`ID`),
   INDEX `fk_Leisure_category1_idx` (`category_categoryID` ASC) VISIBLE,
@@ -79,9 +78,9 @@ ENGINE = InnoDB;
 -- Table `creativeProject`.`public`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `creativeProject`.`public` (
-  `ID` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(45) NULL,
-  `closedDays` VARCHAR(45) NULL,
+  `ID` INT NOT NULL,
+  `name` VARCHAR(255) NULL,
+  `closedDays` VARCHAR(255) NULL,
   `weekOpenTime` TIME NULL,
   `weekClosedTime` TIME NULL,
   `weekendOpenTime` TIME NULL,
@@ -91,8 +90,8 @@ CREATE TABLE IF NOT EXISTS `creativeProject`.`public` (
   `latitude` FLOAT NULL,
   `longitude` FLOAT NULL,
   `call` VARCHAR(45) NULL,
-  `hompageAddress` VARCHAR(45) NULL,
-  `mangementName` VARCHAR(45) NULL,
+  `homepageAddress` VARCHAR(255) NULL,
+  `mangementName` VARCHAR(255) NULL,
   `category_categoryID` INT NOT NULL,
   PRIMARY KEY (`ID`),
   INDEX `fk_public_category1_idx` (`category_categoryID` ASC) VISIBLE,
@@ -108,9 +107,9 @@ ENGINE = InnoDB;
 -- Table `creativeProject`.`outing`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `creativeProject`.`outing` (
-  `ID` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(45) NULL,
-  `address` VARCHAR(45) NULL,
+  `ID` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) NULL,
+  `address` VARCHAR(255) NULL,
   `latitude` FLOAT NULL,
   `longitude` FLOAT NULL,
   `category_categoryID` INT NOT NULL,

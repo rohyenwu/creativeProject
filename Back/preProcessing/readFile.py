@@ -21,13 +21,14 @@ class readFile:
     
     outing_rows = (
         "ESNTL_ID", 
-        "LCLAS_NM", 
-        "FCLTY_ROAD_NM_ADDR", 
+        "FCLTY_NM", 
+        "LNM_ADDR", 
         "FCLTY_LA", 
         "FCLTY_LO"
     )
     
     leisure_rows = (
+        "ID",
         "MLSFC_NM", 
         "FCLTY_NM", 
         "RDNMADR_NM", 
