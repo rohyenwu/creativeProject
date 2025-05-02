@@ -6,3 +6,6 @@ class MembershipRequest(BaseModel):
 class LoginRequest(BaseModel):
     userID: str
     password: str
+class SearchRequest(BaseModel):
+    address: str
+    type: str
