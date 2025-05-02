@@ -1,4 +1,5 @@
 let map, marker;
+let currentLat, currentLng; // displayFacility에서 사용
 
 window.onload = function () {
     const mapContainer = document.getElementById('map');
@@ -38,6 +39,9 @@ function searchLocation(event) {
             const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
             map.setCenter(coords);
             marker.setPosition(coords);
+
+            currentLat = result[0].y;
+            currentLng = result[0].x;
         }
     });
 }
