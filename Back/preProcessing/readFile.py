@@ -48,7 +48,7 @@ class readFile:
     
     def read_outing_facilities(self):
                 # CSV 파일 읽기
-        df = pd.read_csv('csv/outingFacilities.csv', encoding='utf-8')
+        df = pd.read_csv('csv/outingFacilities.csv', encoding='euc-kr')
         
         result = df[list(self.outing_rows)]
         print(result.head())  # 첫 5개 행 출력

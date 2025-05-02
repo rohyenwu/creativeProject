@@ -15,8 +15,8 @@ async def insert_public_facilities(public_facilities):
                 await cursor.execute("""
                     INSERT INTO public (
                         ID, name, closedDays, weekOpenTime, weekClosedTime, weekendOpenTime, weekendClosedTime,
-                        isPayed, address, latitude, longitude, `call`, homepageAddress, mangementName, category_categoryID
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 1)
+                        isPayed, address, latitude, longitude, `call`, homepageAddress, mangementName, category_categoryID,type
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 1,%s )
                 """, (
                     idx + 1,
                     safe(row["개방시설명"]),
@@ -31,7 +31,9 @@ async def insert_public_facilities(public_facilities):
                     safe(row["경도"]),
                     safe(row["사용안내전화번호"]),
                     safe(row["홈페이지주소"]),
-                    safe(row["제공기관명"])
+                    safe(row["제공기관명"]),
+                    safe(row["개방시설유형구분"])  # 여기에 type 값
+
                 ))
             await conn.commit()
         print("✅ public 테이블에 데이터 삽입 완료!")
