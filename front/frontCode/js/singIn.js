@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
         try {
             const response = await fetch("http://localhost:8000/login", {
                 method: "POST",
+                credentials: "include", // 쿠키 포함
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ userID: userID, password: password })
             });
@@ -18,9 +19,9 @@ document.addEventListener("DOMContentLoaded", function() {
             const data = await response.json();
 
             if (response.ok) {
-                // 세션 ID를 localStorage에 저장
-                localStorage.setItem("session_id", data.session_id);
-                localStorage.setItem("userName", data.userName);
+                // 세션 ID는 쿠키로 관리하기?
+                sessionStorage.setItem("session_id", data.session_id);
+                sessionStorage.setItem("userName", data.userName);
 
                 // 메인 페이지로 이동
                 window.location.href = "mainPage.html"; // 일단 비회원 페이지 이동
