@@ -1,7 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from Back.Model.userModel import UserModel
-from Back.Schemas.userScheme import LoginRequest, MembershipRequest
+from Back.Schemas.userScheme import LoginRequest, MembershipRequest, SearchRequest
+from Back.Service.searchService import searchService
 import uuid
 
 router = APIRouter()
@@ -28,3 +29,8 @@ async def login(request: LoginRequest):
 async def logout(session_id: str):
     active_sessions.pop(session_id, None)
     return {"message": True}
+
+@router.post("/search")
+async def search(request: SearchRequest):
+    result = searchService.get_facilities_list(request.categoryID, request.lat, request.lon, request.type)
+    return result
