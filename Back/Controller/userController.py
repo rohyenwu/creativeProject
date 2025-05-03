@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from Back.Model.userModel import UserModel
 from Back.Schemas.userScheme import LoginRequest, MembershipRequest, SearchRequest
+from Back.Service.searchService import searchService
 import uuid
 
 router = APIRouter()
@@ -31,7 +32,5 @@ async def logout(session_id: str):
 
 @router.post("/search")
 async def search(request: SearchRequest):
-    # 여기에 함수를 작성
-
-    # 임시 반환값
-    return {"query": request.query}
+    result = searchService.get_facilities_list(request.categoryID, request.lat, request.lon, request.type)
+    return result

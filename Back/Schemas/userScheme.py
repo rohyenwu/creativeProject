@@ -7,5 +7,7 @@ class LoginRequest(BaseModel):
     userID: str
     password: str
 class SearchRequest(BaseModel):
-    address: str
+    lat: float
+    lon: float
+    categoryID: int
     type: str
