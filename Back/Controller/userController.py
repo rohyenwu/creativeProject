@@ -32,5 +32,5 @@ async def logout(session_id: str):
 
 @router.post("/search")
 async def search(request: SearchRequest):
-    result = searchService.get_facilities_list(request.categoryID, request.lat, request.lon, request.type)
+    result = await searchService.get_facilities_list(request.categoryID, request.lat, request.lon, request.type)
     return result
