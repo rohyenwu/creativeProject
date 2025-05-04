@@ -20,7 +20,7 @@ class searchModel:
     async def get_leisure(type, min_lat, max_lat, min_lon, max_lon):
         conn = await DBConnection.DBConnection.get_db_connection()
         try:
-            query=f"select * from leisure where latitude>=%s and latitude<=%s and longitude>=%s and longitude<=%s and smallLeisure=%s "
+            query=f"SELECT * FROM Leisure WHERE latitude >= %s AND latitude <= %s AND longitude >= %s AND longitude <= %s AND smallLeisure = %s;"
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(query, (min_lat, max_lat, min_lon, max_lon, type))
                 results=await cursor.fetchall()

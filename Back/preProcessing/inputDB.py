@@ -48,6 +48,7 @@ async def insert_outing_facilities(outing_facilities):
     try:
         async with conn.cursor() as cursor:
             for idx, row in outing_facilities.iterrows():
+                print(f"👉 outing 삽입 중... {idx + 1}번째")  # ★ 여기!
                 await cursor.execute("""
                     INSERT INTO outing (
                         ID, name, address, latitude, longitude, category_categoryID
@@ -72,8 +73,9 @@ async def insert_leisure_facilities(leisure_facilities):
     try:
         async with conn.cursor() as cursor:
             for idx, row in leisure_facilities.iterrows():
+                print(f"👉 leisure 삽입 중... {idx + 1}번째")  # ★ 여기!
                 await cursor.execute("""
-                    INSERT INTO leisure (
+                    INSERT INTO Leisure (
                         ID, smallLeisure, address, latitude, longitude, name, category_categoryID
                     ) VALUES (%s, %s, %s, %s, %s, %s, 3)
                 """, (
@@ -96,11 +98,12 @@ async def main():
     await DBConnection.init_pool()
 
     reader = readFile()
-    public_facilities = reader.read_public_facilities()
+    # public_facilities = reader.read_public_facilities()
     outing_facilities = reader.read_outing_facilities()
     leisure_facilities = reader.read_leisure_facilities()
-
-    await insert_public_facilities(public_facilities)
+    print("📦 outing 행 개수:", len(outing_facilities))
+    print("📦 leisure 행 개수:", len(leisure_facilities))
+    # await insert_public_facilities(public_facilities)
     await insert_outing_facilities(outing_facilities)
     await insert_leisure_facilities(leisure_facilities)
 
