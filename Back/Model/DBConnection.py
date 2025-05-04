@@ -19,6 +19,7 @@ class DBConnection:
                     user=os.getenv("DB_USER"),  # 환경 변수에서 DB_USER 가져오기
                     password=os.getenv("DB_PASSWORD"),  # 환경 변수에서 DB_PASSWORD 가져오기
                     db=os.getenv("DB_NAME"),  # 환경 변수에서 DB_NAME 가져오기
+                    charset="utf8mb4",  # 🔥 꼭 넣기!
                     maxsize=10,  # 최대 연결 수
                 )
 
