@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 
 # 가상환경 (나중에 만들 수도 있음)
+.venv/
 venv/
 env/
 
