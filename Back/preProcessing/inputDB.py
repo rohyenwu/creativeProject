@@ -12,6 +12,7 @@ async def insert_public_facilities(public_facilities):
     try:
         async with conn.cursor() as cursor:
             for idx, row in public_facilities.iterrows():
+                print(f"👉 public 삽입 중... {idx + 1}번째")  # ★ 여기!
                 await cursor.execute("""
                     INSERT INTO public (
                         ID, name, closedDays, weekOpenTime, weekClosedTime, weekendOpenTime, weekendClosedTime,
@@ -98,12 +99,14 @@ async def main():
     await DBConnection.init_pool()
 
     reader = readFile()
-    # public_facilities = reader.read_public_facilities()
+    public_facilities = reader.read_public_facilities()
     outing_facilities = reader.read_outing_facilities()
     leisure_facilities = reader.read_leisure_facilities()
+    print("📦 public 행 개수:", len(public_facilities))
+
     print("📦 outing 행 개수:", len(outing_facilities))
     print("📦 leisure 행 개수:", len(leisure_facilities))
-    # await insert_public_facilities(public_facilities)
+    await insert_public_facilities(public_facilities)
     await insert_outing_facilities(outing_facilities)
     await insert_leisure_facilities(leisure_facilities)
 
