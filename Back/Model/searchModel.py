@@ -7,9 +7,9 @@ class searchModel:
     async def get_public(type, min_lat, max_lat, min_lon, max_lon):
         conn = await DBConnection.DBConnection.get_db_connection()
         try:
-            query=f"select * from public where latitude>=%s and latitude<=%s and longitude>=%s and longitude<=%s and type=%s "
+            query=f"select * from public where latitude>=%s and latitude<=%s and longitude>=%s and longitude<=%s and type LIKE %s "
             async with conn.cursor(aiomysql.DictCursor) as cursor:
-                await cursor.execute(query, (min_lat, max_lat, min_lon, max_lon, type))
+                await cursor.execute(query, (min_lat, max_lat, min_lon, max_lon, f"%{type}%"))
                 results=await cursor.fetchall()
                 if not results:
                     return []  # 결과가 없으면 빈 리스트 반환
