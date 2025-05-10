@@ -211,88 +211,29 @@
             <div class="container px-5 my-5">
                 <div class="row gx-5 justify-content-center">
                     <div class="col-lg-11 col-xl-9 col-xxl-8">
-                        <!--공공시설-->
-                        <section>
-                            <div class="d-flex align-items-center justify-content-between mb-4">
-                                <h2 class="text-primary fw-bolder mb-4">공공시설</h2>
-                            </div>
-                            <div class="card shadow border-0 rounded-4 mb-5">
-                                <div class="card-body p-5">
-                                    <div class="row align-items-center gx-5">
-                                        <!-- 왼쪽 정보 박스 -->
-                                        <div class="col text-center text-lg-start mb-4 mb-lg-0">
-                                            <div class="bg-light p-4 rounded-4">
-                                                <div class="text-primary fw-bolder mb-2">시설 이름: 공공도서관</div>
-                                                <div class="small fw-bolder">운영 시간 (평일): 09:00 ~ 18:00</div>
-                                                <div class="small fw-bolder">운영 시간 (주말): 10:00 ~ 16:00</div>
-                                                <div class="small text-muted">휴무일: 매주 월요일</div>
-                                                <div class="small text-muted">유료 여부: 유료</div>
-                                            </div>
-                                        </div>
 
-                                        <!-- 오른쪽 정보 -->
-                                        <div class="col-lg-8">
-                                            <div class="mb-2"><strong>주소:</strong> 서울특별시 중구 세종대로 110</div>
-                                            <div class="mb-2"><strong>전화번호:</strong> 02-1234-5678</div>
-                                            <div class="mb-2"><strong>홈페이지:</strong> <a href="http://example.com" target="_blank">http://example.com</a></div>
-                                            <div class="mb-2"><strong>운영 주체:</strong> 서울시청 문화체육과</div>
-                                            <div class="mb-2"><strong>유형:</strong> 도서관</div>
-                                        </div>
-                                    </div>
-                                </div>
+                        <!--공공시설-->
+                        <section id="publicFacilityResultsSection" style="display: none;">
+                            <h2 class="text-primary fw-bolder mb-0">공공시설 검색 결과</h2>
+                            <div id="publicFacilityCardsContainer">
+                                <!-- 공공시설 카드들이 여기에 동적으로 추가됩니다. -->
                             </div>
                         </section>
 
+
                         <!--나들이 섹션 -->
-                        <section>
-                            <h2 class="text-secondary fw-bolder mb-4">나들이</h2>
-                            <!-- 나들이 카드 -->
-                            <div class="card shadow border-0 rounded-4 mb-5">
-                                <div class="card-body p-5">
-                                    <div class="row align-items-center gx-5">
-                                        <!-- 왼쪽 정보 박스 -->
-                                        <div class="col text-center text-lg-start mb-4 mb-lg-0">
-                                            <div class="bg-light p-4 rounded-4">
-                                                <div class="text-secondary fw-bolder mb-2">나들이 이름: 한강공원</div>
-                                                <div class="mb-2">
-                                                    <div class="small fw-bolder">카테고리: 자연/공원</div>
-                                                    <div class="small text-muted">주소: 서울시 영등포구 여의도동</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- 오른쪽 정보 박스 -->
-                                        <div class="col-lg-8">
-                                            <div><strong>좌표:</strong> 위도 37.5215, 경도 126.9246</div>
-                                        </div>
-                                    </div>
-                                </div>
+                        <section id="outingResultsSection" style="display: none;">
+                            <h2 class="text-secondary fw-bolder mb-4">나들이 검색 결과</h2>
+                            <div id="outingCardsContainer">
+                                <!-- 나들이 카드들이 여기에 동적으로 추가됩니다. -->
                             </div>
                         </section>
 
                         <!--여가시설 섹션-->
-                        <section>
-                            <h2 class="text-warning fw-bolder mb-4">여가시설</h2>
-
-                            <!-- 여가시설 카드 -->
-                            <div class="card shadow border-0 rounded-4 mb-5">
-                                <div class="card-body p-5">
-                                    <div class="row align-items-center gx-5">
-                                        <!-- 왼쪽 정보 -->
-                                        <div class="col text-center text-lg-start mb-4 mb-lg-0">
-                                            <div class="bg-light p-4 rounded-4">
-                                                <div class="text-warning fw-bolder mb-2">여가시설 이름: 서울 수영장</div>
-                                                <div class="mb-2">
-                                                    <div class="small fw-bolder">소분류: 실내 수영장</div>
-                                                    <div class="small text-muted">주소: 서울특별시 강남구</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- 오른쪽 정보 -->
-                                        <div class="col-lg-8">
-                                            <div><strong>좌표:</strong> 위도 37.5172, 경도 127.0473</div>
-                                        </div>
-                                    </div>
-                                </div>
+                        <section id="cultureFestivalResultsSection" style="display: none;">
+                            <h2 class="text-warning fw-bolder mb-4">여가시설 검색 결과</h2>
+                            <div id="cultureFestivalCardsContainer">
+                                <!-- 여가시설 카드들이 여기에 동적으로 추가됩니다. -->
                             </div>
                         </section>
 
