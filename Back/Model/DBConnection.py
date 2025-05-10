@@ -17,6 +17,7 @@ class DBConnection:
                 cls.pool = await aiomysql.create_pool(
                     host=os.getenv("DB_HOST"),  # 환경 변수에서 DB_HOST 가져오기
                     user=os.getenv("DB_USER"),  # 환경 변수에서 DB_USER 가져오기
+                    password=os.getenv("DB_PASSWORD"),
                     db=os.getenv("DB_NAME"),  # 환경 변수에서 DB_NAME 가져오기
                     charset="utf8mb4",  # 🔥 꼭 넣기!
                     maxsize=10,  # 최대 연결 수
@@ -28,7 +29,6 @@ class DBConnection:
             finally:
                 print(os.getenv("DB_HOST"))  # DB_HOST 값이 13.135.32.12로 제대로 로드되었는지 확인
                 print(os.getenv("DB_USER"))
-                print(os.getenv("DB_PASSWORD"))
                 print(os.getenv("DB_NAME"))
 
     @classmethod
