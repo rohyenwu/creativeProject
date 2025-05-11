@@ -36,29 +36,29 @@ async function requestFacilities(category) {
     }
 }
 
-    function displayFacilitiesOnMap(facilities) {
-        // 기존 마커 제거
-        if (window.markers) {
-            window.markers.forEach(marker => marker.setMap(null));
-        }
-        window.markers = [];
-
-        // 시설 마커 추가
-        facilities.forEach(fac => {
-            const marker = new kakao.maps.Marker({
-                position: new kakao.maps.LatLng(fac.lat, fac.lng),
-                map: map
-            });
-
-            const info = new kakao.maps.InfoWindow({
-                content: `<div>${f.name}<br>${f.details}</div>`
-            });
-            kakao.maps.event.addListener(marker, "click", () => {
-                info.open(map, marker);
-            });
-            window.markers.push(marker);
-        });
+function displayFacilitiesOnMap(facilities) {
+    // 기존 마커 제거
+    if (window.markers) {
+        window.markers.forEach(marker => marker.setMap(null));
     }
+    window.markers = [];
+
+    // 시설 마커 추가
+    facilities.forEach(fac => {
+        const marker = new kakao.maps.Marker({
+            position: new kakao.maps.LatLng(fac.lat, fac.lng),
+            map: map
+        });
+
+        const info = new kakao.maps.InfoWindow({
+            content: `<div>${f.name}<br>${f.details}</div>`
+        });
+        kakao.maps.event.addListener(marker, "click", () => {
+            info.open(map, marker);
+        });
+        window.markers.push(marker);
+    });
+}
 
 /**
  * 지정된 컨테이너에 시설 목록을 카드 형태로 표시합니다.
