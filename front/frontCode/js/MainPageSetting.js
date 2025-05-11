@@ -29,7 +29,7 @@ function searchAddress() {
 
 function searchLocation(event) {
     if (event) event.preventDefault();
-    // 여기서 검색이 안될경우가 문제인가?
+
     const address = document.getElementById("location").value;
     if (!address) return;
 
