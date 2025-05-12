@@ -18,8 +18,8 @@ async def insert_categories():
     query = """
     INSERT INTO category (categoryID, categoryName) VALUES
     (1, '공공시설'),
-    (2, '야외시설'),
-    (3, '문화시설')
+    (2, '나들이이'),
+    (3, '여가시설')
     ON DUPLICATE KEY UPDATE categoryName = VALUES(categoryName);
     """
 
