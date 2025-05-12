@@ -55,7 +55,7 @@ async def insert_outing_facilities(outing_facilities):
                         ID, name, address, latitude, longitude, category_categoryID
                     ) VALUES (%s, %s, %s, %s, %s, 2)
                 """, (
-                    idx + 1,
+                    safe(row["ESNTL_ID"]),
                     safe(row["FCLTY_NM"]),
                     safe(row["LNM_ADDR"]),
                     safe(row["FCLTY_LA"]),
