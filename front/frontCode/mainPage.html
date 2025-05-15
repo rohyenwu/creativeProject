@@ -53,31 +53,31 @@
                                             <label class="fw-bold d-block mb-2">시설 유형</label>
                                             <div class="d-flex gap-3">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="facilityType" id="total" onclick="toggleDropdowns()">
-                                                    <label class="form-check-label" for="cultureFestival">전체선택</label>
+                                                    <input class="form-check-input" type="radio" name="facilityType" id="total" value="total" onclick="toggleDropdowns()">
+                                                    <label class="form-check-label" for="total">전체선택</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="facilityType" id="publicFacility" onclick="toggleDropdowns()">
+                                                    <input class="form-check-input" type="radio" name="facilityType" id="publicFacility" value="publicFacility" onclick="toggleDropdowns()">
                                                     <label class="form-check-label" for="publicFacility">공공시설</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="facilityType" id="outing" onclick="toggleDropdowns()">
+                                                    <input class="form-check-input" type="radio" name="facilityType" id="outing" value="outing" onclick="toggleDropdowns()">
                                                     <label class="form-check-label" for="outing">나들이</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="facilityType" id="cultureFestival" onclick="toggleDropdowns()">
-                                                    <label class="form-check-label" for="cultureFestival">여가시설</label>
+                                                    <input class="form-check-input" type="radio" name="facilityType" id="community" value="community" onclick="toggleDropdowns()">
+                                                    <label class="form-check-label" for="community">복지시설</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="facilityType" id="hospital" onclick="toggleDropdowns()">
-                                                    <label class="form-check-label" for="cultureFestival">병원</label>
+                                                    <input class="form-check-input" type="radio" name="facilityType" id="hospital" value="hospital" onclick="toggleDropdowns()">
+                                                    <label class="form-check-label" for="hospital">병원</label>
                                                 </div>
                                             </div>
                                         </div>
                                         <!--공공시설 드롭다운-->
-                                        <div id="facilityDropdownFacilty" class="ms-3" style="display: none">
+                                        <div id="facilityDropdownFacility" class="ms-3" style="display: none">
                                             <select class="form-select">
-                                                <option value="">전체 선택</option>
+                                                <option value="" selected>전체 선택</option>
                                                 <option value="1세미나실">1세미나실</option>
                                                 <option value="1인미디어실">1인미디어실</option>
                                                 <option value="2세미나실">2세미나실</option>
@@ -176,9 +176,9 @@
                                             </select>
                                         </div>
                                         <!--여가시설 드롭다운-->
-                                        <div id="facilityDropdownCulture" class="ms-3" style="display: none">
+                                        <div id="facilityDropdownCommunity" class="ms-3" style="display: none">
                                             <select class="form-select">
-                                                <option value="">전체 선택</option>
+                                                <option value="" selected>전체 선택</option>
                                                 <option value="노인정/노인회관">노인정/노인회관</option>
                                                 <option value="마을/새마을회관">마을/새마을회관</option>
                                                 <option value="보육원/양로원">보육원/양로원</option>
@@ -198,7 +198,7 @@
 
                                         <!-- 검색 버튼 -->
                                         <div class="d-grid">
-                                            <button type="submit" class="btn btn-primary btn-lg" onclick="requestFacilities()">검색</button>
+                                            <button type="button" class="btn btn-primary btn-lg" onclick="requestFacilities()">검색</button>
                                         </div>
                                     </form>
 
