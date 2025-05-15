@@ -1,15 +1,49 @@
-async function requestFacilities(category) {
-    // 주소 검색으로 얻은 위도, 경도 기준 사용
-    const lat = currentLat;
-    const lng = currentLng;
+function getSelectedFacilityType() {
+    // 공공시설 종류 - facilityType  == categoryID
+    const selected = document.querySelector('input[name="facilityType"]:checked');
+    if (selected) {
+        return selected.value;
+    } else {
+        //선택 안돼있으면 null
+        return null;
+    }
+}
+function getSelectedDropdownValue() {
+    // 공공시설 드롭다운
+    const facilityDropdownFacility = document.getElementById("facilityDropdownFacility");
+    const facilityDropdownCommunity = document.getElementById("facilityDropdownCommunity");
+
+    // 공공시설이 보이는 경우
+    if (facilityDropdownFacility.style.display !== "none") {
+        const select = facilityDropdownFacility.querySelector("select");
+        return select.value || "전체 선택";
+    }
+
+    // 여가시설이 보이는 경우
+    if (facilityDropdownCommunity.style.display !== "none") {
+        const select = facilityDropdownCommunity.querySelector("select");
+        return select.value || "전체 선택";
+    }
+
+    // 아무 드롭다운도 보이지 않으면 null
+    return null;
+}
+async function requestFacilities() {
+    const facilityType = getSelectedFacilityType();
+    alert(facilityType);
+    const dropdownValue = getSelectedDropdownValue();
+    alert(dropdownValue);
 
     try {
         // category, lat, lng 변수는 이미 정의되어 있다고 가정
+        // 주소 검색으로 얻은 위도, 경도 기준 사용 - MainPageSetting.js
+        // categoryID - mainPage의 버튼
+        // type - mainPage의 드롭다운
         const payload = {
-            lat: lat,
-            lon: lng,
-            categoryID: 3,
-            type: "복지관" // 적절한 타입 문자열 입력 (예: 'hospital', 'restaurant' 등)
+            lat: currentLat,
+            lon: currentLng,
+            categoryID: facilityType,
+            type: dropdownValue // 적절한 타입 문자열 입력 (예: 'hospital', 'restaurant' 등)
         };
 
         const response = await fetch("http://localhost:8000/search", {

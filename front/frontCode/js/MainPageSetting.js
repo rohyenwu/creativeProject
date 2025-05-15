@@ -48,20 +48,20 @@ function searchLocation(event) {
 
 function toggleDropdowns() {
     const publicFacility = document.getElementById('publicFacility').checked;
-    const cultureFestival = document.getElementById('cultureFestival').checked;
+    const community = document.getElementById('community').checked;
 
-    const dropdownFacility = document.getElementById('facilityDropdownFacilty');
-    const dropdownCulture = document.getElementById('facilityDropdownCulture');
+    const dropdownFacility = document.getElementById('facilityDropdownFacility');
+    const dropdownCommunity = document.getElementById('facilityDropdownCommunity');
 
     // 모두 숨기고
     dropdownFacility.style.display = 'none';
-    dropdownCulture.style.display = 'none';
+    dropdownCommunity.style.display = 'none';
 
     // 선택된 항목만 보이도록 설정
     if (publicFacility) {
         dropdownFacility.style.display = 'block';
-    } else if (cultureFestival) {
-        dropdownCulture.style.display = 'block';
+    } else if (community) {
+        dropdownCommunity.style.display = 'block';
     }
 }
 
