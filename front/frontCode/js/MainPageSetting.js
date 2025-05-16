@@ -1,5 +1,6 @@
 let map, marker;
-let currentLat, currentLng; // displayFacility에서 사용
+let currentLat, currentLng;
+let currCategory
 
 window.onload = function () {
     const mapContainer = document.getElementById('map');
@@ -49,7 +50,7 @@ function searchLocation(event) {
 function toggleDropdowns() {
     const publicFacility = document.getElementById('publicFacility').checked;
     const community = document.getElementById('community').checked;
-
+    const outing = document.getElementById('outing').checked;
     const dropdownFacility = document.getElementById('facilityDropdownFacility');
     const dropdownCommunity = document.getElementById('facilityDropdownCommunity');
 
@@ -60,8 +61,12 @@ function toggleDropdowns() {
     // 선택된 항목만 보이도록 설정
     if (publicFacility) {
         dropdownFacility.style.display = 'block';
+        currCategory = 1
     } else if (community) {
         dropdownCommunity.style.display = 'block';
+        currCategory = 3
+    }else if (outing) {
+        currCategory = 2
     }
 }
 

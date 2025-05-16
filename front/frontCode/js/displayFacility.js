@@ -1,13 +1,3 @@
-function getSelectedFacilityType() {
-    // 공공시설 종류 - facilityType  == categoryID
-    const selected = document.querySelector('input[name="facilityType"]:checked');
-    if (selected) {
-        return selected.value;
-    } else {
-        //선택 안돼있으면 null
-        return null;
-    }
-}
 function getSelectedDropdownValue() {
     // 공공시설 드롭다운
     const facilityDropdownFacility = document.getElementById("facilityDropdownFacility");
@@ -28,21 +18,18 @@ function getSelectedDropdownValue() {
     // 아무 드롭다운도 보이지 않으면 null
     return null;
 }
-async function requestFacilities() {
-    const facilityType = getSelectedFacilityType();
-    alert(facilityType);
-    const dropdownValue = getSelectedDropdownValue();
-    alert(dropdownValue);
 
+async function requestFacilities() {
+    const dropdownValue = getSelectedDropdownValue();
     try {
         // category, lat, lng 변수는 이미 정의되어 있다고 가정
         // 주소 검색으로 얻은 위도, 경도 기준 사용 - MainPageSetting.js
         // categoryID - mainPage의 버튼
         // type - mainPage의 드롭다운
         const payload = {
-            lat: currentLat,
-            lon: currentLng,
-            categoryID: facilityType,
+            lat: parseFloat(currentLat),
+            lon: parseFloat(currentLng),
+            categoryID: currCategory,
             type: dropdownValue // 적절한 타입 문자열 입력 (예: 'hospital', 'restaurant' 등)
         };
 
