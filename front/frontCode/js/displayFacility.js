@@ -16,7 +16,7 @@ function getSelectedDropdownValue() {
     }
 
     // 아무 드롭다운도 보이지 않으면 null
-    return null;
+    return "전체 선택";
 }
 
 async function requestFacilities() {
