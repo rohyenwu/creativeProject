@@ -32,7 +32,6 @@ async function requestFacilities() {
             categoryID: currCategory,
             type: dropdownValue // 적절한 타입 문자열 입력 (예: 'hospital', 'restaurant' 등)
         };
-
         const response = await fetch("http://localhost:8000/search", {
             method: "POST",
             headers: {

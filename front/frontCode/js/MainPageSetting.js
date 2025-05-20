@@ -74,7 +74,7 @@ function toggleDropdowns() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const sessionId = sessionStorage.getItem("sessionId");
+    const sessionId = sessionStorage.getItem("session_id");
 
     if (sessionId) {
         document.getElementById("favoriteMenu").style.display = "block";
