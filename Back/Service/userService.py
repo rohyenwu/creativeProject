@@ -5,8 +5,8 @@ active_sessions = {}
 
 class UserService:
     @staticmethod
-    async def register_user(userID, password, userName):
-        await UserModel.insert_user(userID, password, userName)
+    async def register_user(userID, password, userName,userGrade):
+        await UserModel.insert_user(userID, password, userName,userGrade)
 
     @staticmethod
     async def login_user(userID, password):
