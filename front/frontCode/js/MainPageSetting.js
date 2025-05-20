@@ -47,6 +47,7 @@ function searchLocation(event) {
 }
 
 function toggleDropdowns() {
+    const total = document.getElementById('total').checked;
     const publicFacility = document.getElementById('publicFacility').checked;
     const cultureFestival = document.getElementById('cultureFestival').checked;
 
@@ -60,8 +61,14 @@ function toggleDropdowns() {
     // 선택된 항목만 보이도록 설정
     if (publicFacility) {
         dropdownFacility.style.display = 'block';
-    } else if (cultureFestival) {
-        dropdownCulture.style.display = 'block';
+        currCategory = 1
+    } else if (community) {
+        dropdownCommunity.style.display = 'block';
+        currCategory = 3
+    }else if (outing) {
+        currCategory = 2
+    }else if(total){
+        currCategory = 0;
     }
 }
 
