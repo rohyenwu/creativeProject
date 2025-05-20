@@ -45,13 +45,11 @@ class searchService:
 
         
         facilities=facilities_result
-
         for facility in facilities:
             facility_lat = facility["latitude"]
             facility_lon = facility["longitude"]
             distance = searchService.haversine(lat, lon, facility_lat, facility_lon)
             facility["distance"] = distance
-            print(f"거리: {facility['distance']}km, 주소: {facility['address']}")
 
         facilities = [f for f in facilities if f["distance"] <= 15]
         facilities.sort(key=lambda x: x["distance"])
@@ -61,12 +59,12 @@ class searchService:
 
 # 🔥 여기부터 테스트 코드
 async def test_get_facilities():
-    lat = 37.5366 
-    lon = 127.133
+    lat = 36.144417
+    lon = 128.393278
     categoryID = 1
-
+    type="전시실"
     # ✅ 여기 searchService 클래스 이름 그대로 써야함
-    category, facilities = await searchService.get_facilities_list(categoryID, lat, lon)
+    category, facilities = await searchService.get_facilities_list(categoryID, lat, lon,type)
     print(f"카테고리ID: {category}")
     print(facilities[:5])
 

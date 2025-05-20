@@ -18,13 +18,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
             const data = await response.json();
 
-            if (response.ok) {
+            if (response.ok && data.session_id) {
                 // 세션 ID는 쿠키로 관리하기?
+                //세션스토리지
                 sessionStorage.setItem("session_id", data.session_id);
                 sessionStorage.setItem("userName", data.userName);
+                //쿠키
+                document.cookie = `sessionId=${data.session_id}; path=/; max-age=3600;` //1시간 유지
+                document.cookie = `userName=${data.userName}; path=/; max-age=3600;`
 
                 // 메인 페이지로 이동
                 window.location.href = "mainPage.html"; // 일단 비회원 페이지 이동
+            } else if(!data.session_id){
+                alert("아이디 또는 비밀번호가 잘못되었습니다.")
             } else {
                 message.textContent = data.detail || "로그인 실패";
             }

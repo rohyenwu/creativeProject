@@ -16,10 +16,11 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(userController.router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins= ["*"],            # 허용할 origin
     allow_credentials=True,
     allow_methods=["*"],              # 허용할 HTTP 메서드 (GET, POST 등)
-    allow_headers=["*"],              # 허용할 헤더
+    allow_headers=["*", "-ijt"],
 )

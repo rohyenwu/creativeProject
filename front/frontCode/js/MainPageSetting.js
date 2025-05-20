@@ -1,5 +1,6 @@
 let map, marker;
-let currentLat, currentLng; // displayFacility에서 사용
+let currentLat, currentLng;
+let currCategory
 
 window.onload = function () {
     const mapContainer = document.getElementById('map');
@@ -49,14 +50,14 @@ function searchLocation(event) {
 function toggleDropdowns() {
     const total = document.getElementById('total').checked;
     const publicFacility = document.getElementById('publicFacility').checked;
-    const cultureFestival = document.getElementById('cultureFestival').checked;
-
-    const dropdownFacility = document.getElementById('facilityDropdownFacilty');
-    const dropdownCulture = document.getElementById('facilityDropdownCulture');
+    const community = document.getElementById('community').checked;
+    const outing = document.getElementById('outing').checked;
+    const dropdownFacility = document.getElementById('facilityDropdownFacility');
+    const dropdownCommunity = document.getElementById('facilityDropdownCommunity');
 
     // 모두 숨기고
     dropdownFacility.style.display = 'none';
-    dropdownCulture.style.display = 'none';
+    dropdownCommunity.style.display = 'none';
 
     // 선택된 항목만 보이도록 설정
     if (publicFacility) {
@@ -73,7 +74,7 @@ function toggleDropdowns() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const sessionId = sessionStorage.getItem("sessionId");
+    const sessionId = sessionStorage.getItem("session_id");
 
     if (sessionId) {
         document.getElementById("favoriteMenu").style.display = "block";
