@@ -1,6 +1,6 @@
 let map, marker;
 let currentLat, currentLng;
-let currCategory
+let currCategory = 0;
 
 window.onload = function () {
     const mapContainer = document.getElementById('map');
