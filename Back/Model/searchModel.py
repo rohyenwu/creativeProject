@@ -7,7 +7,7 @@ class searchModel:
     async def get_public(type, min_lat, max_lat, min_lon, max_lon):
         conn = await DBConnection.DBConnection.get_db_connection()
         try:
-            if type == "전체 선택":
+            if type == "all":
                 query = "SELECT * FROM public WHERE latitude >= %s AND latitude <= %s AND longitude >= %s AND longitude <= %s"
                 params = (min_lat, max_lat, min_lon, max_lon)
             else:
@@ -25,7 +25,7 @@ class searchModel:
     async def get_leisure(type, min_lat, max_lat, min_lon, max_lon):
         conn = await DBConnection.DBConnection.get_db_connection()
         try:
-            if type == "전체 선택":
+            if type == "all":
                 query = "SELECT * FROM Leisure WHERE latitude >= %s AND latitude <= %s AND longitude >= %s AND longitude <= %s"
                 params = (min_lat, max_lat, min_lon, max_lon)
             else:
@@ -52,6 +52,7 @@ class searchModel:
                 return results  
         finally:
             await DBConnection.DBConnection.release_db_connection(conn)
+            
     @staticmethod
     async def get_hospital(min_lat, max_lat, min_lon, max_lon):
         conn=await DBConnection.DBConnection.get_db_connection()
