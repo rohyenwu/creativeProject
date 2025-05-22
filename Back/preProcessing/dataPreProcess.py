@@ -82,6 +82,16 @@ def clean_outing_facilities():
     print(f"[outingFacilities] 자연만 남긴 CSV 저장 완료: {output_csv}")
 
 # 메인 실행
+
+
+def clean_hospital_facilities():
+    input_csv=os.path.join(BASE_DIR,'precsv','hospitalFacilities.csv')
+    output_dir=os.path.join(BASE_DIR,'csv')
+    output_csv=os.path.join(output_dir,'hospitalFacilities.csv')
+    df=pd.read_csv(input_csv, encoding='euc-kr')
+    df_open=df[df['영업상태구분코드']==1]
+    os.makedirs(output_dir,exist_ok=True)
+    df_open.to_csv(output_csv,index=False,encoding='euc-kr')
+    print(f"[outingFacilities] 운영중만 남긴 CSV 저장 완료: {output_csv}")
 if __name__ == "__main__":
-    clean_public_facilities()
-    clean_outing_facilities()
+    clean_hospital_facilities()

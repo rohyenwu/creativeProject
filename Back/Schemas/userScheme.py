@@ -3,6 +3,7 @@ class MembershipRequest(BaseModel):
     userID:str
     password:str
     userName:str
+    userGrade:int
 class LoginRequest(BaseModel):
     userID: str
     password: str

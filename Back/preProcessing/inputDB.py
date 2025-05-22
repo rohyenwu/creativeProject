@@ -93,6 +93,34 @@ async def insert_leisure_facilities(leisure_facilities):
         print(f"❌ 오류 발생 (leisure): {e}")
     finally:
         await DBConnection.release_db_connection(conn)
+        
+# hospital 테이블 삽입
+async def insert_hospital_facilities(hospital_facilities):
+    conn = await DBConnection.get_db_connection()
+    try:
+        async with conn.cursor() as cursor:
+            for idx, row in hospital_facilities.iterrows():
+                print(f"👉 hospital 삽입 중... {idx + 1}번째")  # ★ 여기!
+                await cursor.execute("""
+                    INSERT INTO hospital (
+                       ID,hospitalName,type,address,positionX,positionY,medicalDepartment,category_categoryID
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, 4 )
+                """, (
+                    safe(row["번호"]),
+                    safe(row["사업장명"]),
+                    safe(row["업태구분명"]),
+                    safe(row["도로명전체주소"]),
+                    safe(row["좌표정보x"]),
+                    safe(row["좌표정보y"]),
+                    safe(row["진료과목내용"]),
+                ))
+            await conn.commit()
+        print("✅ hospital 테이블에 데이터 삽입 완료!")
+    except Exception as e:
+        print(f"❌ 오류 발생 (hospital): {e}")
+    finally:
+        await DBConnection.release_db_connection(conn)
+
 
 # main 함수
 async def main():
@@ -102,6 +130,7 @@ async def main():
     public_facilities = reader.read_public_facilities()
     outing_facilities = reader.read_outing_facilities()
     leisure_facilities = reader.read_leisure_facilities()
+    hospital_facilities = reader.read_hospital_facilities()
     print("📦 public 행 개수:", len(public_facilities))
 
     print("📦 outing 행 개수:", len(outing_facilities))
@@ -109,6 +138,7 @@ async def main():
     await insert_public_facilities(public_facilities)
     await insert_outing_facilities(outing_facilities)
     await insert_leisure_facilities(leisure_facilities)
+    await insert_hospital_facilities(hospital_facilities)
 
     await DBConnection.close_pool()
 

@@ -35,6 +35,15 @@ class readFile:
         "FCLTY_LO", 
         "FCLTY_LA"
     )
+    hospital_rows=(
+        "번호",
+        "업태구분명",
+        "사업장명",
+        "도로명전체주소",
+        "좌표정보x",
+        "좌표정보y",
+        "진료과목내용용"
+    )
     
     def read_public_facilities(self):
         # CSV 파일 읽기
@@ -61,7 +70,11 @@ class readFile:
         result = df[list(self.leisure_rows)]
         print(result.head())  # 첫 5개 행 출력
         return result
-
+    
+    def read_hospital_facilities(self):
+        df=pd.read_csv('csv/hospitalFacilities.csv', encoding='euc-kr')
+        result=df[list(self.hospital_rows)]
+        return result
 if __name__ == '__main__':
     read_file = readFile()  # 인스턴스 생성
     public_facilities = read_file.read_public_facilities()  # 데이터 읽기

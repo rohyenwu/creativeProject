@@ -10,7 +10,7 @@ active_sessions = {}
 
 @router.post("/membership")
 async def membership(request: MembershipRequest):
-    await UserModel.insert_user(request.userID, request.password, request.userName)
+    await UserModel.insert_user(request.userID, request.password, request.userName, request.userGrade)
     return JSONResponse(content={"message": True})
 
 @router.post("/login")
@@ -18,7 +18,6 @@ async def login(request: LoginRequest):
     user = await UserModel.get_user_by_credentials(request.userID, request.password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-
     session_id = str(uuid.uuid4())
     active_sessions[session_id] = {"userID": request.userID}
     response = JSONResponse(content={"message": True, "session_id": session_id, "userName": user["userName"]})
@@ -35,6 +34,7 @@ async def search(request: SearchRequest):
     result = await searchService.get_facilities_list(request.categoryID, request.lat, request.lon, request.type)
     return result
 
+
 @router.get("/favorite")
 async def get_favorite(session_id: str):
     if session_id not in active_sessions:
@@ -43,3 +43,4 @@ async def get_favorite(session_id: str):
     userID = active_sessions[session_id]["userID"]
     result = await UserModel.get_favorite(userID)
     return result
+

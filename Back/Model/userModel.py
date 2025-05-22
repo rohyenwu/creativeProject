@@ -3,12 +3,12 @@ import aiomysql
 
 class UserModel:
     @staticmethod
-    async def insert_user(userID, password, userName):
+    async def insert_user(userID, password, userName, userGrade):
         conn = await DBConnection.DBConnection.get_db_connection()
         try:
-            query = "INSERT INTO users(userID, password, userName) VALUES (%s, %s, %s)"
+            query = "INSERT INTO users(userID, password, userName) VALUES (%s, %s, %s, %s)"
             async with conn.cursor(aiomysql.DictCursor) as cursor:
-                await cursor.execute(query, (userID, password, userName))
+                await cursor.execute(query, (userID, password, userName, userGrade))
             await conn.commit()
         finally:
             await DBConnection.DBConnection.release_db_connection(conn)
