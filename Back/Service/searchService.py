@@ -29,9 +29,9 @@ class searchService:
     async def get_facilities_list(categoryID, lat, lon, type=""):
         min_lat, max_lat, min_lon, max_lon = searchService.get_bounds(lat, lon,)
         if categoryID == 0:
-            facilities_result = await searchModel.get_public('전체 선택', min_lat, max_lat, min_lon, max_lon)
+            facilities_result = await searchModel.get_public('all', min_lat, max_lat, min_lon, max_lon)
             facilities_result += await searchModel.get_outing(min_lat, max_lat, min_lon, max_lon)
-            facilities_result += await searchModel.get_leisure('전체 선택',min_lat, max_lat, min_lon, max_lon)
+            facilities_result += await searchModel.get_leisure('all',min_lat, max_lat, min_lon, max_lon)
 
         elif categoryID == 1:
             facilities_result = await searchModel.get_public(type, min_lat, max_lat, min_lon, max_lon)
@@ -41,9 +41,9 @@ class searchService:
 
         elif categoryID==3:
             facilities_result = await searchModel.get_leisure(type,min_lat, max_lat, min_lon, max_lon)
-        else:
+        elif categoryID==4:
             facilities_result= await searchModel.get_hospital(min_lat,max_lat,min_lon,max_lon)
-
+            
         
         facilities=facilities_result
         for facility in facilities:
