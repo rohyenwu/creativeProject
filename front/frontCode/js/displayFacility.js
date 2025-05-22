@@ -32,6 +32,9 @@ async function requestFacilities() {
             categoryID: currCategory,
             type: dropdownValue // 적절한 타입 문자열 입력 (예: 'hospital', 'restaurant' 등)
         };
+        if (dropdownValue === "전체 선택"){
+            payload.type = ""
+        }
         const response = await fetch("http://localhost:8000/search", {
             method: "POST",
             headers: {
@@ -48,8 +51,17 @@ async function requestFacilities() {
         console.log("서버 응답:", facilityList);
 
         window.facilities = facilityList;
-        displayFacilitiesOnMap(facilityList);
-        displayFacilitiesBelowMap(facilityList);
+        if (facilityList[0] === 1){
+            displayFacilitiesOnMap(facilityList);
+            displayFacilitiesBelowMap1(facilityList);
+        }else if(facilityList[0] === 2){
+            displayFacilitiesOnMap(facilityList);
+            displayLeisureFacilitiesBelowMap2(facilityList);
+        }else if(facilityList[0] === 3){
+            displayFacilitiesOnMap(facilityList);
+            displayOutingFacilitiesBelowMap3(facilityList);
+        }
+
 
     } catch (error) {
         console.error("시설 데이터를 불러오지 못했습니다:", error);
@@ -92,7 +104,7 @@ function displayFacilitiesOnMap(response) {
 
 
 
-function displayFacilitiesBelowMap(facilityList) {
+function displayFacilitiesBelowMap1(facilityList) {
     const publicFacilities = facilityList[1]; // categoryID: 1
     const container = document.getElementById("publicFacilityCardsContainer");
 
@@ -100,6 +112,8 @@ function displayFacilitiesBelowMap(facilityList) {
 
     // 섹션 보이도록 설정
     document.getElementById("publicFacilityResultsSection").style.display = "block";
+    document.getElementById("cultureFestivalResultsSection").style.display = "none";
+    document.getElementById("outingResultsSection").style.display = "none";
 
     // 기존 내용 비우기
     container.innerHTML = "";
@@ -132,6 +146,81 @@ function displayFacilitiesBelowMap(facilityList) {
         container.appendChild(card);
     });
 }
+
+function displayLeisureFacilitiesBelowMap2(facilityList) {
+    const leisureFacilities = facilityList[1];
+    const container = document.getElementById("outingCardsContainer");
+
+    if (!Array.isArray(leisureFacilities) || leisureFacilities.length === 0) return;
+
+    document.getElementById("publicFacilityResultsSection").style.display = "none";
+    document.getElementById("outingResultsSection").style.display = "block";
+    document.getElementById("cultureFestivalResultsSection").style.display = "none";
+
+    container.innerHTML = "";
+
+    leisureFacilities.forEach(facility => {
+        const card = document.createElement("div");
+        card.className = "card shadow border-0 rounded-4 mb-5";
+
+        card.innerHTML = `
+            <div class="card-body p-5">
+                <div class="row align-items-center gx-5">
+                    <div class="col text-center text-lg-start mb-4 mb-lg-0">
+                        <div class="bg-light p-4 rounded-4">
+                            <div class="text-secondary fw-bolder mb-2">${facility.name}</div>
+                            <div class="mb-2">
+                            </div>
+                        </div>
+                    <div class="col-lg-8">
+                        <div class="mb-2"><strong>주소:</strong> ${facility.address || '정보 없음'}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+
+function displayOutingFacilitiesBelowMap3(facilityList) {
+    const outingFacilities = facilityList[1];
+    const container = document.getElementById("cultureFestivalCardsContainer");
+
+    if (!Array.isArray(outingFacilities) || outingFacilities.length === 0) return;
+
+    document.getElementById("publicFacilityResultsSection").style.display = "none";
+    document.getElementById("outingResultsSection").style.display = "none";
+    document.getElementById("cultureFestivalResultsSection").style.display = "block";
+
+    container.innerHTML = "";
+
+    outingFacilities.forEach(facility => {
+        const card = document.createElement("div");
+        card.className = "card shadow border-0 rounded-4 mb-5";
+
+        card.innerHTML = `
+            <div class="card-body p-5">
+                <div class="row align-items-center gx-5">
+                    <div class="col text-center text-lg-start mb-4 mb-lg-0">
+                        <div class="bg-light p-4 rounded-4">
+                            <div class="text-warning fw-bolder mb-2">${facility.name}</div>
+                            <div class="mb-2">
+                                <div class="small fw-bolder">${facility.smallLeisure || '소분류 없음'}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8"><div>${facility.address || '주소없음'}</div></div>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+
 
 // 시간을 초 단위 숫자에서 HH:MM 형식으로 변환
 function formatTime(seconds) {
