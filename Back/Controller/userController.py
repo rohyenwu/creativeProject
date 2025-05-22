@@ -33,3 +33,14 @@ async def logout(session_id: str):
 async def search(request: SearchRequest):
     result = await searchService.get_facilities_list(request.categoryID, request.lat, request.lon, request.type)
     return result
+
+
+@router.get("/favorite")
+async def get_favorite(session_id: str):
+    if session_id not in active_sessions:
+        raise HTTPException(status_code=401, detail="Invalid session ID")
+    
+    userID = active_sessions[session_id]["userID"]
+    result = await UserModel.get_favorite(userID)
+    return result
+

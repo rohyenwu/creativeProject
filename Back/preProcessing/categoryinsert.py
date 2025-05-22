@@ -21,6 +21,7 @@ async def insert_categories():
     (2, '나들이'),
     (3, '여가시설'),
     (4, '병원')
+
     ON DUPLICATE KEY UPDATE categoryName = VALUES(categoryName);
     """
 

@@ -1,6 +1,6 @@
 let map, marker;
 let currentLat, currentLng;
-let currCategory
+let currCategory = 0;
 
 window.onload = function () {
     const mapContainer = document.getElementById('map');
@@ -48,6 +48,7 @@ function searchLocation(event) {
 }
 
 function toggleDropdowns() {
+    const total = document.getElementById('total').checked;
     const publicFacility = document.getElementById('publicFacility').checked;
     const community = document.getElementById('community').checked;
     const outing = document.getElementById('outing').checked;
@@ -67,11 +68,13 @@ function toggleDropdowns() {
         currCategory = 3
     }else if (outing) {
         currCategory = 2
+    }else if(total){
+        currCategory = 0;
     }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const sessionId = sessionStorage.getItem("sessionId");
+    const sessionId = sessionStorage.getItem("session_id");
 
     if (sessionId) {
         document.getElementById("favoriteMenu").style.display = "block";

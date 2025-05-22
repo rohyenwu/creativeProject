@@ -14,7 +14,7 @@ class UserService:
         if not user:
             return None, None
         session_id = str(uuid.uuid4())
-        active_sessions[session_id] = {"userID": userID}
+        active_sessions[session_id] = {"userID": userID} # 여기에 아이디 존재
         return session_id, user["userName"]
 
     @staticmethod
