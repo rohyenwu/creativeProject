@@ -37,217 +37,210 @@
             </nav>
             <!-- Projects Section-->
             <section class="py-5">
-                <div class="container px-5 mb-5">
+                <div class="container-fluid px-5 mb-5">
                     <div class="text-center mb-5">
                         <h1 class="display-5 fw-bolder mb-0">
                             <span class="text-gradient d-inline">어떤 시설을 찾고 계신가요?</span>
                         </h1>
                     </div>
-                    <div class="row gx-5 justify-content-center">
-                        <div class="col-lg-11 col-xl-9 col-xxl-8">
-                            <div class="card overflow-hidden shadow rounded-4 border-0 mb-5">
-                                <div class="card-body p-5">
-                                    <form>
-                                        <!-- 라디오 버튼 옵션 (가로 정렬) -->
-                                        <div class="mb-3">
-                                            <label class="fw-bold d-block mb-2">시설 유형</label>
-                                            <div class="d-flex gap-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" checked="True" name="facilityType" id="total" value="total" onclick="toggleDropdowns()">
-                                                    <label class="form-check-label" for="total">전체선택</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="facilityType" id="publicFacility" value="publicFacility" onclick="toggleDropdowns()">
-                                                    <label class="form-check-label" for="publicFacility">공공시설</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="facilityType" id="outing" value="outing" onclick="toggleDropdowns()">
-                                                    <label class="form-check-label" for="outing">나들이</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="facilityType" id="community" value="community" onclick="toggleDropdowns()">
-                                                    <label class="form-check-label" for="community">복지시설</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="facilityType" id="hospital" value="hospital" onclick="toggleDropdowns()">
-                                                    <label class="form-check-label" for="hospital">병원</label>
+                        <div class="container card-body overflow-hidden shadow rounded-4 border-0 mb-5">
+                            <!--여기부터 전체 박스 -->
+                            <div class="card-body p-5">
+                                        <form>
+                                            <!-- 라디오 버튼 옵션 (가로 정렬) -->
+                                            <div class="mb-3">
+                                                <label class="fw-bold d-block mb-2">시설 유형</label>
+                                                <div class="d-flex gap-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" checked="True" name="facilityType" id="total" value="total" onclick="toggleDropdowns()">
+                                                        <label class="form-check-label" for="total">전체선택</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="facilityType" id="publicFacility" value="publicFacility" onclick="toggleDropdowns()">
+                                                        <label class="form-check-label" for="publicFacility">공공시설</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="facilityType" id="outing" value="outing" onclick="toggleDropdowns()">
+                                                        <label class="form-check-label" for="outing">나들이</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="facilityType" id="community" value="community" onclick="toggleDropdowns()">
+                                                        <label class="form-check-label" for="community">복지시설</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="facilityType" id="hospital" value="hospital" onclick="toggleDropdowns()">
+                                                        <label class="form-check-label" for="hospital">병원</label>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <!--공공시설 드롭다운-->
-                                        <div id="facilityDropdownFacility" class="ms-3" style="display: none">
-                                            <select class="form-select">
-                                                <option value="" selected>전체 선택</option>
-                                                <option value="1세미나실">1세미나실</option>
-                                                <option value="1인미디어실">1인미디어실</option>
-                                                <option value="2세미나실">2세미나실</option>
-                                                <option value="강당">강당</option>
-                                                <option value="강당+회의실">강당+회의실</option>
-                                                <option value="강의실">강의실</option>
-                                                <option value="강의실+회의실">강의실+회의실</option>
-                                                <option value="게이트볼장">게이트볼장</option>
-                                                <option value="골프장">골프장</option>
-                                                <option value="공연장">공연장</option>
-                                                <option value="공예창작실">공예창작실</option>
-                                                <option value="교육실">교육실</option>
-                                                <option value="교육장">교육장</option>
-                                                <option value="국궁장">국궁장</option>
-                                                <option value="국민체육센터">국민체육센터</option>
-                                                <option value="그라운드골프장">그라운드골프장</option>
-                                                <option value="기타">기타</option>
-                                                <option value="노인복지관">노인복지관</option>
-                                                <option value="녹음">녹음</option>
-                                                <option value="농구장">농구장</option>
-                                                <option value="다목적경기장">다목적경기장</option>
-                                                <option value="다목적실">다목적실</option>
-                                                <option value="다목적실+기타">다목적실+기타</option>
-                                                <option value="다목적체육관">다목적체육관</option>
-                                                <option value="당구장/탁구장">당구장/탁구장</option>
-                                                <option value="대강당">대강당</option>
-                                                <option value="대회의실">대회의실</option>
-                                                <option value="도서관">도서관</option>
-                                                <option value="동아리방">동아리방</option>
-                                                <option value="동아리실">동아리실</option>
-                                                <option value="론볼경기장">론볼경기장</option>
-                                                <option value="마루공간">마루공간</option>
-                                                <option value="문화센터">문화센터</option>
-                                                <option value="문화회관(강당)">문화회관(강당)</option>
-                                                <option value="미디어창작실">미디어창작실</option>
-                                                <option value="민방위교육장">민방위교육장</option>
-                                                <option value="민원등기타">민원등기타</option>
-                                                <option value="배구장">배구장</option>
-                                                <option value="배드맨턴장">배드맨턴장</option>
-                                                <option value="배드민턴+농구">배드민턴+농구</option>
-                                                <option value="배드민턴장">배드민턴장</option>
-                                                <option value="배드민턴장+기타">배드민턴장+기타</option>
-                                                <option value="배드민턴장+탁구장">배드민턴장+탁구장</option>
-                                                <option value="복지회관">복지회관</option>
-                                                <option value="볼링장">볼링장</option>
-                                                <option value="사랑방">사랑방</option>
-                                                <option value="생활문화센터">생활문화센터</option>
-                                                <option value="생활체조장">생활체조장</option>
-                                                <option value="서원">서원</option>
-                                                <option value="세미나실">세미나실</option>
-                                                <option value="소극장, 전시실">소극장, 전시실</option>
-                                                <option value="소프트테니스장">소프트테니스장</option>
-                                                <option value="소회의실">소회의실</option>
-                                                <option value="수영장">수영장</option>
-                                                <option value="수영장+헬스장+체육관+생활체조실+다목적실">수영장+헬스장+체육관+생활체조실+다목적실</option>
-                                                <option value="야구장">야구장</option>
-                                                <option value="야외무대">야외무대</option>
-                                                <option value="연습실">연습실</option>
-                                                <option value="영상실">영상실</option>
-                                                <option value="운동장">운동장</option>
-                                                <option value="음향실">음향실</option>
-                                                <option value="인라인장">인라인장</option>
-                                                <option value="잔디광장">잔디광장</option>
-                                                <option value="전시실">전시실</option>
-                                                <option value="전시실+기타">전시실+기타</option>
-                                                <option value="전시장">전시장</option>
-                                                <option value="족구장">족구장</option>
-                                                <option value="족구장+농구장">족구장+농구장</option>
-                                                <option value="주민사랑방">주민사랑방</option>
-                                                <option value="주민자치센터">주민자치센터</option>
-                                                <option value="주차장">주차장</option>
-                                                <option value="청소년센터">청소년센터</option>
-                                                <option value="청소년수련관">청소년수련관</option>
-                                                <option value="체력단련실">체력단련실</option>
-                                                <option value="체육관">체육관</option>
-                                                <option value="체육관+다목적실">체육관+다목적실</option>
-                                                <option value="체험관">체험관</option>
-                                                <option value="체험장">체험장</option>
-                                                <option value="촬영">촬영</option>
-                                                <option value="축구장">축구장</option>
-                                                <option value="축구장+족구장">축구장+족구장</option>
-                                                <option value="축구장+테니스장">축구장+테니스장</option>
-                                                <option value="캠핑장">캠핑장</option>
-                                                <option value="커뮤니티센터">커뮤니티센터</option>
-                                                <option value="탁구장">탁구장</option>
-                                                <option value="테니스장">테니스장</option>
-                                                <option value="풋살경기장">풋살경기장</option>
-                                                <option value="풋살장">풋살장</option>
-                                                <option value="프로그램실">프로그램실</option>
-                                                <option value="헬스장">헬스장</option>
-                                                <option value="회의실">회의실</option>
-                                                <option value="회의실+강의실">회의실+강의실</option>
-                                                <option value="회의실+강의실+다목적실">회의실+강의실+다목적실</option>
-                                                <option value="회의장">회의장</option>
-                                                <option value="휴양림">휴양림</option>
-                                            </select>
-                                        </div>
-                                        <!--여가시설 드롭다운-->
-                                        <div id="facilityDropdownCommunity" class="ms-3" style="display: none">
-                                            <select class="form-select">
-                                                <option value="" selected>전체 선택</option>
-                                                <option value="노인정/노인회관">노인정/노인회관</option>
-                                                <option value="마을/새마을회관">마을/새마을회관</option>
-                                                <option value="보육원/양로원">보육원/양로원</option>
-                                                <option value="복지관">복지관</option>
-                                            </select>
-                                        </div>
-
-                                        <br>
-                                        <!-- 위치 입력 -->
-                                        <div class="mb-3">
-                                            <label for="location" class="fw-bold">위치 정보:</label>
-                                            <div class="input-group">
-                                                <button type="button" class="btn btn-primary" onclick="searchAddress()">주소 검색</button>
-                                                <input type="text" class="form-control" id="location" placeholder="ex) 경북 구미시 대학로 61" readonly onclick="searchAddress()">
+                                            <!--공공시설 드롭다운-->
+                                            <div id="facilityDropdownFacility" class="ms-3" style="display: none">
+                                                <select class="form-select">
+                                                    <option value="" selected>전체 선택</option>
+                                                    <option value="1세미나실">1세미나실</option>
+                                                    <option value="1인미디어실">1인미디어실</option>
+                                                    <option value="2세미나실">2세미나실</option>
+                                                    <option value="강당">강당</option>
+                                                    <option value="강당+회의실">강당+회의실</option>
+                                                    <option value="강의실">강의실</option>
+                                                    <option value="강의실+회의실">강의실+회의실</option>
+                                                    <option value="게이트볼장">게이트볼장</option>
+                                                    <option value="골프장">골프장</option>
+                                                    <option value="공연장">공연장</option>
+                                                    <option value="공예창작실">공예창작실</option>
+                                                    <option value="교육실">교육실</option>
+                                                    <option value="교육장">교육장</option>
+                                                    <option value="국궁장">국궁장</option>
+                                                    <option value="국민체육센터">국민체육센터</option>
+                                                    <option value="그라운드골프장">그라운드골프장</option>
+                                                    <option value="기타">기타</option>
+                                                    <option value="노인복지관">노인복지관</option>
+                                                    <option value="녹음">녹음</option>
+                                                    <option value="농구장">농구장</option>
+                                                    <option value="다목적경기장">다목적경기장</option>
+                                                    <option value="다목적실">다목적실</option>
+                                                    <option value="다목적실+기타">다목적실+기타</option>
+                                                    <option value="다목적체육관">다목적체육관</option>
+                                                    <option value="당구장/탁구장">당구장/탁구장</option>
+                                                    <option value="대강당">대강당</option>
+                                                    <option value="대회의실">대회의실</option>
+                                                    <option value="도서관">도서관</option>
+                                                    <option value="동아리방">동아리방</option>
+                                                    <option value="동아리실">동아리실</option>
+                                                    <option value="론볼경기장">론볼경기장</option>
+                                                    <option value="마루공간">마루공간</option>
+                                                    <option value="문화센터">문화센터</option>
+                                                    <option value="문화회관(강당)">문화회관(강당)</option>
+                                                    <option value="미디어창작실">미디어창작실</option>
+                                                    <option value="민방위교육장">민방위교육장</option>
+                                                    <option value="민원등기타">민원등기타</option>
+                                                    <option value="배구장">배구장</option>
+                                                    <option value="배드맨턴장">배드맨턴장</option>
+                                                    <option value="배드민턴+농구">배드민턴+농구</option>
+                                                    <option value="배드민턴장">배드민턴장</option>
+                                                    <option value="배드민턴장+기타">배드민턴장+기타</option>
+                                                    <option value="배드민턴장+탁구장">배드민턴장+탁구장</option>
+                                                    <option value="복지회관">복지회관</option>
+                                                    <option value="볼링장">볼링장</option>
+                                                    <option value="사랑방">사랑방</option>
+                                                    <option value="생활문화센터">생활문화센터</option>
+                                                    <option value="생활체조장">생활체조장</option>
+                                                    <option value="서원">서원</option>
+                                                    <option value="세미나실">세미나실</option>
+                                                    <option value="소극장, 전시실">소극장, 전시실</option>
+                                                    <option value="소프트테니스장">소프트테니스장</option>
+                                                    <option value="소회의실">소회의실</option>
+                                                    <option value="수영장">수영장</option>
+                                                    <option value="수영장+헬스장+체육관+생활체조실+다목적실">수영장+헬스장+체육관+생활체조실+다목적실</option>
+                                                    <option value="야구장">야구장</option>
+                                                    <option value="야외무대">야외무대</option>
+                                                    <option value="연습실">연습실</option>
+                                                    <option value="영상실">영상실</option>
+                                                    <option value="운동장">운동장</option>
+                                                    <option value="음향실">음향실</option>
+                                                    <option value="인라인장">인라인장</option>
+                                                    <option value="잔디광장">잔디광장</option>
+                                                    <option value="전시실">전시실</option>
+                                                    <option value="전시실+기타">전시실+기타</option>
+                                                    <option value="전시장">전시장</option>
+                                                    <option value="족구장">족구장</option>
+                                                    <option value="족구장+농구장">족구장+농구장</option>
+                                                    <option value="주민사랑방">주민사랑방</option>
+                                                    <option value="주민자치센터">주민자치센터</option>
+                                                    <option value="주차장">주차장</option>
+                                                    <option value="청소년센터">청소년센터</option>
+                                                    <option value="청소년수련관">청소년수련관</option>
+                                                    <option value="체력단련실">체력단련실</option>
+                                                    <option value="체육관">체육관</option>
+                                                    <option value="체육관+다목적실">체육관+다목적실</option>
+                                                    <option value="체험관">체험관</option>
+                                                    <option value="체험장">체험장</option>
+                                                    <option value="촬영">촬영</option>
+                                                    <option value="축구장">축구장</option>
+                                                    <option value="축구장+족구장">축구장+족구장</option>
+                                                    <option value="축구장+테니스장">축구장+테니스장</option>
+                                                    <option value="캠핑장">캠핑장</option>
+                                                    <option value="커뮤니티센터">커뮤니티센터</option>
+                                                    <option value="탁구장">탁구장</option>
+                                                    <option value="테니스장">테니스장</option>
+                                                    <option value="풋살경기장">풋살경기장</option>
+                                                    <option value="풋살장">풋살장</option>
+                                                    <option value="프로그램실">프로그램실</option>
+                                                    <option value="헬스장">헬스장</option>
+                                                    <option value="회의실">회의실</option>
+                                                    <option value="회의실+강의실">회의실+강의실</option>
+                                                    <option value="회의실+강의실+다목적실">회의실+강의실+다목적실</option>
+                                                    <option value="회의장">회의장</option>
+                                                    <option value="휴양림">휴양림</option>
+                                                </select>
                                             </div>
-                                        </div>
+                                            <!--여가시설 드롭다운-->
+                                            <div id="facilityDropdownCommunity" class="ms-3" style="display: none">
+                                                <select class="form-select">
+                                                    <option value="" selected>전체 선택</option>
+                                                    <option value="노인정/노인회관">노인정/노인회관</option>
+                                                    <option value="마을/새마을회관">마을/새마을회관</option>
+                                                    <option value="보육원/양로원">보육원/양로원</option>
+                                                    <option value="복지관">복지관</option>
+                                                </select>
+                                            </div>
 
-                                        <!-- 검색 버튼 -->
-                                        <div class="d-grid">
-                                            <button type="button" class="btn btn-primary btn-lg" onclick="requestFacilities()">검색</button>
+                                            <br>
+                                            <!-- 위치 입력 -->
+                                            <div class="mb-3">
+                                                <label for="location" class="fw-bold">위치 정보:</label>
+                                                <div class="input-group">
+                                                    <button type="button" class="btn btn-primary" onclick="searchAddress()">주소 검색</button>
+                                                    <input type="text" class="form-control" id="location" placeholder="ex) 경북 구미시 대학로 61" readonly onclick="searchAddress()">
+                                                </div>
+                                            </div>
+
+                                            <!-- 검색 버튼 -->
+                                            <div class="d-grid">
+                                                <button type="button" class="btn btn-primary btn-lg" onclick="requestFacilities()">검색</button>
+                                            </div>
+                                        </form>
+                                            <div class="row gx-5">
                                         </div>
-                                    </form>
-                                <div class="row gx-5">
-                                    <div class="card overflow-hidden shadow rounded-4 border-0">
-                                        <div class="card-body p-5">
-                                            <h2 class="fw-bolder">지도</h2>
-                                            <div id="map" style="width: 100%; height: 400px; border-radius: 10px;"></div>
+                                    </div>
+                            <!--여기부터 세부정보 표시-->
+                            <div class="container px-5 my-5">
+                                        <div class="row gx-5 justify-content-center">
+                                            <div class="col-lg-11 col-xl-9 col-xxl-8">
+
+                                                <!--공공시설-->
+                                                <section id="publicFacilityResultsSection" style="display: none;">
+                                                    <h2 class="text-primary fw-bolder mb-0">공공시설 검색 결과</h2>
+                                                    <div id="publicFacilityCardsContainer">
+                                                        <!-- 공공시설 카드들이 여기에 동적으로 추가됩니다. -->
+                                                    </div>
+                                                </section>
+
+
+                                                <!--나들이 섹션 -->
+                                                <section id="outingResultsSection" style="display: none;">
+                                                    <h2 class="text-secondary fw-bolder mb-4">나들이 검색 결과</h2>
+                                                    <div id="outingCardsContainer">
+                                                        <!-- 나들이 카드들이 여기에 동적으로 추가됩니다. -->
+                                                    </div>
+                                                </section>
+
+                                                <!--복지시설 섹션-->
+                                                <section id="cultureFestivalResultsSection" style="display: none;">
+                                                    <h2 class="text-warning fw-bolder mb-4">복지시설 검색 결과</h2>
+                                                    <div id="cultureFestivalCardsContainer">
+                                                        <!-- 여가시설 카드들이 여기에 동적으로 추가됩니다. -->
+                                                    </div>
+                                                </section>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                            <!--세부정보 마침-->
+                     </div>
                 </div>
             </section>
-            <!-- Call to action section-->
-            <div class="container px-5 my-5">
-                <div class="row gx-5 justify-content-center">
-                    <div class="col-lg-11 col-xl-9 col-xxl-8">
-
-                        <!--공공시설-->
-                        <section id="publicFacilityResultsSection" style="display: none;">
-                            <h2 class="text-primary fw-bolder mb-0">공공시설 검색 결과</h2>
-                            <div id="publicFacilityCardsContainer">
-                                <!-- 공공시설 카드들이 여기에 동적으로 추가됩니다. -->
-                            </div>
-                        </section>
-
-
-                        <!--나들이 섹션 -->
-                        <section id="outingResultsSection" style="display: none;">
-                            <h2 class="text-secondary fw-bolder mb-4">나들이 검색 결과</h2>
-                            <div id="outingCardsContainer">
-                                <!-- 나들이 카드들이 여기에 동적으로 추가됩니다. -->
-                            </div>
-                        </section>
-
-                        <!--복지시설 섹션-->
-                        <section id="cultureFestivalResultsSection" style="display: none;">
-                            <h2 class="text-warning fw-bolder mb-4">복지시설 검색 결과</h2>
-                            <div id="cultureFestivalCardsContainer">
-                                <!-- 여가시설 카드들이 여기에 동적으로 추가됩니다. -->
-                            </div>
-                        </section>
-
-                    </div>
-                </div>
-            </div>
+            <!--지도-->
+            <div id="map" style="width: 100%; height: 400px; border-radius: 10px;" class="px-5"></div>
         </main>
         <!-- Footer-->
         <footer class="bg-white py-4 mt-auto">
