@@ -92,7 +92,7 @@ const resizer = document.getElementById('resizer');
 // Toggle hide/show
 toggleBtn.addEventListener('click', () => {
     sidebar.classList.toggle('minimized');
-    toggleBtn.innerHTML = sidebar.classList.contains('minimized') ? '&raquo;' : '&laquo;';
+    toggleBtn.innerHTML = sidebar.classList.contains('minimized') ? '&laquo;' : '&raquo;';
 });
 
 // Drag resize
