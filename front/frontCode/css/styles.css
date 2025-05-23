@@ -11732,3 +11732,81 @@ html {
     left: -2vw;
   }
 }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.main-container {
+  display: flex;
+  height: 100vh;
+  position: relative;
+}
+
+#map {
+  flex-grow: 1;
+  background-color: #e9ecef;
+}
+
+#sidebar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 600px;
+  min-width: 200px;
+  max-width: 1200px;
+  background-color: #fff;
+  border-left: 1px solid #ccc;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+
+}
+
+#sidebar.minimized {
+  transform: translateX(100%);
+}
+
+#resizer {
+  width: 6px;
+  cursor: ew-resize;
+  background-color: #ddd;
+  position: absolute;
+  top: 0;
+  left: -3px;
+  bottom: 0;
+  z-index: 1010;
+}
+
+#toggleBtn {
+  position: absolute;
+  top: 20px;
+  right: 360px;
+  z-index: 1100;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+}
+
+#sidebar.minimized + #toggleBtn {
+  right: 0;
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+}
+
+.results-scroll-container {
+  flex-grow: 1;
+  min-height: 0; /* 중요! 스크롤 정상작동을 위해 필요 */
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.pagination {
+  justify-content: center;
+}

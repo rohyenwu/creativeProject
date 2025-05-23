@@ -84,3 +84,36 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("nonSignInUser").style.display = "block";
     }
 });
+
+const sidebar = document.getElementById('sidebar');
+const toggleBtn = document.getElementById('toggleBtn');
+const resizer = document.getElementById('resizer');
+
+// Toggle hide/show
+toggleBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('minimized');
+    toggleBtn.innerHTML = sidebar.classList.contains('minimized') ? '&raquo;' : '&laquo;';
+});
+
+// Drag resize
+let isResizing = false;
+
+resizer.addEventListener('mousedown', function (e) {
+    isResizing = true;
+    document.body.style.cursor = 'ew-resize';
+});
+
+window.addEventListener('mousemove', function (e) {
+    if (!isResizing) return;
+    const windowWidth = window.innerWidth;
+    const newWidth = windowWidth - e.clientX;
+    if (newWidth >= 200 && newWidth <= 1200) {
+        sidebar.style.width = newWidth + 'px';
+        toggleBtn.style.right = newWidth + 'px';
+    }
+});
+
+window.addEventListener('mouseup', function () {
+    isResizing = false;
+    document.body.style.cursor = '';
+});
