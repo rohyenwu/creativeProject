@@ -33,7 +33,7 @@ async function requestFacilities() {
             type: dropdownValue // 적절한 타입 문자열 입력 (예: 'hospital', 'restaurant' 등)
         };
         if (dropdownValue === "전체 선택"){
-            payload.type = ""
+            payload.type = "all"
         }
         const response = await fetch("http://localhost:8000/search", {
             method: "POST",
