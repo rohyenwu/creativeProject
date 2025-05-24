@@ -38,9 +38,10 @@ class searchService:
 
         elif categoryID == 2:
             facilities_result = await searchModel.get_outing(min_lat, max_lat, min_lon, max_lon)
-
+            
         elif categoryID==3:
-            facilities_result = await searchModel.get_leisure(type,min_lat, max_lat, min_lon, max_lon)
+            facilities_result = await searchModel.get_leisure(type, min_lat, max_lat, min_lon, max_lon)
+            
         elif categoryID==4:
             facilities_result= await searchModel.get_hospital(min_lat,max_lat,min_lon,max_lon)
             
