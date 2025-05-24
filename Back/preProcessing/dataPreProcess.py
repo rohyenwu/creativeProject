@@ -1,6 +1,7 @@
+import re
 import os
 import pandas as pd
-import re
+from pyproj import CRS, Transformer
 
 # 프로젝트 루트 찾기
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -84,14 +85,39 @@ def clean_outing_facilities():
 # 메인 실행
 
 
+
 def clean_hospital_facilities():
-    input_csv=os.path.join(BASE_DIR,'precsv','hospitalFacilities.csv')
-    output_dir=os.path.join(BASE_DIR,'csv')
-    output_csv=os.path.join(output_dir,'hospitalFacilities.csv')
-    df=pd.read_csv(input_csv, encoding='euc-kr')
-    df_open=df[df['영업상태구분코드']==1]
-    os.makedirs(output_dir,exist_ok=True)
-    df_open.to_csv(output_csv,index=False,encoding='euc-kr')
+    input_csv = os.path.join(BASE_DIR, 'precsv', 'hospitalFacilities.csv')
+    output_dir = os.path.join(BASE_DIR, 'csv')
+    output_csv = os.path.join(output_dir, 'hospitalFacilities.csv')
+    
+    # CSV 파일 읽기
+    df = pd.read_csv(input_csv, encoding='euc-kr')
+    print(df)
+
+    # EPSG:5174 -> EPSG:4326 변환을 위한 프로젝션 정의
+    crs_5174 = CRS.from_epsg(5174)
+    crs_4326 = CRS.from_epsg(4326)
+    
+    # Transformer 설정 (좌표 변환)
+    transformer = Transformer.from_crs(crs_5174, crs_4326, always_xy=True)
+    # 좌표 변환 적용
+    df['좌표정보x(epsg5174)'], df['좌표정보y(epsg5174)'] = zip(*df.apply(
+        lambda row: transformer.transform(row['좌표정보x(epsg5174)'], row['좌표정보y(epsg5174)']), axis=1))
+    
+    # 컬럼 이름 변경
+    df = df.rename(columns={'좌표정보x(epsg5174)': '경도', '좌표정보y(epsg5174)': '위도'})
+    
+    # '영업상태구분코드'가 1인 행만 필터링
+    df_open = df[df['영업상태구분코드'] == 1]
+    
+    # 출력 디렉토리 생성
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # CSV 파일로 저장
+    df_open.to_csv(output_csv, index=False, encoding='euc-kr')
+    
     print(f"[outingFacilities] 운영중만 남긴 CSV 저장 완료: {output_csv}")
+
 if __name__ == "__main__":
     clean_hospital_facilities()

@@ -7,55 +7,61 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema creativeProject
 -- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema creativeproject
+-- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema creativeProject
+-- Schema creativeproject
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `creativeProject` DEFAULT CHARACTER SET utf8 ;
-USE `creativeProject` ;
+CREATE SCHEMA IF NOT EXISTS `creativeproject` DEFAULT CHARACTER SET utf8mb3 ;
+USE `creativeproject` ;
 
 -- -----------------------------------------------------
--- Table `creativeProject`.`userCategory`
+-- Table `creativeproject`.`category`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `creativeProject`.`userCategory` (
+CREATE TABLE IF NOT EXISTS `creativeproject`.`category` (
+  `categoryID` INT NOT NULL AUTO_INCREMENT,
+  `categoryName` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`categoryID`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 5
+DEFAULT CHARACTER SET = utf8mb3;
+
+
+-- -----------------------------------------------------
+-- Table `creativeproject`.`usercategory`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `creativeproject`.`usercategory` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `CategoryName` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`ID`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+AUTO_INCREMENT = 5
+DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `creativeProject`.`users`
+-- Table `creativeproject`.`users`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `creativeProject`.`users` (
+CREATE TABLE IF NOT EXISTS `creativeproject`.`users` (
   `userName` VARCHAR(45) NOT NULL,
   `userID` VARCHAR(45) NOT NULL,
   `password` VARCHAR(45) NOT NULL,
-  `userCategory_ID` INT NOT NULL,
+  `userCategory_ID` INT NOT NULL DEFAULT '1',
   PRIMARY KEY (`userID`),
   INDEX `fk_users_userCategory1_idx` (`userCategory_ID` ASC) VISIBLE,
   CONSTRAINT `fk_users_userCategory1`
     FOREIGN KEY (`userCategory_ID`)
-    REFERENCES `creativeProject`.`userCategory` (`ID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    REFERENCES `creativeproject`.`usercategory` (`ID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `creativeProject`.`category`
+-- Table `creativeproject`.`favorites`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `creativeProject`.`category` (
-  `categoryID` INT NOT NULL AUTO_INCREMENT,
-  `categoryName` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`categoryID`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `creativeProject`.`favorites`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `creativeProject`.`favorites` (
+CREATE TABLE IF NOT EXISTS `creativeproject`.`favorites` (
   `favoritesID` INT NOT NULL AUTO_INCREMENT,
   `users_userID` VARCHAR(45) NOT NULL,
   `placeID` INT NOT NULL,
@@ -64,19 +70,39 @@ CREATE TABLE IF NOT EXISTS `creativeProject`.`favorites` (
   INDEX `fk_favorites_users_idx` (`users_userID` ASC) VISIBLE,
   CONSTRAINT `fk_favorites_users`
     FOREIGN KEY (`users_userID`)
-    REFERENCES `creativeProject`.`users` (`userID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    REFERENCES `creativeproject`.`users` (`userID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `creativeProject`.`Leisure`
+-- Table `creativeproject`.`hospital`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `creativeProject`.`Leisure` (
+CREATE TABLE IF NOT EXISTS `creativeproject`.`hospital` (
+  `ID` INT NOT NULL,
+  `hospitalName` VARCHAR(45) NOT NULL,
+  `type` VARCHAR(45) NOT NULL,
+  `address` VARCHAR(45) NOT NULL,
+  `longitude` DOUBLE NOT NULL,
+  `latitude` DOUBLE NOT NULL,
+  `medicalDepartment` VARCHAR(45) NOT NULL,
+  `category_categoryID` INT NOT NULL,
+  PRIMARY KEY (`ID`),
+  INDEX `fk_hospital_category1_idx` (`category_categoryID` ASC) VISIBLE,
+  CONSTRAINT `fk_hospital_category1`
+    FOREIGN KEY (`category_categoryID`)
+    REFERENCES `creativeproject`.`category` (`categoryID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
+
+-- -----------------------------------------------------
+-- Table `creativeproject`.`leisure`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `creativeproject`.`leisure` (
   `ID` VARCHAR(255) NOT NULL,
   `smallLeisure` VARCHAR(255) NOT NULL,
-  `address` VARCHAR(255) NULL,
+  `address` VARCHAR(255) NULL DEFAULT NULL,
   `latitude` FLOAT NOT NULL,
   `longitude` FLOAT NOT NULL,
   `name` VARCHAR(255) NOT NULL,
@@ -85,81 +111,56 @@ CREATE TABLE IF NOT EXISTS `creativeProject`.`Leisure` (
   INDEX `fk_Leisure_category1_idx` (`category_categoryID` ASC) VISIBLE,
   CONSTRAINT `fk_Leisure_category1`
     FOREIGN KEY (`category_categoryID`)
-    REFERENCES `creativeProject`.`category` (`categoryID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    REFERENCES `creativeproject`.`category` (`categoryID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `creativeProject`.`public`
+-- Table `creativeproject`.`outing`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `creativeProject`.`public` (
-  `ID` INT NOT NULL,
-  `name` VARCHAR(255) NULL,
-  `closedDays` VARCHAR(255) NULL,
-  `weekOpenTime` TIME NULL,
-  `weekClosedTime` TIME NULL,
-  `weekendOpenTime` TIME NULL,
-  `weekendClosedTime` TIME NULL,
-  `isPayed` TINYINT NULL,
-  `address` VARCHAR(45) NULL,
-  `latitude` FLOAT NULL,
-  `longitude` FLOAT NULL,
-  `call` VARCHAR(45) NULL,
-  `homepageAddress` VARCHAR(255) NULL,
-  `mangementName` VARCHAR(255) NULL,
-  `category_categoryID` INT NOT NULL,
-  PRIMARY KEY (`ID`),
-  INDEX `fk_public_category1_idx` (`category_categoryID` ASC) VISIBLE,
-  CONSTRAINT `fk_public_category1`
-    FOREIGN KEY (`category_categoryID`)
-    REFERENCES `creativeProject`.`category` (`categoryID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `creativeProject`.`outing`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `creativeProject`.`outing` (
+CREATE TABLE IF NOT EXISTS `creativeproject`.`outing` (
   `ID` VARCHAR(255) NOT NULL,
-  `name` VARCHAR(255) NULL,
-  `address` VARCHAR(255) NULL,
-  `latitude` FLOAT NULL,
-  `longitude` FLOAT NULL,
+  `name` VARCHAR(255) NULL DEFAULT NULL,
+  `address` VARCHAR(255) NULL DEFAULT NULL,
+  `latitude` FLOAT NULL DEFAULT NULL,
+  `longitude` FLOAT NULL DEFAULT NULL,
   `category_categoryID` INT NOT NULL,
   PRIMARY KEY (`ID`),
   INDEX `fk_outing_category1_idx` (`category_categoryID` ASC) VISIBLE,
   CONSTRAINT `fk_outing_category1`
     FOREIGN KEY (`category_categoryID`)
-    REFERENCES `creativeProject`.`category` (`categoryID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    REFERENCES `creativeproject`.`category` (`categoryID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `creativeProject`.`hospital`
+-- Table `creativeproject`.`public`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `creativeProject`.`hospital` (
+CREATE TABLE IF NOT EXISTS `creativeproject`.`public` (
   `ID` INT NOT NULL,
-  `hospitalName` VARCHAR(45) NOT NULL,
-  `type` VARCHAR(45) NOT NULL,
-  `address` VARCHAR(45) NOT NULL,
-  `positionX` DOUBLE NOT NULL,
-  `positionY` DOUBLE NOT NULL,
-  `medicalDepartment` VARCHAR(45) NOT NULL,
+  `name` VARCHAR(255) NULL DEFAULT NULL,
+  `closedDays` VARCHAR(255) NULL DEFAULT NULL,
+  `weekOpenTime` TIME NULL DEFAULT NULL,
+  `weekClosedTime` TIME NULL DEFAULT NULL,
+  `weekendOpenTime` TIME NULL DEFAULT NULL,
+  `weekendClosedTime` TIME NULL DEFAULT NULL,
+  `isPayed` TINYINT NULL DEFAULT NULL,
+  `address` VARCHAR(45) NULL DEFAULT NULL,
+  `latitude` FLOAT NULL DEFAULT NULL,
+  `longitude` FLOAT NULL DEFAULT NULL,
+  `call` VARCHAR(45) NULL DEFAULT NULL,
+  `homepageAddress` VARCHAR(255) NULL DEFAULT NULL,
+  `mangementName` VARCHAR(255) NULL DEFAULT NULL,
   `category_categoryID` INT NOT NULL,
   PRIMARY KEY (`ID`),
-  INDEX `fk_hospital_category1_idx` (`category_categoryID` ASC) VISIBLE,
-  CONSTRAINT `fk_hospital_category1`
+  INDEX `fk_public_category1_idx` (`category_categoryID` ASC) VISIBLE,
+  CONSTRAINT `fk_public_category1`
     FOREIGN KEY (`category_categoryID`)
-    REFERENCES `creativeProject`.`category` (`categoryID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    REFERENCES `creativeproject`.`category` (`categoryID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
