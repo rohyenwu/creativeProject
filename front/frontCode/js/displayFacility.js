@@ -22,10 +22,9 @@ function getSelectedDropdownValue() {
 async function requestFacilities() {
     const dropdownValue = getSelectedDropdownValue();
     try {
-        // category, lat, lng 변수는 이미 정의되어 있다고 가정
-        // 주소 검색으로 얻은 위도, 경도 기준 사용 - MainPageSetting.js
-        // categoryID - mainPage의 버튼
-        // type - mainPage의 드롭다운
+        console.log("위도, 경도 : " + currentLat + " " + currentLng);
+        console.log("카테고리id : " + currCategory)
+        console.log("세부정보 : " + dropdownValue)
         const payload = {
             lat: parseFloat(currentLat),
             lon: parseFloat(currentLng),
@@ -70,7 +69,17 @@ async function requestFacilities() {
 
 function displayFacilitiesOnMap(response) {
 
-    const facilities = response[1]; // 실제 시설 배열
+    // 지도 클릭 시 열려 있는 InfoWindow 닫기
+    kakao.maps.event.addListener(map, "click", function () {
+        if (openInfoWindow) {
+            openInfoWindow.close();
+            openInfoWindow = null;
+        }
+    });
+
+
+    const categoryId = response[0];   // 1: hospital/public, 2: leisure, 3: outing
+    const facilities = response[1];   // 실제 시설 배열
 
     // 기존 마커 제거
     if (window.markers) {
@@ -78,29 +87,69 @@ function displayFacilitiesOnMap(response) {
     }
     window.markers = [];
 
-    // 시설 마커 추가
+    // 마커 이미지 설정
+    const markerIcons = {
+        1: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+        2: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+        3: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png'
+    };
+
+    const imageSrc = markerIcons[categoryId]; // 카테고리별 아이콘 선택
+    const imageSize = new kakao.maps.Size(24, 35);
+    const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+
+    const ps = new kakao.maps.services.Places(); // 한 번만 생성
+    let openInfoWindow = null; // 현재 열려 있는 InfoWindow
+
     facilities.forEach(fac => {
-        if (!fac.latitude || !fac.longitude) {
-            console.warn("좌표 없음:", fac.name);
-            return;
-        }
+        if (!fac.latitude || !fac.longitude) return;
 
-        const marker = new kakao.maps.Marker({
-            position: new kakao.maps.LatLng(fac.latitude, fac.longitude),
-            map: map
+        const position = new kakao.maps.LatLng(fac.latitude, fac.longitude);
+        const marker = new kakao.maps.Marker({ position, map, image: markerImage });
+
+        kakao.maps.event.addListener(marker, "click", function () {
+            // 기존 InfoWindow 닫기
+            if (openInfoWindow) openInfoWindow.close();
+
+            // 카카오 장소 검색
+            ps.keywordSearch(fac.name, function (data, status) {
+                if (status === kakao.maps.services.Status.OK && data.length > 0) {
+                    const place = data[0]; // 첫 번째 결과 사용
+
+                    const content = `
+                   <div class="card p-3 mb-3 rounded-3 shadow-sm" style="font-size: 0.9rem;">
+                      <div class="card-body">
+                        <h5 class="card-title mb-2 fw-bold">${place.place_name}</h5>
+                        <p class="card-text mb-2">${place.road_address_name || place.address_name}</p>
+                        <a href="https://place.map.kakao.com/${place.id}" target="_blank" class="btn btn-sm btn-primary">
+                          카카오맵에서 보기
+                        </a>
+                      </div>
+                    </div>
+                `;
+                    const infoWindow = new kakao.maps.InfoWindow({
+                        content,
+                        position: marker.getPosition()
+                    });
+
+                    infoWindow.open(map, marker);
+                    openInfoWindow = infoWindow; // 현재 열린 창 저장
+                } else {
+                    // 기본 정보로 fallback
+                    const infoWindow = new kakao.maps.InfoWindow({
+                        content: `<div style="padding:10px;">${fac.name}<br>${fac.address}</div>`,
+                        position: marker.getPosition()
+                    });
+                    infoWindow.open(map, marker);
+                    openInfoWindow = infoWindow;
+                }
+            });
         });
-
-        const info = new kakao.maps.InfoWindow({
-            content: `<div>${fac.name}<br>${fac.address}</div>`
-        });
-
-        kakao.maps.event.addListener(marker, "click", () => {
-            info.open(map, marker);
-        });
-
         window.markers.push(marker);
     });
+
 }
+
 
 
 
@@ -183,7 +232,6 @@ function displayLeisureFacilitiesBelowMap2(facilityList) {
     });
 }
 
-
 function displayOutingFacilitiesBelowMap3(facilityList) {
     const outingFacilities = facilityList[1];
     const container = document.getElementById("cultureFestivalCardsContainer");
@@ -220,9 +268,6 @@ function displayOutingFacilitiesBelowMap3(facilityList) {
     });
 }
 
-
-
-// 시간을 초 단위 숫자에서 HH:MM 형식으로 변환
 function formatTime(seconds) {
     if (!seconds || seconds === 0) return "-";
     const hours = Math.floor(seconds / 3600).toString().padStart(2, '0');
