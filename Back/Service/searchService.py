@@ -64,13 +64,14 @@ class searchService:
         favorites = await FavoriteModel.get_favorite(userID)
         if not favorites:
             return []
-        facilities = []
+        facilities = [[] for i in range(4)]  # 0: public, 1: outing, 2: leisure, 3: hospital
         null = {
+            "category_categoryID": 0, # 이 값이 0이면 데이터가 없는 것으로 간주
             "ID": 0,
-            "name": "정보 없음",
+            "name": "정보 없음", # 병원 테이블 수정
             "address": "정보 없음",
-            "latitude": 0.0,
-            "longitude": 0.0
+            "latitude": 0.0, # 병원 테이블 수정
+            "longitude": 0.0 # 병원 테이블 수정
         }
         for favorite in favorites:
             categoryID = favorite["categoryID"]
@@ -78,21 +79,26 @@ class searchService:
             if categoryID == 1:
                 facility = await searchModel.get_public_by_id(facilityID)
                 if facility is None: # 업데이트 후 시설이 조회되지 않을 경우.
+                    null["ID"] = facilityID
                     facility = null
             elif categoryID == 2:
                 facility = await searchModel.get_outing_by_id(facilityID)
                 if facility is None: # 업데이트 후 시설이 조회되지 않을 경우.
+                    null["ID"] = facilityID
                     facility = null
             elif categoryID == 3:
                 facility = await searchModel.get_leisure_by_id(facilityID)
                 if facility is None: # 업데이트 후 시설이 조회되지 않을 경우.
+                    null["ID"] = facilityID
                     facility = null
             elif categoryID == 4:
                 facility = await searchModel.get_hospital_by_id(facilityID)
                 if facility is None: # 업데이트 후 시설이 조회되지 않을 경우.
+                    null["ID"] = facilityID
                     facility = null
             if facility:
-                facilities.append(facility)
+                facilities[categoryID-1].append(facility)
+        return facilities
 
 # 🔥 여기부터 테스트 코드
 async def test_get_facilities():
