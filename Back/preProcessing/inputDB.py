@@ -76,7 +76,7 @@ async def insert_leisure_facilities(leisure_facilities):
             for idx, row in leisure_facilities.iterrows():
                 print(f"👉 leisure 삽입 중... {idx + 1}번째")  # ★ 여기!
                 await cursor.execute("""
-                    INSERT INTO Leisure (
+                    INSERT INTO leisure (
                         ID, smallLeisure, address, latitude, longitude, name, category_categoryID
                     ) VALUES (%s, %s, %s, %s, %s, %s, 3)
                 """, (
@@ -135,9 +135,9 @@ async def main():
 
     print("📦 outing 행 개수:", len(outing_facilities))
     print("📦 leisure 행 개수:", len(leisure_facilities))
-    await insert_public_facilities(public_facilities)
-    await insert_outing_facilities(outing_facilities)
-    await insert_leisure_facilities(leisure_facilities)
+    # await insert_public_facilities(public_facilities)
+    # await insert_outing_facilities(outing_facilities)
+    # await insert_leisure_facilities(leisure_facilities)
     await insert_hospital_facilities(hospital_facilities)
 
     await DBConnection.close_pool()

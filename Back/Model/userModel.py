@@ -6,7 +6,7 @@ class UserModel:
     async def insert_user(userID, password, userName, userGrade):
         conn = await DBConnection.DBConnection.get_db_connection()
         try:
-            query = "INSERT INTO users(userID, password, userName) VALUES (%s, %s, %s, %s)"
+            query = "INSERT INTO users(userID, password, userName, userCategory_ID) VALUES (%s, %s, %s, %s)"
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(query, (userID, password, userName, userGrade))
             await conn.commit()

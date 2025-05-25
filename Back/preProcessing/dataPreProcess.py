@@ -1,5 +1,6 @@
 import re
 import os
+import shutil
 import pandas as pd
 from pyproj import CRS, Transformer
 
@@ -94,7 +95,8 @@ def clean_hospital_facilities():
     # CSV 파일 읽기
     df = pd.read_csv(input_csv, encoding='euc-kr')
     print(df)
-
+    df = df[df['좌표정보x(epsg5174)'].notnull()]
+    df = df[df['도로명전체주소'].notnull()]
     # EPSG:5174 -> EPSG:4326 변환을 위한 프로젝션 정의
     crs_5174 = CRS.from_epsg(5174)
     crs_4326 = CRS.from_epsg(4326)
@@ -118,6 +120,22 @@ def clean_hospital_facilities():
     df_open.to_csv(output_csv, index=False, encoding='euc-kr')
     
     print(f"[outingFacilities] 운영중만 남긴 CSV 저장 완료: {output_csv}")
+    
+def clean_all_precsv():
+    # 기존의 정리 함수들 호출
+    clean_public_facilities()
+    clean_outing_facilities()
+    clean_hospital_facilities()
+
+    source_path = "../precsv/leisureFacilities.csv"
+    destination_path = "../csv/leisureFacilities.csv"
+
+    # 파일이 존재하는지 확인하고 이동
+    if os.path.exists(source_path):
+        shutil.move(source_path, destination_path)
+        print(f"파일이 {destination_path}로 이동되었습니다.")
+    else:
+        print("leisureFacilities.csv 파일이 존재하지 않습니다.")
 
 if __name__ == "__main__":
     clean_hospital_facilities()

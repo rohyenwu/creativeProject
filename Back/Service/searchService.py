@@ -28,26 +28,46 @@ class searchService:
 
     @staticmethod
     async def get_facilities_list(categoryID, lat, lon, type=""):
-        min_lat, max_lat, min_lon, max_lon = searchService.get_bounds(lat, lon,)
-        if categoryID == 0:
-            facilities_result = await searchModel.get_public('all', min_lat, max_lat, min_lon, max_lon)
-            facilities_result += await searchModel.get_outing(min_lat, max_lat, min_lon, max_lon)
-            facilities_result += await searchModel.get_leisure('all',min_lat, max_lat, min_lon, max_lon)
+        min_lat, max_lat, min_lon, max_lon = searchService.get_bounds(lat, lon)
 
+        if categoryID == 0:
+            facilities_result1 = await searchModel.get_public('all', min_lat, max_lat, min_lon, max_lon)
+            facilities_result2 = await searchModel.get_outing(min_lat, max_lat, min_lon, max_lon)
+            facilities_result3 = await searchModel.get_leisure('all', min_lat, max_lat, min_lon, max_lon)
+
+            result = [
+                [1, facilities_result1],
+                [2, facilities_result2],
+                [3, facilities_result3]
+            ]
+
+            for category in result:
+                facilities = category[1]
+                for facility in facilities:
+                    facility_lat = facility["latitude"]
+                    facility_lon = facility["longitude"]
+                    distance = searchService.haversine(lat, lon, facility_lat, facility_lon)
+                    facility["distance"] = distance
+                facilities = [f for f in facilities if f["distance"] <= 15]
+                facilities.sort(key=lambda x: x["distance"])
+                category[1] = facilities
+
+            return categoryID, result
+
+        # 그 외 categoryID는 기존처럼 처리
         elif categoryID == 1:
-            facilities_result = await searchModel.get_public(type, min_lat, max_lat, min_lon, max_lon)
+            facilities = await searchModel.get_public(type, min_lat, max_lat, min_lon, max_lon)
 
         elif categoryID == 2:
-            facilities_result = await searchModel.get_outing(min_lat, max_lat, min_lon, max_lon)
-            
-        elif categoryID==3:
-            facilities_result = await searchModel.get_leisure(type, min_lat, max_lat, min_lon, max_lon)
-            
-        elif categoryID==4:
-            facilities_result= await searchModel.get_hospital(min_lat,max_lat,min_lon,max_lon)
-            
-        
-        facilities=facilities_result
+            facilities = await searchModel.get_outing(min_lat, max_lat, min_lon, max_lon)
+
+        elif categoryID == 3:
+            facilities = await searchModel.get_leisure(type, min_lat, max_lat, min_lon, max_lon)
+
+        elif categoryID == 4:
+            facilities = await searchModel.get_hospital(min_lat, max_lat, min_lon, max_lon)
+
+        # 거리 계산
         for facility in facilities:
             facility_lat = facility["latitude"]
             facility_lon = facility["longitude"]
@@ -58,6 +78,8 @@ class searchService:
         facilities.sort(key=lambda x: x["distance"])
 
         return categoryID, facilities
+
+
     
     @staticmethod
     async def get_favorite_facilities(userID):
