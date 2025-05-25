@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from Back.Model.userModel import UserModel
-from Back.Schemas.userScheme import LoginRequest, MembershipRequest, SearchRequest
+from Back.Schemas.userScheme import LoginRequest, MembershipRequest, SearchRequest, FavoriteRequest
 from Back.Service.searchService import searchService
 from Back.Model.favoriteModel import FavoriteModel
 import uuid
@@ -41,14 +41,14 @@ async def get_favorite(session_id: str):
         raise HTTPException(status_code=401, detail="Invalid session ID")
     
     userID = active_sessions[session_id]["userID"]
-    result = await FavoriteModel.get_favorite(userID)
+    result = await searchService.get_favorite_facilities(userID)
     return result
 
 @router.post("/addFavorite")
-async def add_favorite(session_id: str, facilityID: int, categoryID: int):
-    if session_id not in active_sessions:
+async def add_favorite(request: FavoriteRequest):
+    if request.session_id not in active_sessions:
         raise HTTPException(status_code=401, detail="Invalid session ID")
     
-    userID = active_sessions[session_id]["userID"]
-    await FavoriteModel.insert_favorite(userID, facilityID, categoryID)
+    userID = active_sessions[request.session_id]["userID"]
+    await FavoriteModel.insert_favorite(userID, request.facilityID, request.categoryID)
     return

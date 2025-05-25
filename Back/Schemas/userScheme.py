@@ -12,3 +12,7 @@ class SearchRequest(BaseModel):
     lon: float
     categoryID: int
     type: str
+class FavoriteRequest(BaseModel):
+    session_id: str
+    facilityID: int
+    categoryID: int

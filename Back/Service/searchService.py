@@ -4,6 +4,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 
 import math
 from Back.Model.searchModel import searchModel
+from Back.Model.favoriteModel import FavoriteModel
 
 class searchService:
     @staticmethod
@@ -57,7 +58,41 @@ class searchService:
         facilities.sort(key=lambda x: x["distance"])
 
         return categoryID, facilities
-
+    
+    @staticmethod
+    async def get_favorite_facilities(userID):
+        favorites = await FavoriteModel.get_favorite(userID)
+        if not favorites:
+            return []
+        facilities = []
+        null = {
+            "ID": 0,
+            "name": "정보 없음",
+            "address": "정보 없음",
+            "latitude": 0.0,
+            "longitude": 0.0
+        }
+        for favorite in favorites:
+            categoryID = favorite["categoryID"]
+            facilityID = favorite["placeID"]
+            if categoryID == 1:
+                facility = await searchModel.get_public_by_id(facilityID)
+                if facility is None: # 업데이트 후 시설이 조회되지 않을 경우.
+                    facility = null
+            elif categoryID == 2:
+                facility = await searchModel.get_outing_by_id(facilityID)
+                if facility is None: # 업데이트 후 시설이 조회되지 않을 경우.
+                    facility = null
+            elif categoryID == 3:
+                facility = await searchModel.get_leisure_by_id(facilityID)
+                if facility is None: # 업데이트 후 시설이 조회되지 않을 경우.
+                    facility = null
+            elif categoryID == 4:
+                facility = await searchModel.get_hospital_by_id(facilityID)
+                if facility is None: # 업데이트 후 시설이 조회되지 않을 경우.
+                    facility = null
+            if facility:
+                facilities.append(facility)
 
 # 🔥 여기부터 테스트 코드
 async def test_get_facilities():
