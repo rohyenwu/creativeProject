@@ -44,7 +44,7 @@
             </nav>
             <!-- Projects Section-->
             <section class="py-5">
-                <div class="container-fluid px-5 mb-5">
+                <div class="container-fluid">
                     <div class="text-center mb-5">
                         <h1 class="display-5 fw-bolder mb-0">
                             <span class="text-gradient d-inline">어떤 시설을 찾고 계신가요?</span>
@@ -68,7 +68,7 @@
                                             <input class="form-check-input" type="radio" checked name="facilityType" id="total" value="total" onclick="toggleDropdowns()">
                                             <label class="form-check-label d-flex justify-content-between align-items-center" for="total">
                                                 전체선택
-                                                <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png" width="16" height="24" alt="전체">
+                                                <img src="/front/frontCode/assets/total.png" width="28" height="24" alt="전체">
                                             </label>
                                         </div>
 
@@ -76,7 +76,7 @@
                                             <input class="form-check-input" type="radio" name="facilityType" id="publicFacility" value="publicFacility" onclick="toggleDropdowns()">
                                             <label class="form-check-label d-flex justify-content-between align-items-center" for="publicFacility">
                                                 공공시설
-                                                <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png" width="16" height="24" alt="공공시설">
+                                                <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png" width="20" height="24" alt="공공시설">
                                             </label>
                                         </div>
 
@@ -84,7 +84,7 @@
                                             <input class="form-check-input" type="radio" name="facilityType" id="outing" value="outing" onclick="toggleDropdowns()">
                                             <label class="form-check-label d-flex justify-content-between align-items-center" for="outing">
                                                 나들이
-                                                <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png" width="16" height="24" alt="나들이">
+                                                <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png" width="20" height="24" alt="나들이">
                                             </label>
                                         </div>
 
@@ -92,7 +92,7 @@
                                             <input class="form-check-input" type="radio" name="facilityType" id="community" value="community" onclick="toggleDropdowns()">
                                             <label class="form-check-label d-flex justify-content-between align-items-center" for="community">
                                                 복지시설
-                                                <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png" width="16" height="24" alt="복지시설">
+                                                <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png" width="20" height="24" alt="복지시설">
                                             </label>
                                         </div>
 
@@ -100,7 +100,7 @@
                                             <input class="form-check-input" type="radio" name="facilityType" id="hospital" value="hospital" onclick="toggleDropdowns()">
                                             <label class="form-check-label d-flex justify-content-between align-items-center" for="hospital">
                                                 병원
-                                                <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png" width="16" height="24" alt="병원">
+                                                <img src="assets/hospital.png" width="24" height="24" alt="병원">
                                             </label>
                                         </div>
                                     </div>
@@ -249,6 +249,13 @@
                                             <section id="cultureFestivalResultsSection" style="display: none;">
                                                 <h2 class="text-warning fw-bolder mb-4">복지시설 검색 결과</h2>
                                                 <div id="cultureFestivalCardsContainer">
+                                                    <!-- 여가시설 카드들이 여기에 동적으로 추가됩니다. -->
+                                                </div>
+                                            </section>
+                                            <!--병원 섹션-->
+                                            <section id="hospitalResultSection" style="display: none;">
+                                                <h2 class="text-danger fw-bolder mb-4">병원 검색 결과</h2>
+                                                <div id="hospitalResultContainer">
                                                     <!-- 여가시설 카드들이 여기에 동적으로 추가됩니다. -->
                                                 </div>
                                             </section>

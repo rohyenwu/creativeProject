@@ -59,6 +59,11 @@ async function requestFacilities() {
         }else if(facilityList[0] === 3){
             displayFacilitiesOnMap(facilityList);
             displayOutingFacilitiesBelowMap3(facilityList);
+        }else if(facilityList[0] === 4){
+            displayFacilitiesOnMap(facilityList);
+            displayHospitalFacilitiesBelowMap(facilityList);
+        }else if(facilityList[0] === 0){
+            //전체전체
         }
 
 
@@ -68,7 +73,6 @@ async function requestFacilities() {
 }
 
 function displayFacilitiesOnMap(response) {
-
     // 지도 클릭 시 열려 있는 InfoWindow 닫기
     kakao.maps.event.addListener(map, "click", function () {
         if (openInfoWindow) {
@@ -76,9 +80,7 @@ function displayFacilitiesOnMap(response) {
             openInfoWindow = null;
         }
     });
-
-
-    const categoryId = response[0];   // 1: hospital/public, 2: leisure, 3: outing
+    const categoryId = response[0];   // 1: public, 2: leisure, 3: outing, 4:hospital
     const facilities = response[1];   // 실제 시설 배열
 
     // 기존 마커 제거
@@ -89,9 +91,11 @@ function displayFacilitiesOnMap(response) {
 
     // 마커 이미지 설정
     const markerIcons = {
+        0: 'assets/total.png',
         1: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
         2: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-        3: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png'
+        3: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+        4: 'assets/hospital.png',
     };
 
     const imageSrc = markerIcons[categoryId]; // 카테고리별 아이콘 선택
@@ -147,7 +151,6 @@ function displayFacilitiesOnMap(response) {
                     openInfoWindow = infoWindow;
                 }
             });
-
             //infowindow에 클릭이벤트 등록 - 해당 id를 가진 card로 스크롤 이동
             console.log('시설 ID:', fid); // 시설 ID 값 확인
 
@@ -179,6 +182,7 @@ function displayFacilitiesBelowMap1(facilityList) {
     document.getElementById("publicFacilityResultsSection").style.display = "block";
     document.getElementById("cultureFestivalResultsSection").style.display = "none";
     document.getElementById("outingResultsSection").style.display = "none";
+    document.getElementById("hospitalResultSection").style.display = "none";
 
     // 기존 내용 비우기
     container.innerHTML = "";
@@ -237,6 +241,7 @@ function displayLeisureFacilitiesBelowMap2(facilityList) {
     document.getElementById("publicFacilityResultsSection").style.display = "none";
     document.getElementById("outingResultsSection").style.display = "block";
     document.getElementById("cultureFestivalResultsSection").style.display = "none";
+    document.getElementById("hospitalResultSection").style.display = "none";
 
     container.innerHTML = "";
 
@@ -289,6 +294,7 @@ function displayOutingFacilitiesBelowMap3(facilityList) {
     document.getElementById("publicFacilityResultsSection").style.display = "none";
     document.getElementById("outingResultsSection").style.display = "none";
     document.getElementById("cultureFestivalResultsSection").style.display = "block";
+    document.getElementById("hospitalResultSection").style.display = "none";
 
     container.innerHTML = "";
 
@@ -326,6 +332,71 @@ function displayOutingFacilitiesBelowMap3(facilityList) {
                 markerInfoWindow.open(map, targetMarker);
             } else {
                 console.error(`시설 ID ${facilityId}에 해당하는 마커를 찾을 수 없습니다.`);
+            }
+        });
+        container.appendChild(card);
+    });
+}
+
+function displayHospitalFacilitiesBelowMap(hospitalFacilityList) {
+    const hospitals = hospitalFacilityList[1];
+    const container = document.getElementById("hospitalResultContainer");
+
+    if (!Array.isArray(hospitals) || hospitals.length === 0) return;
+
+    document.getElementById("publicFacilityResultsSection").style.display = "none";
+    document.getElementById("outingResultsSection").style.display = "none";
+    document.getElementById("cultureFestivalResultsSection").style.display = "none";
+    document.getElementById("hospitalResultSection").style.display = "block";
+
+    container.innerHTML = "";
+
+    hospitals.forEach(hospital => {
+        const card = document.createElement("div");
+        card.className = "card shadow border-0 rounded-4 mb-5";
+
+        const hospitalName = hospital.hospitalName || '이름 정보 없음';
+        const medicalDepartments = hospital.medicalDepartment || '진료과목 정보 없음';
+        const address = hospital.address || '주소 정보 없음';
+        const hospitalID = hospital.ID;
+
+        card.innerHTML = `
+            <div class="card-body p-5" id="hospital-card-${hospitalID}">
+                <div class="row align-items-center gx-5">
+                    <div class="col text-center text-lg-start mb-4 mb-lg-0">
+                        <div class="bg-light p-4 rounded-4">
+                            <div class="text-danger fw-bolder mb-2">${hospitalName}</div>
+                            <div class="mb-2">
+                                <div class="small fw-bolder">${medicalDepartments}</div>
+                            </div>                    
+                        </div>
+                    </div>
+                     ${hospital.type ? `<div class="small text-muted">${hospital.type}</div>` : ''}
+                    <div class="col-lg-8"><div>${address}</div></div>
+                </div>
+            </div>
+        `;
+
+        card.addEventListener("click", () => {
+            const targetMarker = window.markers && window.markers.find(marker => marker.facilityId === hospitalID);
+
+            if (targetMarker && typeof map !== 'undefined' && typeof kakao !== 'undefined') {
+                map.setCenter(targetMarker.getPosition());
+
+                const markerInfoWindow = new kakao.maps.InfoWindow({
+                    content: `<div style="padding:5px; font-size:12px; white-space: nowrap;">${hospitalName}</div>`,
+                });
+                markerInfoWindow.open(map, targetMarker);
+            } else {
+                if (!targetMarker) {
+                    console.error(`병원 ID ${hospitalID} (${hospitalName})에 해당하는 마커를 찾을 수 없습니다. window.markers를 확인하세요.`);
+                }
+                if (typeof map === 'undefined') {
+                    console.error("Kakao Map object 'map' is not defined.");
+                }
+                if (typeof kakao === 'undefined') {
+                    console.error("Kakao Maps SDK 'kakao' is not defined.");
+                }
             }
         });
         container.appendChild(card);
