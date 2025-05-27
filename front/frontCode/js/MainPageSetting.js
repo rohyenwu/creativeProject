@@ -52,6 +52,8 @@ function toggleDropdowns() {
     const publicFacility = document.getElementById('publicFacility').checked;
     const community = document.getElementById('community').checked;
     const outing = document.getElementById('outing').checked;
+    const hospital = document.getElementById('hospital').checked;
+
     const dropdownFacility = document.getElementById('facilityDropdownFacility');
     const dropdownCommunity = document.getElementById('facilityDropdownCommunity');
 
@@ -70,6 +72,8 @@ function toggleDropdowns() {
         currCategory = 2
     }else if(total){
         currCategory = 0;
+    }else if(hospital) {
+        currCategory = 4
     }
 }
 
