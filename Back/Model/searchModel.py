@@ -101,7 +101,7 @@ class searchModel:
     async def get_hospital(min_lat, max_lat, min_lon, max_lon):
         conn=await DBConnection.DBConnection.get_db_connection()
         try:
-            query=f"select * from hospital where latitud>=%s and latitude<=%s and longitude>=%s and longitude<=%s"
+            query=f"select * from hospital where latitude>=%s and latitude<=%s and longitude>=%s and longitude<=%s"
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(query,(min_lat,max_lat,min_lon,max_lon))
                 results=await cursor.fetchall()
