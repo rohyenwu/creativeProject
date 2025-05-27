@@ -212,14 +212,7 @@ function displayFacilitiesBelowMap1(facilityList) {
             const targetMarker = window.markers.find(marker => marker.faciltyId === facility.ID)
 
             if (targetMarker) {
-                // 지도 중심을 해당 마커로 이동
-                map.setCenter(targetMarker.getPosition());
-
-                // 마커의 인포윈도우 열기
-                const markerInfoWindow = new kakao.maps.InfoWindow({
-                    content: `<div style="padding:5px; font-size:12px;">${facilityId}</div>`,
-                });
-                markerInfoWindow.open(map, targetMarker);
+                kakao.maps.event.trigger(targetMarker, 'click');
             } else {
                 console.error(`시설 ID ${facilityId}에 해당하는 마커를 찾을 수 없습니다.`);
             }
@@ -264,14 +257,7 @@ function displayLeisureFacilitiesBelowMap2(facilityList) {
             const targetMarker = window.markers.find(marker => marker.faciltyId === facility.ID)
 
             if (targetMarker) {
-                // 지도 중심을 해당 마커로 이동
-                map.setCenter(targetMarker.getPosition());
-
-                // 마커의 인포윈도우 열기
-                const markerInfoWindow = new kakao.maps.InfoWindow({
-                    content: `<div style="padding:5px; font-size:12px;">${facilityId}</div>`,
-                });
-                markerInfoWindow.open(map, targetMarker);
+                kakao.maps.event.trigger(targetMarker, 'click');
             } else {
                 console.error(`시설 ID ${facilityId}에 해당하는 마커를 찾을 수 없습니다.`);
             }
@@ -316,14 +302,7 @@ function displayOutingFacilitiesBelowMap3(facilityList) {
             const targetMarker = window.markers.find(marker => marker.faciltyId === facility.ID)
 
             if (targetMarker) {
-                // 지도 중심을 해당 마커로 이동
-                map.setCenter(targetMarker.getPosition());
-
-                // 마커의 인포윈도우 열기
-                const markerInfoWindow = new kakao.maps.InfoWindow({
-                    content: `<div style="padding:5px; font-size:12px;">${facilityId}</div>`,
-                });
-                markerInfoWindow.open(map, targetMarker);
+                kakao.maps.event.trigger(targetMarker, 'click');
             } else {
                 console.error(`시설 ID ${facilityId}에 해당하는 마커를 찾을 수 없습니다.`);
             }
