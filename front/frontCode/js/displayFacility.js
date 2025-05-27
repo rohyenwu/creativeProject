@@ -174,7 +174,10 @@ function displayFacilitiesBelowMap1(facilityList) {
     const container = document.getElementById("publicFacilityCardsContainer");
 
     if (!Array.isArray(publicFacilities) || publicFacilities.length === 0) return;
-
+    if (openInfoWindow) {
+        openInfoWindow.close();
+        openInfoWindow = null;
+    }
     // 섹션 보이도록 설정
     document.getElementById("publicFacilityResultsSection").style.display = "block";
     document.getElementById("cultureFestivalResultsSection").style.display = "none";
@@ -212,6 +215,10 @@ function displayFacilitiesBelowMap1(facilityList) {
             const targetMarker = window.markers.find(marker => marker.faciltyId === facility.ID)
 
             if (targetMarker) {
+                // 지도 중심을 해당 마커로 이동
+                map.setCenter(targetMarker.getPosition());
+
+                // 마커의 인포윈도우 열기
                 kakao.maps.event.trigger(targetMarker, 'click');
             } else {
                 console.error(`시설 ID ${facilityId}에 해당하는 마커를 찾을 수 없습니다.`);
@@ -224,7 +231,10 @@ function displayFacilitiesBelowMap1(facilityList) {
 function displayLeisureFacilitiesBelowMap2(facilityList) {
     const leisureFacilities = facilityList[1];
     const container = document.getElementById("outingCardsContainer");
-
+    if (openInfoWindow) {
+        openInfoWindow.close();
+        openInfoWindow = null;
+    }
     if (!Array.isArray(leisureFacilities) || leisureFacilities.length === 0) return;
 
     document.getElementById("publicFacilityResultsSection").style.display = "none";
@@ -257,6 +267,10 @@ function displayLeisureFacilitiesBelowMap2(facilityList) {
             const targetMarker = window.markers.find(marker => marker.faciltyId === facility.ID)
 
             if (targetMarker) {
+                // 지도 중심을 해당 마커로 이동
+                map.setCenter(targetMarker.getPosition());
+
+                // 마커의 인포윈도우 열기
                 kakao.maps.event.trigger(targetMarker, 'click');
             } else {
                 console.error(`시설 ID ${facilityId}에 해당하는 마커를 찾을 수 없습니다.`);
@@ -269,7 +283,10 @@ function displayLeisureFacilitiesBelowMap2(facilityList) {
 function displayOutingFacilitiesBelowMap3(facilityList) {
     const outingFacilities = facilityList[1];
     const container = document.getElementById("cultureFestivalCardsContainer");
-
+    if (openInfoWindow) {
+        openInfoWindow.close();
+        openInfoWindow = null;
+    }
     if (!Array.isArray(outingFacilities) || outingFacilities.length === 0) return;
 
     document.getElementById("publicFacilityResultsSection").style.display = "none";
@@ -302,6 +319,10 @@ function displayOutingFacilitiesBelowMap3(facilityList) {
             const targetMarker = window.markers.find(marker => marker.faciltyId === facility.ID)
 
             if (targetMarker) {
+                // 지도 중심을 해당 마커로 이동
+                map.setCenter(targetMarker.getPosition());
+
+                // 마커의 인포윈도우 열기
                 kakao.maps.event.trigger(targetMarker, 'click');
             } else {
                 console.error(`시설 ID ${facilityId}에 해당하는 마커를 찾을 수 없습니다.`);
