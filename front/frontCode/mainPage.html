@@ -5,6 +5,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
+        <style>
+            #wrapper {
+                height: 100%;
+                overflow-y: auto; /* 스크롤 영역 */
+            }
+        </style>
         <title>돌봄 나침반</title>
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="assets/—Pngtree—chongyang%20festival%20old%20man%20holding_3801893.png" />
@@ -17,6 +23,7 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
     </head>
+    <div id="wrapper">
     <body class="d-flex flex-column h-100 bg-light">
         <main class="flex-shrink-0">
             <!-- Navigation-->
@@ -276,4 +283,5 @@
         <script src="js/displayFacility.js"></script>
         <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_APP_KEY&libraries=services"></script>
     </body>
+    </div>
 </html>
