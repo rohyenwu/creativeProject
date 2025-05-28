@@ -177,10 +177,7 @@ function displayFacilitiesBelowMap1(facilityList) {
     const container = document.getElementById("publicFacilityCardsContainer");
 
     if (!Array.isArray(publicFacilities) || publicFacilities.length === 0) return;
-    if (openInfoWindow) {
-        openInfoWindow.close();
-        openInfoWindow = null;
-    }
+
     // 섹션 보이도록 설정
     document.getElementById("publicFacilityResultsSection").style.display = "block";
     document.getElementById("cultureFestivalResultsSection").style.display = "none";
@@ -235,10 +232,7 @@ function displayFacilitiesBelowMap1(facilityList) {
 function displayLeisureFacilitiesBelowMap2(facilityList) {
     const leisureFacilities = facilityList[1];
     const container = document.getElementById("outingCardsContainer");
-    if (openInfoWindow) {
-        openInfoWindow.close();
-        openInfoWindow = null;
-    }
+
     if (!Array.isArray(leisureFacilities) || leisureFacilities.length === 0) return;
 
     document.getElementById("publicFacilityResultsSection").style.display = "none";
@@ -288,10 +282,7 @@ function displayLeisureFacilitiesBelowMap2(facilityList) {
 function displayOutingFacilitiesBelowMap3(facilityList) {
     const outingFacilities = facilityList[1];
     const container = document.getElementById("cultureFestivalCardsContainer");
-    if (openInfoWindow) {
-        openInfoWindow.close();
-        openInfoWindow = null;
-    }
+
     if (!Array.isArray(outingFacilities) || outingFacilities.length === 0) return;
 
     document.getElementById("publicFacilityResultsSection").style.display = "none";
