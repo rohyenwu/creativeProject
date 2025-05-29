@@ -608,7 +608,7 @@ function displayHospitalFacilitiesBelowMap(hospitalFacilityList) {
         const hospitalID = hospital.ID;
 
         card.innerHTML = `
-            <div class="card-body p-5" id="hospital-card-${hospitalID}">
+            <div class="card-body p-5" id="${hospitalID}">
                 <div class="row align-items-center gx-5">
                     <div class="col text-center text-lg-start mb-4 mb-lg-0">
                         <div class="bg-light p-4 rounded-4">
