@@ -9,7 +9,6 @@ class adminService:
     def DB_Update(files):
          fm.Delete_PreCSVFiles()
          fm.UploadFile(files)
-         pre.clean_all_precsv()
-         
+                 
          
          
