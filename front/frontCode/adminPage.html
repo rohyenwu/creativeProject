@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="Admin page for CSV file upload" />
+  <meta name="author" content="" />
+  <title>Admin - CSV Upload</title>
+  <!-- Favicon-->
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+  <!-- Custom Google font-->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <!-- Bootstrap icons-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet" />
+  <!-- Core theme CSS (includes Bootstrap)-->
+  <link href="css/styles.css" rel="stylesheet" />
+  <style>
+    /* Custom styles for drag and drop */
+    #dropZone {
+      border: 2px dashed #ccc;
+      transition: border-color 0.3s, background-color 0.3s;
+      cursor: pointer; /* Add cursor pointer */
+    }
+    #dropZone.drag-over {
+      border-color: var(--bs-primary);
+      background-color: rgba(var(--bs-primary-rgb), 0.05);
+    }
+    /* Hide the default file input */
+    #csvFile {
+      display: none;
+    }
+  </style>
+</head>
+<body class="d-flex flex-column h-100 bg-light">
+<main class="flex-shrink-0">
+  <!-- Navigation-->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
+    <div class="container px-5">
+      <a class="navbar-brand" href="index.html"><span class="fw-bolder text-primary">Start Bootstrap</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 small fw-bolder">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="resume.html">Resume</a></li>
+          <li class="nav-item"><a class="nav-link" href="projects.html">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- CSV Upload Section-->
+  <section class="py-5">
+    <div class="container px-5 mb-5">
+      <div class="text-center mb-5">
+        <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">CSV 파일 업로드</span></h1>
+      </div>
+      <div class="row gx-5 justify-content-center">
+        <div class="col-lg-8 col-xl-7 col-xxl-6">
+          <div class="card shadow rounded-4 border-0">
+            <div class="card-body p-4 p-sm-5">
+              <form id="csvUploadForm">
+                <div id="dropZone" class="rounded p-5 text-center mb-4" role="button" tabindex="0" aria-label="CSV 파일 드래그 앤 드롭 영역 또는 클릭하여 파일 선택">
+                  <i class="bi bi-cloud-arrow-up-fill fs-1 text-primary"></i>
+                  <p class="mb-0 mt-2">여기에 CSV 파일을 드래그 앤 드롭하거나<br/> <span class="text-primary fw-bold">클릭하여 파일을 선택하세요.</span></p>
+                  <input type="file" id="csvFile" accept=".csv" />
+                </div>
+                <div id="fileInfoPreview" class="mb-3" style="display: none;">
+                  <p class="mb-1"><strong>선택된 파일:</strong> <span id="fileName"></span></p>
+                  <p class="mb-0"><strong>파일 크기:</strong> <span id="fileSize"></span></p>
+                </div>
+                <div class="d-grid">
+                  <button class="btn btn-primary btn-lg" id="uploadButton" type="submit" disabled>업로드</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Call to action section-->
+  <section class="py-5 bg-gradient-primary-to-secondary text-white">
+    <div class="container px-4 px-lg-5 my-5">
+      <div class="text-center">
+        <h2 class="display-5 fw-bolder mb-4">돌봄 나침반 - 관리자 페이지</h2>
+      </div>
+    </div>
+  </section>
+</main>
+<!-- Footer-->
+<footer class="bg-white py-4 mt-auto">
+  <div class="container px-5">
+    <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+      <div class="col-auto"><div class="small m-0">Copyright © Your Website 2023</div></div>
+      <div class="col-auto">
+        <a class="small" href="#!">Privacy</a>
+        <span class="mx-1">·</span>
+        <a class="small" href="#!">Terms</a>
+        <span class="mx-1">·</span>
+        <a class="small" href="#!">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS (if you have custom JS in scripts.js, ensure it's linked or included)-->
+<!-- <script src="js/scripts.js"></script> -->
+<script src="js/adminPageSetting.js"></script>
+</body>
+</html>

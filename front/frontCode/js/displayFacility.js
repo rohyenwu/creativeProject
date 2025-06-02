@@ -31,7 +31,7 @@ async function requestFacilities() {
             categoryID: currCategory,
             type: dropdownValue // 적절한 타입 문자열 입력 (예: 'hospital', 'restaurant' 등)
         };
-        if (dropdownValue === "전체 선택"){
+        if (dropdownValue === "전체 선택") {
             payload.type = "all"
         }
         const response = await fetch("http://localhost:8000/search", {
@@ -50,15 +50,21 @@ async function requestFacilities() {
         console.log("서버 응답:", facilityList);
 
         window.facilities = facilityList;
-        if (facilityList[0] === 1){
+        if (facilityList[0] === 1) {
             displayFacilitiesOnMap(facilityList);
             displayFacilitiesBelowMap1(facilityList);
-        }else if(facilityList[0] === 2){
+        } else if (facilityList[0] === 2) {
             displayFacilitiesOnMap(facilityList);
             displayLeisureFacilitiesBelowMap2(facilityList);
-        }else if(facilityList[0] === 3){
+        } else if (facilityList[0] === 3) {
             displayFacilitiesOnMap(facilityList);
             displayOutingFacilitiesBelowMap3(facilityList);
+        } else if (facilityList[0] === 4) {
+            displayFacilitiesOnMap(facilityList);
+            displayHospitalFacilitiesBelowMap(facilityList);
+        } else if (facilityList[0] === 0) {
+            displayTotalFacilitiesOnMap(facilityList)
+            displayTotalFacilitesBlowMap(facilityList);
         }
 
 
@@ -67,8 +73,132 @@ async function requestFacilities() {
     }
 }
 
-function displayFacilitiesOnMap(response) {
+/**
+ * 여러 카테고리의 시설들을 각각의 카테고리 아이콘으로 지도에 표시합니다.
+ * "total" 요청과 같이 여러 카테고리 데이터가 배열로 올 때 사용됩니다.
+ * 서버 응답 형식 예시: [0, [[1, [facility1, facility2]], [3, [facility3, facility4]]]]
+ * 여기서 첫 번째 0은 식별자, 두 번째 요소가 실제 [카테고리ID, 시설배열] 쌍들의 배열입니다.
+ *
+ * @param {Array} serverResponse
+ *
+ */
+function displayTotalFacilitiesOnMap(serverResponse) {
+    // 실제 카테고리별 시설 데이터는 serverResponse[1]에 존재합니다.
+    const categoryFacilityPairs = serverResponse[1];
 
+    if (!Array.isArray(categoryFacilityPairs) || categoryFacilityPairs.length === 0) {
+        console.warn("표시할 시설 데이터가 없거나 형식이 올바르지 않습니다.", categoryFacilityPairs);
+        if (window.markers) {
+            window.markers.forEach(marker => marker.setMap(null));
+            window.markers = [];
+        }
+        return;
+    }
+
+    if (!window.mapClickListenerAttachedTotal) {
+        kakao.maps.event.addListener(map, "click", function () {
+            if (window.openInfoWindowTotal) {
+                window.openInfoWindowTotal.close();
+                window.openInfoWindowTotal = null;
+            }
+        });
+        window.mapClickListenerAttachedTotal = true;
+    }
+    if (window.markers) {
+        window.markers.forEach(marker => marker.setMap(null));
+    }
+    window.markers = [];
+    const markerIcons = {
+        0: 'assets/total.png',
+        1: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+        2: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+        3: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+        4: 'assets/hospital.png',
+    };
+    const imageSize = new kakao.maps.Size(24, 35);
+
+    const ps = new kakao.maps.services.Places();
+    window.openInfoWindowTotal = null;
+
+    categoryFacilityPairs.forEach(categoryData => {
+        if (!Array.isArray(categoryData) || categoryData.length !== 2) {
+            console.warn("잘못된 카테고리 데이터 형식:", categoryData);
+            return;
+        }
+
+        const categoryId = categoryData[0];
+        const facilities = categoryData[1];
+
+        if (!facilities || !Array.isArray(facilities) || facilities.length === 0) {
+            return;
+        }
+
+        const imageSrc = markerIcons[categoryId] || markerIcons[0];
+        const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+
+        facilities.forEach(fac => {
+            if (!fac || !fac.latitude || !fac.longitude) {
+                return;
+            }
+
+            const position = new kakao.maps.LatLng(fac.latitude, fac.longitude);
+            const marker = new kakao.maps.Marker({
+                position,
+                map,
+                image: markerImage
+            });
+
+            const fid = fac.ID;
+            marker.facilityId = fid;
+
+            kakao.maps.event.addListener(marker, "click", function () {
+                if (window.openInfoWindowTotal) window.openInfoWindowTotal.close();
+
+                ps.keywordSearch(fac.name, function (data, status) {
+                    let content;
+                    if (status === kakao.maps.services.Status.OK && data.length > 0) {
+                        const place = data[0];
+                        content = `
+                           <div class="card p-3 mb-3 rounded-3 shadow-sm" style="font-size: 0.9rem; min-width:250px;">
+                              <div class="card-body">
+                                <h5 class="card-title mb-2 fw-bold">${place.place_name}</h5>
+                                <p class="card-text mb-2">${place.road_address_name || place.address_name || '주소 정보 없음'}</p>
+                                ${place.phone ? `<p class="card-text mb-2">전화: ${place.phone}</p>` : ''}
+                                <a href="https://place.map.kakao.com/${place.id}" target="_blank" class="btn btn-sm btn-primary mt-2">
+                                  카카오맵에서 보기
+                                </a>
+                              </div>
+                            </div>
+                        `;
+                    } else {
+                        content = `<div style="padding:10px; min-width:180px;"><strong>${fac.name}</strong><br>${fac.address || '주소 정보 없음'}</div>`;
+                    }
+
+                    const infoWindow = new kakao.maps.InfoWindow({
+                        content,
+                        position: marker.getPosition(),
+                        disableAutoPan: true
+                    });
+
+                    infoWindow.open(map, marker);
+                    window.openInfoWindowTotal = infoWindow;
+                });
+
+                console.log('시설 ID:', fid);
+                const cardElement = document.querySelector(`[id="${fid}"]`);
+                if (cardElement) {
+                    console.log('카드 요소를 찾았습니다:', cardElement);
+                    cardElement.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
+                    cardElement.classList.add("highlight");
+                    setTimeout(() => cardElement.classList.remove("highlight"), 2000);
+                }
+            });
+            window.markers.push(marker);
+        });
+    });
+}
+
+function displayFacilitiesOnMap(response) {
     // 지도 클릭 시 열려 있는 InfoWindow 닫기
     kakao.maps.event.addListener(map, "click", function () {
         if (openInfoWindow) {
@@ -76,9 +206,7 @@ function displayFacilitiesOnMap(response) {
             openInfoWindow = null;
         }
     });
-
-
-    const categoryId = response[0];   // 1: hospital/public, 2: leisure, 3: outing
+    const categoryId = response[0];   // 1: public, 2: leisure, 3: outing, 4:hospital
     const facilities = response[1];   // 실제 시설 배열
 
     // 기존 마커 제거
@@ -89,9 +217,11 @@ function displayFacilitiesOnMap(response) {
 
     // 마커 이미지 설정
     const markerIcons = {
+        0: 'assets/total.png',
         1: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
         2: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-        3: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png'
+        3: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+        4: 'assets/hospital.png',
     };
 
     const imageSrc = markerIcons[categoryId]; // 카테고리별 아이콘 선택
@@ -105,7 +235,10 @@ function displayFacilitiesOnMap(response) {
         if (!fac.latitude || !fac.longitude) return;
 
         const position = new kakao.maps.LatLng(fac.latitude, fac.longitude);
-        const marker = new kakao.maps.Marker({ position, map, image: markerImage });
+        const marker = new kakao.maps.Marker({position, map, image: markerImage});
+
+        const fid = fac.ID;
+        marker.faciltyId = fid;
 
         kakao.maps.event.addListener(marker, "click", function () {
             // 기존 InfoWindow 닫기
@@ -118,7 +251,7 @@ function displayFacilitiesOnMap(response) {
 
                     const content = `
                    <div class="card p-3 mb-3 rounded-3 shadow-sm" style="font-size: 0.9rem;">
-                      <div class="card-body">
+                      <div class="card-body"">
                         <h5 class="card-title mb-2 fw-bold">${place.place_name}</h5>
                         <p class="card-text mb-2">${place.road_address_name || place.address_name}</p>
                         <a href="https://place.map.kakao.com/${place.id}" target="_blank" class="btn btn-sm btn-primary">
@@ -144,27 +277,35 @@ function displayFacilitiesOnMap(response) {
                     openInfoWindow = infoWindow;
                 }
             });
+            //infowindow에 클릭이벤트 등록 - 해당 id를 가진 card로 스크롤 이동
+            console.log('시설 ID:', fid); // 시설 ID 값 확인
+
+            const cardElement = document.querySelector(`[id="${fid}"]`);
+            if (cardElement) {
+                console.log('카드 요소를 찾았습니다:', cardElement); // 찾은 요소 콘솔 출력
+
+                cardElement.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
+                cardElement.classList.add("highlight"); // 강조를 위해 클래스 추가
+                setTimeout(() => cardElement.classList.remove("highlight"), 2000); // 2초 뒤 클래스 제거
+            }
+
         });
         window.markers.push(marker);
     });
-
 }
 
+function displayTotalFacilitesBlowMap(facilityList) {
+    const publicFacilities = facilityList[1][0][1];
+    const leisureFacilities = facilityList[1][1][1];
+    const outingFacilities = facilityList[1][2][1];
+    const container = document.getElementById("totalFacilityCardsContainer");
 
-
-
-function displayFacilitiesBelowMap1(facilityList) {
-    const publicFacilities = facilityList[1]; // categoryID: 1
-    const container = document.getElementById("publicFacilityCardsContainer");
-
-    if (!Array.isArray(publicFacilities) || publicFacilities.length === 0) return;
-
-    // 섹션 보이도록 설정
-    document.getElementById("publicFacilityResultsSection").style.display = "block";
+    document.getElementById('totalFacilityResultsSection').style.display = 'block';
+    document.getElementById("publicFacilityResultsSection").style.display = "none";
     document.getElementById("cultureFestivalResultsSection").style.display = "none";
     document.getElementById("outingResultsSection").style.display = "none";
+    document.getElementById("hospitalResultSection").style.display = "none";
 
-    // 기존 내용 비우기
     container.innerHTML = "";
 
     publicFacilities.forEach(facility => {
@@ -172,10 +313,10 @@ function displayFacilitiesBelowMap1(facilityList) {
         card.className = "card shadow border-0 rounded-4 mb-5";
 
         card.innerHTML = `
-            <div class="card-body p-5">
+            <div class="card-body p-5" id="${facility.ID}">
                 <div class="row align-items-center gx-5">
                     <div class="col text-center text-lg-start mb-4 mb-lg-0">
-                        <div class="bg-light p-4 rounded-4">
+                        <div class="bg-light p-4 rounded-4" >
                             <div class="text-primary fw-bolder mb-2">${facility.name}</div>
                             <div class="small fw-bolder">유형: ${facility.type || '정보 없음'}</div>
                             <div class="small text-muted">휴관일: ${facility.closedDays || '없음'}</div>
@@ -191,29 +332,29 @@ function displayFacilitiesBelowMap1(facilityList) {
                 </div>
             </div>
         `;
+        // 카드 클릭 시 해당 마커로 이동하는 기능 구현
+        card.addEventListener("click", () => {
+            const targetMarker = window.markers.find(marker => marker.faciltyId === facility.ID)
 
+            if (targetMarker) {
+                // 지도 중심을 해당 마커로 이동
+                map.setCenter(targetMarker.getPosition());
+
+                // 마커의 인포윈도우 열기
+                kakao.maps.event.trigger(targetMarker, 'click');
+            } else {
+                console.error(`시설 ID ${facilityId}에 해당하는 마커를 찾을 수 없습니다.`);
+            }
+        });
         container.appendChild(card);
     });
-}
-
-function displayLeisureFacilitiesBelowMap2(facilityList) {
-    const leisureFacilities = facilityList[1];
-    const container = document.getElementById("outingCardsContainer");
-
-    if (!Array.isArray(leisureFacilities) || leisureFacilities.length === 0) return;
-
-    document.getElementById("publicFacilityResultsSection").style.display = "none";
-    document.getElementById("outingResultsSection").style.display = "block";
-    document.getElementById("cultureFestivalResultsSection").style.display = "none";
-
-    container.innerHTML = "";
 
     leisureFacilities.forEach(facility => {
         const card = document.createElement("div");
         card.className = "card shadow border-0 rounded-4 mb-5";
 
         card.innerHTML = `
-            <div class="card-body p-5">
+            <div class="card-body p-5" id="${facility.ID}">
                 <div class="row align-items-center gx-5">
                     <div class="col text-center text-lg-start mb-4 mb-lg-0">
                         <div class="bg-light p-4 rounded-4">
@@ -227,29 +368,29 @@ function displayLeisureFacilitiesBelowMap2(facilityList) {
                 </div>
             </div>
         `;
+        // 카드 클릭 시 해당 마커로 이동하는 기능 구현
+        card.addEventListener("click", () => {
+            const targetMarker = window.markers.find(marker => marker.faciltyId === facility.ID)
 
+            if (targetMarker) {
+                // 지도 중심을 해당 마커로 이동
+                map.setCenter(targetMarker.getPosition());
+
+                // 마커의 인포윈도우 열기
+                kakao.maps.event.trigger(targetMarker, 'click');
+            } else {
+                console.error(`시설 ID ${facilityId}에 해당하는 마커를 찾을 수 없습니다.`);
+            }
+        });
         container.appendChild(card);
     });
-}
-
-function displayOutingFacilitiesBelowMap3(facilityList) {
-    const outingFacilities = facilityList[1];
-    const container = document.getElementById("cultureFestivalCardsContainer");
-
-    if (!Array.isArray(outingFacilities) || outingFacilities.length === 0) return;
-
-    document.getElementById("publicFacilityResultsSection").style.display = "none";
-    document.getElementById("outingResultsSection").style.display = "none";
-    document.getElementById("cultureFestivalResultsSection").style.display = "block";
-
-    container.innerHTML = "";
 
     outingFacilities.forEach(facility => {
         const card = document.createElement("div");
         card.className = "card shadow border-0 rounded-4 mb-5";
 
         card.innerHTML = `
-            <div class="card-body p-5">
+            <div class="card-body p-5" id="${facility.ID}">
                 <div class="row align-items-center gx-5">
                     <div class="col text-center text-lg-start mb-4 mb-lg-0">
                         <div class="bg-light p-4 rounded-4">
@@ -263,7 +404,248 @@ function displayOutingFacilitiesBelowMap3(facilityList) {
                 </div>
             </div>
         `;
+        // 카드 클릭 시 해당 마커로 이동하는 기능 구현
+        card.addEventListener("click", () => {
+            const targetMarker = window.markers.find(marker => marker.faciltyId === facility.ID)
 
+            if (targetMarker) {
+                // 지도 중심을 해당 마커로 이동
+                map.setCenter(targetMarker.getPosition());
+
+                // 마커의 인포윈도우 열기
+                kakao.maps.event.trigger(targetMarker, 'click');
+            } else {
+                console.error(`시설 ID ${facilityId}에 해당하는 마커를 찾을 수 없습니다.`);
+            }
+        });
+        container.appendChild(card);
+    });
+
+}
+
+
+function displayFacilitiesBelowMap1(facilityList) {
+    const publicFacilities = facilityList[1]; // categoryID: 1
+    const container = document.getElementById("publicFacilityCardsContainer");
+
+    if (!Array.isArray(publicFacilities) || publicFacilities.length === 0) return;
+
+    // 섹션 보이도록 설정
+    document.getElementById('totalFacilityResultsSection').style.display = 'none';
+    document.getElementById("publicFacilityResultsSection").style.display = "block";
+    document.getElementById("cultureFestivalResultsSection").style.display = "none";
+    document.getElementById("outingResultsSection").style.display = "none";
+    document.getElementById("hospitalResultSection").style.display = "none";
+
+    // 기존 내용 비우기
+    container.innerHTML = "";
+
+    publicFacilities.forEach(facility => {
+        const card = document.createElement("div");
+        card.className = "card shadow border-0 rounded-4 mb-5";
+
+        card.innerHTML = `
+            <div class="card-body p-5" id="${facility.ID}">
+                <div class="row align-items-center gx-5">
+                    <div class="col text-center text-lg-start mb-4 mb-lg-0">
+                        <div class="bg-light p-4 rounded-4" >
+                            <div class="text-primary fw-bolder mb-2">${facility.name}</div>
+                            <div class="small fw-bolder">유형: ${facility.type || '정보 없음'}</div>
+                            <div class="small text-muted">휴관일: ${facility.closedDays || '없음'}</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="mb-2"><strong>주소:</strong> ${facility.address || '정보 없음'}</div>
+                        <div class="mb-2"><strong>전화번호:</strong> ${facility.call || '없음'}</div>
+                        <div class="mb-2"><strong>운영시간(평일):</strong> ${formatTime(facility.weekOpenTime)} ~ ${formatTime(facility.weekClosedTime)}</div>
+                        <div class="mb-2"><strong>홈페이지:</strong> ${facility.homepageAddress ? `<a href="${facility.homepageAddress}" target="_blank">${facility.homepageAddress}</a>` : '없음'}</div>
+                        <div><strong>유료 여부:</strong> ${facility.isPayed === 1 ? "유료" : "무료"}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        // 카드 클릭 시 해당 마커로 이동하는 기능 구현
+        card.addEventListener("click", () => {
+            const targetMarker = window.markers.find(marker => marker.faciltyId === facility.ID)
+
+            if (targetMarker) {
+                // 지도 중심을 해당 마커로 이동
+                map.setCenter(targetMarker.getPosition());
+
+                // 마커의 인포윈도우 열기
+                kakao.maps.event.trigger(targetMarker, 'click');
+            } else {
+                console.error(`시설 ID ${facilityId}에 해당하는 마커를 찾을 수 없습니다.`);
+            }
+        });
+        container.appendChild(card);
+    });
+}
+
+function displayLeisureFacilitiesBelowMap2(facilityList) {
+    const leisureFacilities = facilityList[1];
+    const container = document.getElementById("outingCardsContainer");
+
+    if (!Array.isArray(leisureFacilities) || leisureFacilities.length === 0) return;
+
+    document.getElementById('totalFacilityResultsSection').style.display = 'none';
+    document.getElementById("publicFacilityResultsSection").style.display = "none";
+    document.getElementById("outingResultsSection").style.display = "block";
+    document.getElementById("cultureFestivalResultsSection").style.display = "none";
+    document.getElementById("hospitalResultSection").style.display = "none";
+
+    container.innerHTML = "";
+
+    leisureFacilities.forEach(facility => {
+        const card = document.createElement("div");
+        card.className = "card shadow border-0 rounded-4 mb-5";
+
+        card.innerHTML = `
+            <div class="card-body p-5" id="${facility.ID}">
+                <div class="row align-items-center gx-5">
+                    <div class="col text-center text-lg-start mb-4 mb-lg-0">
+                        <div class="bg-light p-4 rounded-4">
+                            <div class="text-secondary fw-bolder mb-2">${facility.name}</div>
+                            <div class="mb-2">
+                            </div>
+                        </div>
+                    <div class="col-lg-8">
+                        <div class="mb-2"><strong>주소:</strong> ${facility.address || '정보 없음'}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        // 카드 클릭 시 해당 마커로 이동하는 기능 구현
+        card.addEventListener("click", () => {
+            const targetMarker = window.markers.find(marker => marker.faciltyId === facility.ID)
+
+            if (targetMarker) {
+                // 지도 중심을 해당 마커로 이동
+                map.setCenter(targetMarker.getPosition());
+
+                // 마커의 인포윈도우 열기
+                kakao.maps.event.trigger(targetMarker, 'click');
+            } else {
+                console.error(`시설 ID ${facilityId}에 해당하는 마커를 찾을 수 없습니다.`);
+            }
+        });
+        container.appendChild(card);
+    });
+}
+
+function displayOutingFacilitiesBelowMap3(facilityList) {
+    const outingFacilities = facilityList[1];
+    const container = document.getElementById("cultureFestivalCardsContainer");
+
+    if (!Array.isArray(outingFacilities) || outingFacilities.length === 0) return;
+
+    document.getElementById('totalFacilityResultsSection').style.display = 'none';
+    document.getElementById("publicFacilityResultsSection").style.display = "none";
+    document.getElementById("outingResultsSection").style.display = "none";
+    document.getElementById("cultureFestivalResultsSection").style.display = "block";
+    document.getElementById("hospitalResultSection").style.display = "none";
+
+    container.innerHTML = "";
+
+    outingFacilities.forEach(facility => {
+        const card = document.createElement("div");
+        card.className = "card shadow border-0 rounded-4 mb-5";
+
+        card.innerHTML = `
+            <div class="card-body p-5" id="${facility.ID}">
+                <div class="row align-items-center gx-5">
+                    <div class="col text-center text-lg-start mb-4 mb-lg-0">
+                        <div class="bg-light p-4 rounded-4">
+                            <div class="text-warning fw-bolder mb-2">${facility.name}</div>
+                            <div class="mb-2">
+                                <div class="small fw-bolder">${facility.smallLeisure || '소분류 없음'}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8"><div>${facility.address || '주소없음'}</div></div>
+                </div>
+            </div>
+        `;
+        // 카드 클릭 시 해당 마커로 이동하는 기능 구현
+        card.addEventListener("click", () => {
+            const targetMarker = window.markers.find(marker => marker.faciltyId === facility.ID)
+
+            if (targetMarker) {
+                // 지도 중심을 해당 마커로 이동
+                map.setCenter(targetMarker.getPosition());
+
+                // 마커의 인포윈도우 열기
+                kakao.maps.event.trigger(targetMarker, 'click');
+            } else {
+                console.error(`시설 ID ${facilityId}에 해당하는 마커를 찾을 수 없습니다.`);
+            }
+        });
+        container.appendChild(card);
+    });
+}
+
+function displayHospitalFacilitiesBelowMap(hospitalFacilityList) {
+    const hospitals = hospitalFacilityList[1];
+    const container = document.getElementById("hospitalResultContainer");
+
+    if (!Array.isArray(hospitals) || hospitals.length === 0) return;
+
+    document.getElementById('totalFacilityResultsSection').style.display = 'none';
+    document.getElementById("publicFacilityResultsSection").style.display = "none";
+    document.getElementById("outingResultsSection").style.display = "none";
+    document.getElementById("cultureFestivalResultsSection").style.display = "none";
+    document.getElementById("hospitalResultSection").style.display = "block";
+
+    container.innerHTML = "";
+
+    hospitals.forEach(hospital => {
+        const card = document.createElement("div");
+        card.className = "card shadow border-0 rounded-4 mb-5";
+
+        const hospitalName = hospital.hospitalName || '이름 정보 없음';
+        const medicalDepartments = hospital.medicalDepartment || '진료과목 정보 없음';
+        const address = hospital.address || '주소 정보 없음';
+        const hospitalID = hospital.ID;
+
+        card.innerHTML = `
+            <div class="card-body p-5" id="${hospitalID}">
+                <div class="row align-items-center gx-5">
+                    <div class="col text-center text-lg-start mb-4 mb-lg-0">
+                        <div class="bg-light p-4 rounded-4">
+                            <div class="text-danger fw-bolder mb-2">${hospitalName}</div>
+                            <div class="mb-2">
+                                <div class="small fw-bolder">${medicalDepartments}</div>
+                            </div>                    
+                        </div>
+                    </div>
+                     ${hospital.type ? `<div class="small text-muted">${hospital.type}</div>` : ''}
+                    <div class="col-lg-8"><div>${address}</div></div>
+                </div>
+            </div>
+        `;
+
+        card.addEventListener("click", () => {
+            const targetMarker = window.markers && window.markers.find(marker => marker.facilityId === hospitalID);
+
+            if (targetMarker && typeof map !== 'undefined' && typeof kakao !== 'undefined') {
+                map.setCenter(targetMarker.getPosition());
+
+                const markerInfoWindow = new kakao.maps.InfoWindow({
+                    content: `<div style="padding:5px; font-size:12px; white-space: nowrap;">${hospitalName}</div>`,
+                });
+                markerInfoWindow.open(map, targetMarker);
+            } else {
+                if (!targetMarker) {
+                    console.error(`병원 ID ${hospitalID} (${hospitalName})에 해당하는 마커를 찾을 수 없습니다. window.markers를 확인하세요.`);
+                }
+                if (typeof map === 'undefined') {
+                    console.error("Kakao Map object 'map' is not defined.");
+                }
+                if (typeof kakao === 'undefined') {
+                    console.error("Kakao Maps SDK 'kakao' is not defined.");
+                }
+            }
+        });
         container.appendChild(card);
     });
 }
