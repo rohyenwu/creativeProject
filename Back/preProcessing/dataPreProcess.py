@@ -138,4 +138,6 @@ def clean_all_precsv():
         print("leisureFacilities.csv 파일이 존재하지 않습니다.")
 
 if __name__ == "__main__":
+    clean_public_facilities()
+    clean_outing_facilities()
     clean_hospital_facilities()
