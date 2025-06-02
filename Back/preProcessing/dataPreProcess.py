@@ -3,6 +3,7 @@ import os
 import shutil
 import pandas as pd
 from pyproj import CRS, Transformer
+import json
 
 # 프로젝트 루트 찾기
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -48,6 +49,19 @@ def clean_public_facilities():
         return row['개방시설유형구분']
 
     df['개방시설유형구분'] = df.apply(fix_facility_type, axis=1)
+
+    # 함수 밖에서 한 번만 읽기
+    json_path = os.path.join(os.path.dirname(__file__), 'public_type.json')
+    with open(json_path, 'r', encoding='utf-8') as f:
+        public_type_dict = json.load(f)
+
+    def classify_facility_type(row):
+        for key, values in public_type_dict.items():
+            if row['개방시설유형구분'] in values:
+                return key
+        return row['개방시설유형구분']
+    
+    df['개방시설유형구분'] = df.apply(classify_facility_type, axis=1)
 
     # 수정된 행 수 출력
     modified_count = (original_df['개방시설유형구분'] != df['개방시설유형구분']).sum()
@@ -141,3 +155,4 @@ if __name__ == "__main__":
     clean_public_facilities()
     clean_outing_facilities()
     clean_hospital_facilities()
+
