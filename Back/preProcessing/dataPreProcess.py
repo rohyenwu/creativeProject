@@ -153,3 +153,6 @@ def clean_all_precsv():
 
 if __name__ == "__main__":
     clean_public_facilities()
+    clean_outing_facilities()
+    clean_hospital_facilities()
+

@@ -293,6 +293,41 @@ function displayFacilitiesOnMap(response) {
         window.markers.push(marker);
     });
 }
+// 즐겨찾기 추가
+async function addFavorite(facilityID, categoryID) {
+    const session_id = getCookie("session_id");
+    if (!session_id) {
+        alert("로그인이 필요합니다.");
+        return;
+    }
+
+    try {
+        const response = await fetch("http://localhost:8000/toggleFavorite", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": session_id
+            },
+            body: JSON.stringify({
+                session_id: session_id,
+                facilityID,
+                categoryID
+            })
+        });
+
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.detail || "요청 실패");
+        }
+
+        const result = await response.json();
+        console.log("즐겨찾기 추가:", result);
+
+    } catch (error) {
+        console.error("즐겨찾기 처리 중 오류:", error);
+        alert("즐겨찾기 처리 중 오류가 발생했습니다.");
+    }
+}
 
 function displayTotalFacilitesBlowMap(facilityList) {
     const publicFacilities = facilityList[1][0][1];
@@ -314,6 +349,13 @@ function displayTotalFacilitesBlowMap(facilityList) {
 
         card.innerHTML = `
             <div class="card-body p-5" id="${facility.ID}">
+                <button
+                    class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
+                    onclick="addFavorite('${facility.ID, facility.categoryID}')"
+                    title="즐겨찾기 추가/제거"
+                    style="font-size: 1.5rem; line-height: 1;">
+                    즐겨찾기 추가
+                </button>
                 <div class="row align-items-center gx-5">
                     <div class="col text-center text-lg-start mb-4 mb-lg-0">
                         <div class="bg-light p-4 rounded-4" >
@@ -335,7 +377,7 @@ function displayTotalFacilitesBlowMap(facilityList) {
         // 카드 클릭 시 해당 마커로 이동하는 기능 구현
         card.addEventListener("click", () => {
             const targetMarker = window.markers.find(marker => marker.faciltyId === facility.ID)
-
+            console.log(targetMarker);
             if (targetMarker) {
                 // 지도 중심을 해당 마커로 이동
                 map.setCenter(targetMarker.getPosition());
@@ -569,7 +611,7 @@ function displayOutingFacilitiesBelowMap3(facilityList) {
         // 카드 클릭 시 해당 마커로 이동하는 기능 구현
         card.addEventListener("click", () => {
             const targetMarker = window.markers.find(marker => marker.faciltyId === facility.ID)
-
+            console.log(targetMarker);
             if (targetMarker) {
                 // 지도 중심을 해당 마커로 이동
                 map.setCenter(targetMarker.getPosition());
@@ -649,7 +691,6 @@ function displayHospitalFacilitiesBelowMap(hospitalFacilityList) {
         container.appendChild(card);
     });
 }
-
 function formatTime(seconds) {
     if (!seconds || seconds === 0) return "-";
     const hours = Math.floor(seconds / 3600).toString().padStart(2, '0');
