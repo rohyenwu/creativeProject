@@ -10,8 +10,13 @@ class FavoriteModel:
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(query, (userID, facilityID, categoryID))
             await conn.commit()
+        except Exception as e:
+            print(f"Error inserting favorite: {e}")
+            await conn.rollback()
+            return False
         finally:
             await DBConnection.DBConnection.release_db_connection(conn)
+        return True
     
     @staticmethod
     async def delete_favorite(userID, facilityID):
@@ -21,8 +26,13 @@ class FavoriteModel:
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(query, (userID, facilityID))
             await conn.commit()
+        except Exception as e:
+            print(f"Error deleting favorite: {e}")
+            await conn.rollback()
+            return False
         finally:
             await DBConnection.DBConnection.release_db_connection(conn)
+        return True
 
     @staticmethod
     async def delete_all_favorites_by_user(userID):
@@ -32,8 +42,13 @@ class FavoriteModel:
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(query, (userID,))
             await conn.commit()
+        except Exception as e:
+            print(f"Error deleting all favorites for user {userID}: {e}")
+            await conn.rollback()
+            return False
         finally:
             await DBConnection.DBConnection.release_db_connection(conn)
+        return True
     
     @staticmethod
     async def get_favorite(userID):

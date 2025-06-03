@@ -50,5 +50,14 @@ async def add_favorite(request: FavoriteRequest):
         raise HTTPException(status_code=401, detail="Invalid session ID")
     
     userID = active_sessions[request.session_id]["userID"]
-    await FavoriteModel.insert_favorite(userID, request.facilityID, request.categoryID)
-    return
+    result = await FavoriteModel.insert_favorite(userID, request.facilityID, request.categoryID)
+    return {"message": result}
+
+@router.post("/deleteFavorite")
+async def delete_favorite(request: FavoriteRequest):
+    if request.session_id not in active_sessions:
+        raise HTTPException(status_code=401, detail="Invalid session ID")
+    
+    userID = active_sessions[request.session_id]["userID"]
+    result = await FavoriteModel.delete_favorite(userID, request.facilityID)
+    return {"message": result}
