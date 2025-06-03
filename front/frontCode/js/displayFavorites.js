@@ -43,6 +43,41 @@ async function fetchFavorites(sessionId) {
         alert("즐겨찾기를 불러오는 데 실패했습니다.");
     }
 }
+// 즐겨찾기 삭제
+async function deleteFavorite(facilityID, categoryID) {
+    const session_id = getCookie("session_id");
+    if (!session_id) {
+        alert("로그인이 필요합니다.");
+        return;
+    }
+
+    try {
+        const response = await fetch("http://localhost:8000/deleteFavorite", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": session_id
+            },
+            body: JSON.stringify({
+                session_id: session_id,
+                facilityID,
+                categoryID
+            })
+        });
+
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.detail || "요청 실패");
+        }
+
+        const result = await response.json();
+        console.log("즐겨찾기 추가:", result);
+
+    } catch (error) {
+        console.error("즐겨찾기 처리 중 오류:", error);
+        alert("즐겨찾기 처리 중 오류가 발생했습니다.");
+    }
+}
 
 // 즐겨찾기 HTML 렌더링
 function renderFavorites(favorites) {
@@ -64,6 +99,13 @@ function renderFavorites(favorites) {
 
             card.innerHTML = `
             <div class="card-body p-5" id="${favorite.ID}">
+            <button
+                    class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
+                    onclick="deleteFavorite('${facility.ID, facility.categoryID}')"
+                    title="즐겨찾기 추가/제거"
+                    style="font-size: 1.5rem; line-height: 1;">
+                    즐겨찾기 제거
+                </button>
                 <div class="row align-items-center gx-5">
                     <div class="col text-center text-lg-start mb-4 mb-lg-0">
                         <div class="bg-light p-4 rounded-4" >
