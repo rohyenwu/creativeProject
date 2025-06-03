@@ -302,7 +302,7 @@ async function addFavorite(facilityID, categoryID) {
     }
 
     try {
-        const response = await fetch("http://localhost:8000/toggleFavorite", {
+        const response = await fetch("http://localhost:8000/addFavorite", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
