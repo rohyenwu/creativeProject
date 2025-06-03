@@ -1,11 +1,11 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse
 from Back.Model.userModel import UserModel
 from Back.Schemas.userScheme import LoginRequest, MembershipRequest, SearchRequest, FavoriteRequest
 from Back.Service.searchService import searchService
 from Back.Model.favoriteModel import FavoriteModel
 import uuid
-
+from typing import Optional
 router = APIRouter()
 active_sessions = {}
 
@@ -61,3 +61,20 @@ async def delete_favorite(request: FavoriteRequest):
     userID = active_sessions[request.session_id]["userID"]
     result = await FavoriteModel.delete_favorite(userID, request.facilityID)
     return {"message": result}
+@router.post("/adminPage")
+async def upload_admin_files(
+    file1: Optional[UploadFile] = File(default=None),  # public
+    file2: Optional[UploadFile] = File(default=None),  # outing
+    file3: Optional[UploadFile] = File(default=None),  # leisure
+    file4: Optional[UploadFile] = File(default=None),  # hospital
+):
+    # 프론트에서 온 파일들을 순서에 따라 변수에 담기만 함
+    public = file1
+    outing = file2
+    leisure = file3
+    hospital = file4
+
+    # 그대로 adminService로 넘김
+    adminService.DB_Update(public, outing, leisure, hospital)
+
+    return {"message": "Files passed to DB_Update"}
