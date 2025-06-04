@@ -244,39 +244,26 @@ function displayFacilitiesOnMap(response) {
             // 기존 InfoWindow 닫기
             if (openInfoWindow) openInfoWindow.close();
 
-            // 카카오 장소 검색
-            ps.keywordSearch(fac.name, function (data, status) {
-                if (status === kakao.maps.services.Status.OK && data.length > 0) {
-                    const place = data[0]; // 첫 번째 결과 사용
+            //InfoWindow 구현(기존 정보 사용), kakaoMap Search X
+            const content = `
+               <div class="card p-3 mb-3 rounded-3" style="font-size: 0.8rem; max-width: 280px;">
+                  <div class="card-body p-2">
+                    <h5 class="card-title mb-2 fw-bold" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.5rem !important;">${fac.name}</h5>
+                    <a href="https://map.kakao.com/link/search/${encodeURIComponent(fac.name)}" target="_blank" class="btn btn-sm btn-primary" style="white-space: nowrap; display: inline-block;">
+                      카카오맵에서 검색
+                    </a>
+                  </div>
+                </div>
+            `;
 
-                    const content = `
-                   <div class="card p-3 mb-3 rounded-3 shadow-sm" style="font-size: 0.9rem;">
-                      <div class="card-body"">
-                        <h5 class="card-title mb-2 fw-bold">${place.place_name}</h5>
-                        <p class="card-text mb-2">${place.road_address_name || place.address_name}</p>
-                        <a href="https://place.map.kakao.com/${place.id}" target="_blank" class="btn btn-sm btn-primary">
-                          카카오맵에서 보기
-                        </a>
-                      </div>
-                    </div>
-                `;
-                    const infoWindow = new kakao.maps.InfoWindow({
-                        content,
-                        position: marker.getPosition()
-                    });
-
-                    infoWindow.open(map, marker);
-                    openInfoWindow = infoWindow; // 현재 열린 창 저장
-                } else {
-                    // 기본 정보로 fallback
-                    const infoWindow = new kakao.maps.InfoWindow({
-                        content: `<div style="padding:10px;">${fac.name}<br>${fac.address}</div>`,
-                        position: marker.getPosition()
-                    });
-                    infoWindow.open(map, marker);
-                    openInfoWindow = infoWindow;
-                }
+            const infoWindow = new kakao.maps.InfoWindow({
+                content: content,
+                position: marker.getPosition(), // 마커의 위치를 사용합니다.
             });
+
+            infoWindow.open(map, marker);
+            openInfoWindow = infoWindow; // 현재 열린 인포윈도우를 저장합니다.
+
             //infowindow에 클릭이벤트 등록 - 해당 id를 가진 card로 스크롤 이동
             console.log('시설 ID:', fid); // 시설 ID 값 확인
 
