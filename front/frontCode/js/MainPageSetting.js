@@ -121,22 +121,3 @@ window.addEventListener('mouseup', function () {
     isResizing = false;
     document.body.style.cursor = '';
 });
-
-// 즐겨찾기 추가
-async function addFavorite(sessionId, facilityID, categoryID) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/addFavorite`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ session_id: sessionId, facilityID, categoryID }),
-        });
-        if (!response.ok) {
-            throw new Error("즐겨찾기 추가 실패");
-        }
-        alert("즐겨찾기가 성공적으로 추가되었습니다!");
-        await fetchFavorites(sessionId); // 새로 추가 후 즐겨찾기를 다시 가져옴
-    } catch (error) {
-        console.error(error);
-        alert("즐겨찾기를 추가하는 데 실패했습니다.");
-    }
-}
