@@ -282,23 +282,25 @@ function displayFacilitiesOnMap(response) {
 }
 // 즐겨찾기 추가
 async function addFavorite(facilityID, categoryID) {
-    const session_id = getCookie("session_id");
+    //const session_id = getCookie("session_id");
+    const session_id = sessionStorage.getItem("session_id");
     if (!session_id) {
         alert("로그인이 필요합니다.");
         return;
     }
+    console.log("현재정보", session_id, facilityID, categoryID);
 
     try {
         const response = await fetch("http://localhost:8000/addFavorite", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": session_id
+                // "Authorization": session_id
             },
             body: JSON.stringify({
                 session_id: session_id,
-                facilityID,
-                categoryID
+                facilityID: facilityID,
+                categoryID: categoryID
             })
         });
 
@@ -308,10 +310,11 @@ async function addFavorite(facilityID, categoryID) {
         }
 
         const result = await response.json();
+        alert("즐겨찾기 추가 완료")
         console.log("즐겨찾기 추가:", result);
 
     } catch (error) {
-        console.error("즐겨찾기 처리 중 오류:", error);
+        console.error("즐겨찾기 처리 중 오류:", error, error.message);
         alert("즐겨찾기 처리 중 오류가 발생했습니다.");
     }
 }
@@ -338,7 +341,7 @@ function displayTotalFacilitesBlowMap(facilityList) {
             <div class="card-body p-5" id="${facility.ID}">
                 <button
                     class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                    onclick="addFavorite('${facility.ID, facility.categoryID}')"
+                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
                     title="즐겨찾기 추가/제거"
                     style="font-size: 1.5rem; line-height: 1;">
                     즐겨찾기 추가
@@ -386,7 +389,7 @@ function displayTotalFacilitesBlowMap(facilityList) {
             <div class="card-body p-5" id="${facility.ID}">
             <button
                     class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                    onclick="addFavorite('${facility.ID, facility.categoryID}')"
+                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
                     title="즐겨찾기 추가/제거"
                     style="font-size: 1.5rem; line-height: 1;">
                     즐겨찾기 추가
@@ -429,7 +432,7 @@ function displayTotalFacilitesBlowMap(facilityList) {
             <div class="card-body p-5" id="${facility.ID}">
             <button
                     class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                    onclick="addFavorite('${facility.ID, facility.categoryID}')"
+                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
                     title="즐겨찾기 추가/제거"
                     style="font-size: 1.5rem; line-height: 1;">
                     즐겨찾기 추가
@@ -491,7 +494,7 @@ function displayFacilitiesBelowMap1(facilityList) {
             <div class="card-body p-5" id="${facility.ID}">
             <button
                     class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                    onclick="addFavorite('${facility.ID, facility.categoryID}')"
+                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
                     title="즐겨찾기 추가/제거"
                     style="font-size: 1.5rem; line-height: 1;">
                     즐겨찾기 추가
@@ -554,7 +557,7 @@ function displayLeisureFacilitiesBelowMap2(facilityList) {
             <div class="card-body p-5" id="${facility.ID}">
             <button
                     class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                    onclick="addFavorite('${facility.ID, facility.categoryID}')"
+                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
                     title="즐겨찾기 추가/제거"
                     style="font-size: 1.5rem; line-height: 1;">
                     즐겨찾기 추가
@@ -612,7 +615,7 @@ function displayOutingFacilitiesBelowMap3(facilityList) {
             <div class="card-body p-5" id="${facility.ID}">
             <button
                     class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                    onclick="addFavorite('${facility.ID, facility.categoryID}')"
+                   onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
                     title="즐겨찾기 추가/제거"
                     style="font-size: 1.5rem; line-height: 1;">
                     즐겨찾기 추가
@@ -675,7 +678,7 @@ function displayHospitalFacilitiesBelowMap(hospitalFacilityList) {
             <div class="card-body p-5" id="${hospitalID}">
             <button
                     class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                    onclick="addFavorite('${facility.ID, facility.categoryID}')"
+                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
                     title="즐겨찾기 추가/제거"
                     style="font-size: 1.5rem; line-height: 1;">
                     즐겨찾기 추가
