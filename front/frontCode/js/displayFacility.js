@@ -83,7 +83,6 @@ async function requestFacilities() {
  *
  */
 function displayTotalFacilitiesOnMap(serverResponse) {
-    // 실제 카테고리별 시설 데이터는 serverResponse[1]에 존재합니다.
     const categoryFacilityPairs = serverResponse[1];
 
     if (!Array.isArray(categoryFacilityPairs) || categoryFacilityPairs.length === 0) {
@@ -104,10 +103,12 @@ function displayTotalFacilitiesOnMap(serverResponse) {
         });
         window.mapClickListenerAttachedTotal = true;
     }
+
     if (window.markers) {
         window.markers.forEach(marker => marker.setMap(null));
     }
     window.markers = [];
+
     const markerIcons = {
         0: 'assets/total.png',
         1: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
@@ -152,37 +153,28 @@ function displayTotalFacilitiesOnMap(serverResponse) {
             marker.facilityId = fid;
 
             kakao.maps.event.addListener(marker, "click", function () {
-                if (window.openInfoWindowTotal) window.openInfoWindowTotal.close();
+                if (window.openInfoWindowTotal) {
+                    window.openInfoWindowTotal.close();
+                }
 
-                ps.keywordSearch(fac.name, function (data, status) {
-                    let content;
-                    if (status === kakao.maps.services.Status.OK && data.length > 0) {
-                        const place = data[0];
-                        content = `
-                           <div class="card p-3 mb-3 rounded-3 shadow-sm" style="font-size: 0.9rem; min-width:250px;">
-                              <div class="card-body">
-                                <h5 class="card-title mb-2 fw-bold">${place.place_name}</h5>
-                                <p class="card-text mb-2">${place.road_address_name || place.address_name || '주소 정보 없음'}</p>
-                                ${place.phone ? `<p class="card-text mb-2">전화: ${place.phone}</p>` : ''}
-                                <a href="https://place.map.kakao.com/${place.id}" target="_blank" class="btn btn-sm btn-primary mt-2">
-                                  카카오맵에서 보기
-                                </a>
-                              </div>
-                            </div>
-                        `;
-                    } else {
-                        content = `<div style="padding:10px; min-width:180px;"><strong>${fac.name}</strong><br>${fac.address || '주소 정보 없음'}</div>`;
-                    }
+                const content = `
+                   <div class="card p-3 mb-3 rounded-3" style="font-size: 0.8rem; max-width: 280px;">
+                      <div class="card-body p-2">
+                        <h5 class="card-title mb-2 fw-bold" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.5rem !important;">${fac.name}</h5>
+                        <a href="https://map.kakao.com/link/search/${encodeURIComponent(fac.name)}" target="_blank" class="btn btn-sm btn-primary" style="white-space: nowrap; display: inline-block;">
+                          카카오맵에서 검색
+                        </a>
+                      </div>
+                    </div>
+                `;
 
-                    const infoWindow = new kakao.maps.InfoWindow({
-                        content,
-                        position: marker.getPosition(),
-                        disableAutoPan: true
-                    });
-
-                    infoWindow.open(map, marker);
-                    window.openInfoWindowTotal = infoWindow;
+                const infoWindow = new kakao.maps.InfoWindow({
+                    content: content,
+                    position: marker.getPosition(),
                 });
+
+                infoWindow.open(map, marker);
+                window.openInfoWindowTotal = infoWindow;
 
                 console.log('시설 ID:', fid);
                 const cardElement = document.querySelector(`[id="${fid}"]`);
