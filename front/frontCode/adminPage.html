@@ -5,9 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <meta name="description" content="Admin page for CSV file upload" />
   <meta name="author" content="" />
-  <title>Admin - CSV Upload</title>
+  <style>
+    #wrapper {
+      height: 100%;
+      overflow-y: auto; /* 스크롤 영역 */
+    }
+  </style>
+  <title>관리자 페이지 - CSV 업로드</title>
   <!-- Favicon-->
-  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+  <link rel="icon" type="image/x-icon" href="assets/MainImage2.png" />
   <!-- Custom Google font-->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -45,9 +51,9 @@
     }
   </style>
 </head>
+<div id="wrapper">
 <body class="d-flex flex-column h-100 bg-light">
 <main class="flex-shrink-0">
-  <!-- Navigation (기존과 동일) -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
     <div class="container px-5">
       <a class="navbar-brand" href="index.html"><span class="fw-bolder text-primary">돌봄 나침반</span></a>
@@ -79,9 +85,12 @@
                     <p class="mb-0 mt-2">파일 드래그 앤 드롭 또는 <span class="text-primary fw-bold">클릭</span></p>
                     <input type="file" id="csvFilePublic" class="csv-file-input" accept=".csv" />
                   </div>
-                  <div id="fileInfoPublic" class="file-info-preview mt-2" style="display: none;">
-                    <p class="mb-1"><strong>선택된 파일:</strong> <span class="file-name"></span></p>
-                    <p class="mb-0"><strong>파일 크기:</strong> <span class="file-size"></span></p>
+                  <div id="fileInfoPublic" class="file-info-preview mt-2 d-flex justify-content-between align-items-center" style="display: none;">
+                    <div>
+                      <p class="mb-1"><strong>선택된 파일:</strong> <span class="file-name"></span></p>
+                      <p class="mb-0"><strong>파일 크기:</strong> <span class="file-size"></span></p>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger" id="clearFileBtnPublic">X</button>
                   </div>
                 </div>
 
@@ -93,9 +102,15 @@
                     <p class="mb-0 mt-2">파일 드래그 앤 드롭 또는 <span class="text-primary fw-bold">클릭</span></p>
                     <input type="file" id="csvFileOuting" class="csv-file-input" accept=".csv" />
                   </div>
-                  <div id="fileInfoOuting" class="file-info-preview mt-2" style="display: none;">
-                    <p class="mb-1"><strong>선택된 파일:</strong> <span class="file-name"></span></p>
-                    <p class="mb-0"><strong>파일 크기:</strong> <span class="file-size"></span></p>
+                  <!-- fileInfoOuting div 수정 -->
+                  <div id="fileInfoOuting" class="file-info-preview mt-2 d-flex justify-content-between align-items-center" style="display: none;">
+                    <!-- 파일 정보 텍스트를 묶을 div -->
+                    <div>
+                      <p class="mb-1"><strong>선택된 파일:</strong> <span class="file-name"></span></p>
+                      <p class="mb-0"><strong>파일 크기:</strong> <span class="file-size"></span></p>
+                    </div>
+                    <!-- X 버튼 추가 -->
+                    <button type="button" class="btn btn-sm btn-outline-danger" id="clearFileBtnOuting">X</button>
                   </div>
                 </div>
 
@@ -107,9 +122,15 @@
                     <p class="mb-0 mt-2">파일 드래그 앤 드롭 또는 <span class="text-primary fw-bold">클릭</span></p>
                     <input type="file" id="csvFileLeisure" class="csv-file-input" accept=".csv" />
                   </div>
-                  <div id="fileInfoLeisure" class="file-info-preview mt-2" style="display: none;">
-                    <p class="mb-1"><strong>선택된 파일:</strong> <span class="file-name"></span></p>
-                    <p class="mb-0"><strong>파일 크기:</strong> <span class="file-size"></span></p>
+                  <!-- fileInfoLeisure div 수정 -->
+                  <div id="fileInfoLeisure" class="file-info-preview mt-2 d-flex justify-content-between align-items-center" style="display: none;">
+                    <!-- 파일 정보 텍스트를 묶을 div -->
+                    <div>
+                      <p class="mb-1"><strong>선택된 파일:</strong> <span class="file-name"></span></p>
+                      <p class="mb-0"><strong>파일 크기:</strong> <span class="file-size"></span></p>
+                    </div>
+                    <!-- X 버튼 추가 -->
+                    <button type="button" class="btn btn-sm btn-outline-danger" id="clearFileBtnLeisure">X</button>
                   </div>
                 </div>
 
@@ -121,9 +142,15 @@
                     <p class="mb-0 mt-2">파일 드래그 앤 드롭 또는 <span class="text-primary fw-bold">클릭</span></p>
                     <input type="file" id="csvFileHospital" class="csv-file-input" accept=".csv" />
                   </div>
-                  <div id="fileInfoHospital" class="file-info-preview mt-2" style="display: none;">
-                    <p class="mb-1"><strong>선택된 파일:</strong> <span class="file-name"></span></p>
-                    <p class="mb-0"><strong>파일 크기:</strong> <span class="file-size"></span></p>
+                  <!-- fileInfoHospital div 수정 -->
+                  <div id="fileInfoHospital" class="file-info-preview mt-2 d-flex justify-content-between align-items-center" style="display: none;">
+                    <!-- 파일 정보 텍스트를 묶을 div -->
+                    <div>
+                      <p class="mb-1"><strong>선택된 파일:</strong> <span class="file-name"></span></p>
+                      <p class="mb-0"><strong>파일 크기:</strong> <span class="file-size"></span></p>
+                    </div>
+                    <!-- X 버튼 추가 -->
+                    <button type="button" class="btn btn-sm btn-outline-danger" id="clearFileBtnHospital">X</button>
                   </div>
                 </div>
 
@@ -143,7 +170,7 @@
   <section class="py-5 bg-gradient-primary-to-secondary text-white">
     <div class="container px-4 px-lg-5 my-5">
       <div class="text-center">
-        <h2 class="display-5 fw-bolder mb-4">돌봄 나침반 - 관리자 페이지</h2>
+        <h2 class="display-5 fw-bold mb-4">돌봄 나침반 - 관리자 페이지</h2>
       </div>
     </div>
   </section>
@@ -152,14 +179,8 @@
 <footer class="bg-white py-4 mt-auto">
   <div class="container px-5">
     <div class="row align-items-center justify-content-between flex-column flex-sm-row">
-      <div class="col-auto"><div class="small m-0">Copyright © Your Website 2023</div></div>
-      <div class="col-auto">
-        <a class="small" href="#!">Privacy</a>
-        <span class="mx-1">·</span>
-        <a class="small" href="#!">Terms</a>
-        <span class="mx-1">·</span>
-        <a class="small" href="#!">Contact</a>
-      </div>
+      <div class="col-auto"><div class="small m-0">Copyright © Creative Project 2025</div></div>
+
     </div>
   </div>
 </footer>
@@ -168,4 +189,5 @@
 <!-- Core theme JS (if you have custom JS in scripts.js, ensure it's linked or included)-->
 <script src="js/adminPageSetting.js"></script>
 </body>
+</div>
 </html>
