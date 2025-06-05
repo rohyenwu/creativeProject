@@ -9,25 +9,29 @@ document.addEventListener('DOMContentLoaded', function () {
             dropZoneId: 'dropZonePublic',
             fileInputId: 'csvFilePublic',
             fileInfoId: 'fileInfoPublic',
-            file: null // 선택된 파일 객체 저장
+            file: null, // 선택된 파일 객체 저장
+            btn: 'clearFileBtnPublic'
         },
         file2: {
             dropZoneId: 'dropZoneOuting',
             fileInputId: 'csvFileOuting',
             fileInfoId: 'fileInfoOuting',
-            file: null
+            file: null,
+            btn: 'clearFileBtnOuting'
         },
         file3: {
             dropZoneId: 'dropZoneLeisure',
             fileInputId: 'csvFileLeisure',
             fileInfoId: 'fileInfoLeisure',
-            file: null
+            file: null,
+            btn: 'clearFileBtnLeisure',
         },
         file4: {
             dropZoneId: 'dropZoneHospital',
             fileInputId: 'csvFileHospital',
             fileInfoId: 'fileInfoHospital',
-            file: null
+            file: null,
+            btn: 'clearFileBtnHospital'
         }
     };
 
@@ -37,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const dropZone = document.getElementById(section.dropZoneId);
         const fileInput = document.getElementById(section.fileInputId);
         const fileInfoDiv = document.getElementById(section.fileInfoId);
+        const clearBtn = document.getElementById(section.btn)
 
         if (!dropZone || !fileInput || !fileInfoDiv) {
             console.error(`Elements for ${fileKey} not found.`);
@@ -50,7 +55,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 fileInput.click();
             }
         });
-
 
         // 드래그 이벤트 처리
         dropZone.addEventListener('dragover', (e) => {
@@ -76,6 +80,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // 파일 선택 시 처리
         fileInput.addEventListener('change', () => handleFileSelect(fileInput, fileKey));
+
+        // X 버튼 클릭 시 파일 선택 취소 처리
+        clearBtn.addEventListener('click', () => {
+            fileInput.value = null; // 파일 입력 요소의 값 초기화 (중요!)
+            fileSections[fileKey].file = null; // 내부 상태에서 파일 정보 제거
+
+            // 파일 정보 UI 숨기기 및 텍스트 초기화
+            fileInfoDiv.style.display = 'none';
+            const fileNameSpan = fileInfoDiv.querySelector('.file-name');
+            const fileSizeSpan = fileInfoDiv.querySelector('.file-size');
+            if (fileNameSpan) fileNameSpan.textContent = '';
+            if (fileSizeSpan) fileSizeSpan.textContent = '';
+
+            console.log(`${fileKey} 파일 선택이 취소되었습니다.`);
+        });
+
     });
 
     function handleFileSelect(inputElement, fileKey) {
