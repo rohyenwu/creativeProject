@@ -83,7 +83,6 @@ async function requestFacilities() {
  *
  */
 function displayTotalFacilitiesOnMap(serverResponse) {
-    // 실제 카테고리별 시설 데이터는 serverResponse[1]에 존재합니다.
     const categoryFacilityPairs = serverResponse[1];
 
     if (!Array.isArray(categoryFacilityPairs) || categoryFacilityPairs.length === 0) {
@@ -104,10 +103,12 @@ function displayTotalFacilitiesOnMap(serverResponse) {
         });
         window.mapClickListenerAttachedTotal = true;
     }
+
     if (window.markers) {
         window.markers.forEach(marker => marker.setMap(null));
     }
     window.markers = [];
+
     const markerIcons = {
         0: 'assets/total.png',
         1: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
@@ -152,37 +153,28 @@ function displayTotalFacilitiesOnMap(serverResponse) {
             marker.facilityId = fid;
 
             kakao.maps.event.addListener(marker, "click", function () {
-                if (window.openInfoWindowTotal) window.openInfoWindowTotal.close();
+                if (window.openInfoWindowTotal) {
+                    window.openInfoWindowTotal.close();
+                }
 
-                ps.keywordSearch(fac.name, function (data, status) {
-                    let content;
-                    if (status === kakao.maps.services.Status.OK && data.length > 0) {
-                        const place = data[0];
-                        content = `
-                           <div class="card p-3 mb-3 rounded-3 shadow-sm" style="font-size: 0.9rem; min-width:250px;">
-                              <div class="card-body">
-                                <h5 class="card-title mb-2 fw-bold">${place.place_name}</h5>
-                                <p class="card-text mb-2">${place.road_address_name || place.address_name || '주소 정보 없음'}</p>
-                                ${place.phone ? `<p class="card-text mb-2">전화: ${place.phone}</p>` : ''}
-                                <a href="https://place.map.kakao.com/${place.id}" target="_blank" class="btn btn-sm btn-primary mt-2">
-                                  카카오맵에서 보기
-                                </a>
-                              </div>
-                            </div>
-                        `;
-                    } else {
-                        content = `<div style="padding:10px; min-width:180px;"><strong>${fac.name}</strong><br>${fac.address || '주소 정보 없음'}</div>`;
-                    }
+                const content = `
+                   <div class="card p-3 mb-3 rounded-3" style="font-size: 0.8rem; max-width: 280px;">
+                      <div class="card-body p-2">
+                        <h5 class="card-title mb-2 fw-bold" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.5rem !important;">${fac.name}</h5>
+                        <a href="https://map.kakao.com/link/search/${encodeURIComponent(fac.name)}" target="_blank" class="btn btn-sm btn-primary" style="white-space: nowrap; display: inline-block;">
+                          카카오맵에서 검색
+                        </a>
+                      </div>
+                    </div>
+                `;
 
-                    const infoWindow = new kakao.maps.InfoWindow({
-                        content,
-                        position: marker.getPosition(),
-                        disableAutoPan: true
-                    });
-
-                    infoWindow.open(map, marker);
-                    window.openInfoWindowTotal = infoWindow;
+                const infoWindow = new kakao.maps.InfoWindow({
+                    content: content,
+                    position: marker.getPosition(),
                 });
+
+                infoWindow.open(map, marker);
+                window.openInfoWindowTotal = infoWindow;
 
                 console.log('시설 ID:', fid);
                 const cardElement = document.querySelector(`[id="${fid}"]`);
@@ -244,39 +236,26 @@ function displayFacilitiesOnMap(response) {
             // 기존 InfoWindow 닫기
             if (openInfoWindow) openInfoWindow.close();
 
-            // 카카오 장소 검색
-            ps.keywordSearch(fac.name, function (data, status) {
-                if (status === kakao.maps.services.Status.OK && data.length > 0) {
-                    const place = data[0]; // 첫 번째 결과 사용
+            //InfoWindow 구현(기존 정보 사용), kakaoMap Search X
+            const content = `
+               <div class="card p-3 mb-3 rounded-3" style="font-size: 0.8rem; max-width: 280px;">
+                  <div class="card-body p-2">
+                    <h5 class="card-title mb-2 fw-bold" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.5rem !important;">${fac.name}</h5>
+                    <a href="https://map.kakao.com/link/search/${encodeURIComponent(fac.name)}" target="_blank" class="btn btn-sm btn-primary" style="white-space: nowrap; display: inline-block;">
+                      카카오맵에서 검색
+                    </a>
+                  </div>
+                </div>
+            `;
 
-                    const content = `
-                   <div class="card p-3 mb-3 rounded-3 shadow-sm" style="font-size: 0.9rem;">
-                      <div class="card-body"">
-                        <h5 class="card-title mb-2 fw-bold">${place.place_name}</h5>
-                        <p class="card-text mb-2">${place.road_address_name || place.address_name}</p>
-                        <a href="https://place.map.kakao.com/${place.id}" target="_blank" class="btn btn-sm btn-primary">
-                          카카오맵에서 보기
-                        </a>
-                      </div>
-                    </div>
-                `;
-                    const infoWindow = new kakao.maps.InfoWindow({
-                        content,
-                        position: marker.getPosition()
-                    });
-
-                    infoWindow.open(map, marker);
-                    openInfoWindow = infoWindow; // 현재 열린 창 저장
-                } else {
-                    // 기본 정보로 fallback
-                    const infoWindow = new kakao.maps.InfoWindow({
-                        content: `<div style="padding:10px;">${fac.name}<br>${fac.address}</div>`,
-                        position: marker.getPosition()
-                    });
-                    infoWindow.open(map, marker);
-                    openInfoWindow = infoWindow;
-                }
+            const infoWindow = new kakao.maps.InfoWindow({
+                content: content,
+                position: marker.getPosition(), // 마커의 위치를 사용합니다.
             });
+
+            infoWindow.open(map, marker);
+            openInfoWindow = infoWindow; // 현재 열린 인포윈도우를 저장합니다.
+
             //infowindow에 클릭이벤트 등록 - 해당 id를 가진 card로 스크롤 이동
             console.log('시설 ID:', fid); // 시설 ID 값 확인
 
@@ -295,23 +274,25 @@ function displayFacilitiesOnMap(response) {
 }
 // 즐겨찾기 추가
 async function addFavorite(facilityID, categoryID) {
-    const session_id = getCookie("session_id");
+    //const session_id = getCookie("session_id");
+    const session_id = sessionStorage.getItem("session_id");
     if (!session_id) {
         alert("로그인이 필요합니다.");
         return;
     }
+    console.log("현재정보", session_id, facilityID, categoryID);
 
     try {
-        const response = await fetch("http://localhost:8000/toggleFavorite", {
+        const response = await fetch("http://localhost:8000/addFavorite", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": session_id
+                // "Authorization": session_id
             },
             body: JSON.stringify({
                 session_id: session_id,
-                facilityID,
-                categoryID
+                facilityID: facilityID,
+                categoryID: categoryID
             })
         });
 
@@ -321,10 +302,11 @@ async function addFavorite(facilityID, categoryID) {
         }
 
         const result = await response.json();
+        alert("즐겨찾기 추가 완료")
         console.log("즐겨찾기 추가:", result);
 
     } catch (error) {
-        console.error("즐겨찾기 처리 중 오류:", error);
+        console.error("즐겨찾기 처리 중 오류:", error, error.message);
         alert("즐겨찾기 처리 중 오류가 발생했습니다.");
     }
 }
@@ -351,7 +333,7 @@ function displayTotalFacilitesBlowMap(facilityList) {
             <div class="card-body p-5" id="${facility.ID}">
                 <button
                     class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                    onclick="addFavorite('${facility.ID, facility.categoryID}')"
+                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
                     title="즐겨찾기 추가/제거"
                     style="font-size: 1.5rem; line-height: 1;">
                     즐겨찾기 추가
@@ -397,6 +379,13 @@ function displayTotalFacilitesBlowMap(facilityList) {
 
         card.innerHTML = `
             <div class="card-body p-5" id="${facility.ID}">
+            <button
+                    class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
+                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
+                    title="즐겨찾기 추가/제거"
+                    style="font-size: 1.5rem; line-height: 1;">
+                    즐겨찾기 추가
+                </button>
                 <div class="row align-items-center gx-5">
                     <div class="col text-center text-lg-start mb-4 mb-lg-0">
                         <div class="bg-light p-4 rounded-4">
@@ -433,6 +422,13 @@ function displayTotalFacilitesBlowMap(facilityList) {
 
         card.innerHTML = `
             <div class="card-body p-5" id="${facility.ID}">
+            <button
+                    class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
+                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
+                    title="즐겨찾기 추가/제거"
+                    style="font-size: 1.5rem; line-height: 1;">
+                    즐겨찾기 추가
+                </button>
                 <div class="row align-items-center gx-5">
                     <div class="col text-center text-lg-start mb-4 mb-lg-0">
                         <div class="bg-light p-4 rounded-4">
@@ -488,6 +484,13 @@ function displayFacilitiesBelowMap1(facilityList) {
 
         card.innerHTML = `
             <div class="card-body p-5" id="${facility.ID}">
+            <button
+                    class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
+                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
+                    title="즐겨찾기 추가/제거"
+                    style="font-size: 1.5rem; line-height: 1;">
+                    즐겨찾기 추가
+                </button>
                 <div class="row align-items-center gx-5">
                     <div class="col text-center text-lg-start mb-4 mb-lg-0">
                         <div class="bg-light p-4 rounded-4" >
@@ -544,6 +547,13 @@ function displayLeisureFacilitiesBelowMap2(facilityList) {
 
         card.innerHTML = `
             <div class="card-body p-5" id="${facility.ID}">
+            <button
+                    class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
+                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
+                    title="즐겨찾기 추가/제거"
+                    style="font-size: 1.5rem; line-height: 1;">
+                    즐겨찾기 추가
+                </button>
                 <div class="row align-items-center gx-5">
                     <div class="col text-center text-lg-start mb-4 mb-lg-0">
                         <div class="bg-light p-4 rounded-4">
@@ -595,6 +605,13 @@ function displayOutingFacilitiesBelowMap3(facilityList) {
 
         card.innerHTML = `
             <div class="card-body p-5" id="${facility.ID}">
+            <button
+                    class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
+                   onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
+                    title="즐겨찾기 추가/제거"
+                    style="font-size: 1.5rem; line-height: 1;">
+                    즐겨찾기 추가
+                </button>
                 <div class="row align-items-center gx-5">
                     <div class="col text-center text-lg-start mb-4 mb-lg-0">
                         <div class="bg-light p-4 rounded-4">
@@ -651,6 +668,13 @@ function displayHospitalFacilitiesBelowMap(hospitalFacilityList) {
 
         card.innerHTML = `
             <div class="card-body p-5" id="${hospitalID}">
+            <button
+                    class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
+                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
+                    title="즐겨찾기 추가/제거"
+                    style="font-size: 1.5rem; line-height: 1;">
+                    즐겨찾기 추가
+                </button>
                 <div class="row align-items-center gx-5">
                     <div class="col text-center text-lg-start mb-4 mb-lg-0">
                         <div class="bg-light p-4 rounded-4">
