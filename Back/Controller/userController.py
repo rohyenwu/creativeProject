@@ -76,6 +76,6 @@ async def upload_admin_files(
     hospital = file4
 
     # 그대로 adminService로 넘김
-    adminService.DB_Update(public, outing, leisure, hospital)
+    await adminService.DB_Update(public, outing, leisure, hospital)
 
     return {"message": "Files passed to DB_Update"}
