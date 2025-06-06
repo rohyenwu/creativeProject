@@ -5,6 +5,7 @@ import Back.preProcessing.inputDB as inDB
 import Back.preProcessing.dataPreProcess as pre
 import Model.adminModel as admin
 import Back.preProcessing.sync as sync
+#한번에 다 받도록
 class adminService:
     @staticmethod
     def DB_Update(public, outing, leisure, hospital):
