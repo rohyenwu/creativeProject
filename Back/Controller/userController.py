@@ -4,6 +4,7 @@ from Back.Model.userModel import UserModel
 from Back.Schemas.userScheme import LoginRequest, MembershipRequest, SearchRequest, FavoriteRequest
 from Back.Service.searchService import searchService
 from Back.Model.favoriteModel import FavoriteModel
+from Back.Service.adminService import adminService
 import uuid
 from typing import Optional
 router = APIRouter()
