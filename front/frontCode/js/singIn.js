@@ -44,3 +44,42 @@ document.addEventListener("DOMContentLoaded", function() {
         window.location.href = "mainPage.html"; // 비회원 페이지 이동
     });
 });
+
+const adminLoginBtn = document.getElementById('adminLoginBtn');
+const adminIdInput = document.getElementById('userID');
+const adminPwInput = document.getElementById('password');
+
+// 2. '관리자용 로그인' 버튼에 클릭 이벤트 리스너를 추가
+adminLoginBtn.addEventListener('click', function() {
+    // 3. 사용자가 입력한 아이디와 비밀번호 값 가져오기
+    const enteredId = adminIdInput.value;
+    const enteredPw = adminPwInput.value;
+
+    // 4. 미리 정해둔 정답 아이디/비밀번호와 비교
+    const correctId = '1';
+    const correctPw = '1';
+
+    // 5. 조건문(if)을 사용하여 아이디와 비밀번호가 모두 일치하는지 확인
+    if (enteredId === correctId && enteredPw === correctPw) {
+        // 일치할 경우
+        alert('로그인 성공! 관리자 페이지로 이동합니다.');
+        // 'adminPage.html'로 페이지 이동
+        window.location.href = 'adminPage.html';
+    } else {
+        // 일치하지 않을 경우
+        alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+        // 입력 필드 초기화 (선택사항)
+        adminIdInput.value = '';
+        adminPwInput.value = '';
+        // 다시 아이디 입력창에 포커스를 줌 (사용자 편의)
+        adminIdInput.focus();
+    }
+});
+
+// 엔터 키로도 로그인을 시도할 수 있게 하는 기능 (선택사항)
+adminPwInput.addEventListener('keyup', function(event) {
+    // event.key가 'Enter'일 경우, 로그인 버튼을 클릭한 것과 동일한 효과를 낸다.
+    if (event.key === 'Enter') {
+        adminLoginBtn.click();
+    }
+});

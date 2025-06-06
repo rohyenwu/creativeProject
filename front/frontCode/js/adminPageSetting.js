@@ -150,15 +150,14 @@ document.addEventListener('DOMContentLoaded', function () {
         if (fileCount === 0) {
             uploadStatusDiv.className = 'alert alert-warning';
             uploadStatusDiv.textContent = '업로드할 파일이 없습니다.';
-            uploadButton.disabled = false; // 다시 활성화 (혹은 true 유지)
+            uploadButton.disabled = false;
             return;
         }
 
         try {
-            const response = await fetch('/adminPage', { // FastAPI 엔드포인트
+            const response = await fetch('http://localhost:8000/adminPage', {
                 method: 'POST',
                 body: formData
-                // headers: { 'Content-Type': 'multipart/form-data' } // FormData는 자동으로 설정됨
             });
 
             if (response.ok) {
@@ -198,6 +197,5 @@ document.addEventListener('DOMContentLoaded', function () {
         uploadButton.disabled = true; // 업로드 버튼 비활성화
     }
 
-    // 초기 업로드 버튼 상태 설정
     updateUploadButtonState();
 });
