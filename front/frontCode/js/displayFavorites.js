@@ -53,8 +53,8 @@ async function deleteFavorite(facilityID, categoryID) {
         alert("로그인이 필요합니다.");
         return;
     }
-    console.log(session_id);
     console.log(facilityID);
+    console.log(typeof (facilityID));
     try {
         const response = await fetch("http://localhost:8000/deleteFavorite", {
             method: "POST",
@@ -79,6 +79,8 @@ async function deleteFavorite(facilityID, categoryID) {
         console.error("즐겨찾기 처리 중 오류:", error.message);
         alert("즐겨찾기 처리 중 오류가 발생했습니다.");
     }
+    // 즐겨찾기 리스트를 갱신해주는 기능 추가
+    fetchFavorites(session_id);
 }
 
 // 즐겨찾기 HTML 렌더링
@@ -91,6 +93,11 @@ function renderFavorites(favoritesall) {
     document.getElementById('facility').style.display = 'block';
     document.getElementById("outing").style.display = 'block';
     document.getElementById("seniorCenter").style.display = 'block';
+
+    outingContainer.innerHTML = "";
+    facilityContainer.innerHTML = "";
+    leisureContainer.innerHTML = "";
+
     // 즐겨찾기 항목 렌더링
     favoritesall.forEach((favorites) => {
         favorites.forEach((favorite) => {
@@ -103,7 +110,7 @@ function renderFavorites(favoritesall) {
             <div class="card-body p-5" id="${favorite.ID}">
                 <button
                     class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                    onclick="deleteFavorite(${favorite.ID}, ${favorite.category_categoryID})"
+                    onclick="deleteFavorite('${favorite.ID}', '${favorite.category_categoryID}')"
                     title="즐겨찾기 추가/삭제"
                     style="font-size: 1.5rem; line-height: 1;">
                     즐겨찾기 삭제
@@ -135,7 +142,7 @@ function renderFavorites(favoritesall) {
             <div class="card-body p-5" id="${favorite.ID}">
                 <button
                     class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                    onclick="deleteFavorite(${favorite.ID}, ${favorite.category_categoryID})"
+                    onclick="deleteFavorite('${favorite.ID}', '${favorite.category_categoryID}')"
                     title="즐겨찾기 추가/삭제"
                     style="font-size: 1.5rem; line-height: 1;">
                     즐겨찾기 삭제
@@ -161,7 +168,7 @@ function renderFavorites(favoritesall) {
             <div class="card-body p-5" id="${favorite.ID}">
                 <button
                     class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                    onclick="deleteFavorite(${favorite.ID}, ${favorite.category_categoryID})"
+                    onclick="deleteFavorite('${favorite.ID}', '${favorite.category_categoryID}')"
                     title="즐겨찾기 추가/삭제"
                     style="font-size: 1.5rem; line-height: 1;">
                     즐겨찾기 삭제
