@@ -1,13 +1,28 @@
 document.addEventListener("DOMContentLoaded", function() {
+    // HTML 요소 가져오기
+    const userIDInput = document.getElementById("userID");
+    const passwordInput = document.getElementById("password");
+    const submitButton = document.getElementById("submitButton");
+    const adminLoginBtn = document.getElementById("adminLoginBtn"); // 관리자 버튼도 가져옵니다.
+    const nonMemberButton = document.getElementById("nonMember");
     const message = document.getElementById("message");
 
-    document.getElementById("submitButton").addEventListener("click", async function(event) {
-        //로그인 함수 구현부분
-        event.preventDefault(); // 기본 빈칸 제출 동작 막기
+    // 로그인 처리를 하나의 함수로 통합합니다.
+    async function handleLogin() {
+        const userID = userIDInput.value;
+        const password = passwordInput.value;
 
-        const userID = document.getElementById("userID").value;
-        const password = document.getElementById("password").value;
+        // 1. 먼저, 하드코딩된 관리자 계정인지 확인합니다.
+        const adminId = '1';
+        const adminPw = '1';
 
+        if (userID === adminId && password === adminPw) {
+            alert('관리자 로그인 성공! 관리자 페이지로 이동합니다.');
+            window.location.href = 'adminPage.html';
+            return; // 관리자 로그인이 성공했으므로 여기서 함수를 종료합니다.
+        }
+
+        // 2. 관리자 계정이 아니라면, 일반 사용자로 서버에 로그인을 시도합니다.
         try {
             const response = await fetch("http://localhost:8000/login", {
                 method: "POST",
@@ -19,67 +34,47 @@ document.addEventListener("DOMContentLoaded", function() {
             const data = await response.json();
 
             if (response.ok && data.session_id) {
-                // 세션 ID는 쿠키로 관리하기?
-                //세션스토리지
+                // 로그인 성공
                 sessionStorage.setItem("session_id", data.session_id);
                 sessionStorage.setItem("userName", data.userName);
-                //쿠키
-                document.cookie = `sessionId=${data.session_id}; path=/; max-age=3600;` //1시간 유지
-                document.cookie = `userName=${data.userName}; path=/; max-age=3600;`
+                document.cookie = `sessionId=${data.session_id}; path=/; max-age=3600;`; // 1시간 유지
+                document.cookie = `userName=${data.userName}; path=/; max-age=3600;`;
 
                 // 메인 페이지로 이동
-                window.location.href = "mainPage.html"; // 일단 비회원 페이지 이동
-            } else if(!data.session_id){
-                alert("아이디 또는 비밀번호가 잘못되었습니다.")
+                window.location.href = "mainPage.html";
             } else {
-                message.textContent = data.detail || "로그인 실패";
+                // 로그인 실패 (서버에서 session_id를 주지 않거나, 응답 코드가 ok가 아님)
+                // 서버에서 보낸 에러 메시지가 있다면 그걸 쓰고, 없다면 기본 메시지를 사용합니다.
+                alert(data.detail || "아이디 또는 비밀번호가 잘못되었습니다.");
+                message.textContent = data.detail || "로그인에 실패했습니다.";
             }
         } catch (error) {
             message.textContent = "서버에 연결할 수 없습니다.";
-            console.error(error);
+            console.error("Login Error:", error);
+        }
+    }
+
+    // 일반 로그인 버튼 클릭 시 통합 로그인 함수 실행
+    submitButton.addEventListener("click", function(event) {
+        event.preventDefault(); // form의 기본 제출 동작 막기
+        handleLogin();
+    });
+
+    // 관리자용 로그인 버튼 클릭 시에도 동일한 통합 로그인 함수 실행
+    adminLoginBtn.addEventListener("click", function(event) {
+        event.preventDefault();
+        handleLogin();
+    });
+
+    // 비회원 버튼
+    nonMemberButton.addEventListener("click", function() {
+        window.location.href = "mainPage.html";
+    });
+
+    // 엔터 키로 로그인 시도
+    passwordInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            handleLogin();
         }
     });
-
-    document.getElementById("nonMember").addEventListener("click", function() {
-        window.location.href = "mainPage.html"; // 비회원 페이지 이동
-    });
-});
-
-const adminLoginBtn = document.getElementById('adminLoginBtn');
-const adminIdInput = document.getElementById('userID');
-const adminPwInput = document.getElementById('password');
-
-// 2. '관리자용 로그인' 버튼에 클릭 이벤트 리스너를 추가
-adminLoginBtn.addEventListener('click', function() {
-    // 3. 사용자가 입력한 아이디와 비밀번호 값 가져오기
-    const enteredId = adminIdInput.value;
-    const enteredPw = adminPwInput.value;
-
-    // 4. 미리 정해둔 정답 아이디/비밀번호와 비교
-    const correctId = '1';
-    const correctPw = '1';
-
-    // 5. 조건문(if)을 사용하여 아이디와 비밀번호가 모두 일치하는지 확인
-    if (enteredId === correctId && enteredPw === correctPw) {
-        // 일치할 경우
-        alert('로그인 성공! 관리자 페이지로 이동합니다.');
-        // 'adminPage.html'로 페이지 이동
-        window.location.href = 'adminPage.html';
-    } else {
-        // 일치하지 않을 경우
-        alert('아이디 또는 비밀번호가 일치하지 않습니다.');
-        // 입력 필드 초기화 (선택사항)
-        adminIdInput.value = '';
-        adminPwInput.value = '';
-        // 다시 아이디 입력창에 포커스를 줌 (사용자 편의)
-        adminIdInput.focus();
-    }
-});
-
-// 엔터 키로도 로그인을 시도할 수 있게 하는 기능 (선택사항)
-adminPwInput.addEventListener('keyup', function(event) {
-    // event.key가 'Enter'일 경우, 로그인 버튼을 클릭한 것과 동일한 효과를 낸다.
-    if (event.key === 'Enter') {
-        adminLoginBtn.click();
-    }
 });
