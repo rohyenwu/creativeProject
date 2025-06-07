@@ -3,7 +3,7 @@ import aiomysql
 import Back.preProcessing.File_Mangement as fm
 import Back.preProcessing.inputDB as inDB
 import Back.preProcessing.dataPreProcess as pre
-import Model.adminModel as admin
+import Back.Model.adminModel as admin
 import Back.preProcessing.sync as sync
 #한번에 다 받도록
 class adminService:
