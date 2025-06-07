@@ -668,13 +668,6 @@ function displayHospitalFacilitiesBelowMap(hospitalFacilityList) {
 
         card.innerHTML = `
             <div class="card-body p-5" id="${hospitalID}">
-            <button
-                    class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
-                    title="즐겨찾기 추가/제거"
-                    style="font-size: 1.5rem; line-height: 1;">
-                    즐겨찾기 추가
-                </button>
                 <div class="row align-items-center gx-5">
                     <div class="col text-center text-lg-start mb-4 mb-lg-0">
                         <div class="bg-light p-4 rounded-4">
