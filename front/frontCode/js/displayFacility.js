@@ -335,7 +335,7 @@ function displayTotalFacilitesBlowMap(facilityList) {
             <div class="card-body p-5" id="${facility.ID}">
                 <button
                     class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
+                    onclick="addFavorite('${facility.ID}', ${facility.category_categoryID})"
                     title="즐겨찾기 추가/제거"
                     style="font-size: 1.5rem; line-height: 1;">
                     즐겨찾기 추가
@@ -383,7 +383,7 @@ function displayTotalFacilitesBlowMap(facilityList) {
             <div class="card-body p-5" id="${facility.ID}">
             <button
                     class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
+                    onclick="addFavorite('${facility.ID}', ${facility.category_categoryID})"
                     title="즐겨찾기 추가/제거"
                     style="font-size: 1.5rem; line-height: 1;">
                     즐겨찾기 추가
@@ -426,7 +426,7 @@ function displayTotalFacilitesBlowMap(facilityList) {
             <div class="card-body p-5" id="${facility.ID}">
             <button
                     class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
+                    onclick="addFavorite('${facility.ID}', ${facility.category_categoryID})"
                     title="즐겨찾기 추가/제거"
                     style="font-size: 1.5rem; line-height: 1;">
                     즐겨찾기 추가
@@ -488,7 +488,7 @@ function displayFacilitiesBelowMap1(facilityList) {
             <div class="card-body p-5" id="${facility.ID}">
             <button
                     class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
+                    onclick="addFavorite('${facility.ID}', ${facility.category_categoryID})"
                     title="즐겨찾기 추가/제거"
                     style="font-size: 1.5rem; line-height: 1;">
                     즐겨찾기 추가
@@ -609,7 +609,7 @@ function displayOutingFacilitiesBelowMap3(facilityList) {
             <div class="card-body p-5" id="${facility.ID}">
             <button
                     class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                   onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
+                   onclick="addFavorite('${facility.ID}', ${facility.category_categoryID})"
                     title="즐겨찾기 추가/제거"
                     style="font-size: 1.5rem; line-height: 1;">
                     즐겨찾기 추가
