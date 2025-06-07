@@ -275,6 +275,8 @@ function displayFacilitiesOnMap(response) {
 // 즐겨찾기 추가
 async function addFavorite(facilityID, categoryID) {
     //const session_id = getCookie("session_id");
+    console.log(facilityID);
+    console.log(typeof (facilityID));
     const session_id = sessionStorage.getItem("session_id");
     if (!session_id) {
         alert("로그인이 필요합니다.");
@@ -549,7 +551,7 @@ function displayLeisureFacilitiesBelowMap2(facilityList) {
             <div class="card-body p-5" id="${facility.ID}">
             <button
                     class="position-absolute top-0 end-0 m-3 btn btn-light border-0" 
-                    onclick="addFavorite(${facility.ID}, ${facility.category_categoryID})"
+                    onclick="addFavorite('${facility.ID}', '${facility.category_categoryID}')"
                     title="즐겨찾기 추가/제거"
                     style="font-size: 1.5rem; line-height: 1;">
                     즐겨찾기 추가
