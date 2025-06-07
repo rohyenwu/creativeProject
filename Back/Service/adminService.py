@@ -12,12 +12,12 @@ class adminService:
         if(public!=None):
             fm.Delete_PublicCSV()
             await fm.Upload_PublicCSV(public)
-            await pre.clean_public_facilities()
+            pre.clean_public_facilities()
             await sync.sync_public_table("csv/publicFacilities.csv")
         if(outing!=None):
             fm.Delete_OutingCSV()
             await fm.Upload_OutingCSV(outing)
-            await pre.clean_outing_facilities()
+            pre.clean_outing_facilities()
             await sync.sync_outing_table("csv/outingFacilities.csv")
         if(leisure!=None):
             await fm.Upload_LeisureCSV(leisure)
@@ -25,7 +25,7 @@ class adminService:
         if(hospital!=None):
             fm.Delete_HospitalCSV()
             await fm.Upload_HospitalCSV(hospital)
-            await pre.clean_hospital_facilities()
+            pre.clean_hospital_facilities()
             await sync.sync_hospital_table("csv/hospitalFacilities.csv")
 
                     

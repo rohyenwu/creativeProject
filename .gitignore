@@ -14,3 +14,4 @@ env/
 # 환경변수 파일 (만들 경우)
 .env
 Back/.env
+precsv/publicFacilities.csv
