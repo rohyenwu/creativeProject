@@ -12,21 +12,21 @@ class adminService:
         if(public!=None):
             fm.Delete_PublicCSV()
             await fm.Upload_PublicCSV(public)
-            pre.clean_public_facilities()
-            sync.sync_public_table("csv/publicFacilities.csv")
+            await pre.clean_public_facilities()
+            await sync.sync_public_table("csv/publicFacilities.csv")
         if(outing!=None):
             fm.Delete_OutingCSV()
             await fm.Upload_OutingCSV(outing)
-            pre.clean_outing_facilities()
-            sync.sync_outing_table("csv/outingFacilities.csv")
+            await pre.clean_outing_facilities()
+            await sync.sync_outing_table("csv/outingFacilities.csv")
         if(leisure!=None):
             await fm.Upload_LeisureCSV(leisure)
-            sync.sync_leisure_table("csv/leisureFacilities.csv")
+            await sync.sync_leisure_table("csv/leisureFacilities.csv")
         if(hospital!=None):
             fm.Delete_HospitalCSV()
             await fm.Upload_HospitalCSV(hospital)
-            pre.clean_hospital_facilities()
-            sync.sync_hospital_table("csv/hospitalFacilities.csv")
+            await pre.clean_hospital_facilities()
+            await sync.sync_hospital_table("csv/hospitalFacilities.csv")
 
                     
          
