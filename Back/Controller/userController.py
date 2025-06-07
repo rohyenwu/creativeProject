@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse
 from Back.Model.userModel import UserModel
-from Back.Schemas.userScheme import LoginRequest, MembershipRequest, SearchRequest, FavoriteRequest
+from Back.Schemas.userScheme import LoginRequest, MembershipRequest, SearchRequest, FavoriteRequest, DeleteFavoriteRequest
 from Back.Service.searchService import searchService
 from Back.Model.favoriteModel import FavoriteModel
 from Back.Service.adminService import adminService
@@ -49,13 +49,12 @@ async def get_favorite(session_id: str):
 async def add_favorite(request: FavoriteRequest):
     if request.session_id not in active_sessions:
         raise HTTPException(status_code=401, detail="Invalid session ID")
-    
     userID = active_sessions[request.session_id]["userID"]
     result = await FavoriteModel.insert_favorite(userID, request.facilityID, request.categoryID)
     return {"message": result}
 
 @router.post("/deleteFavorite")
-async def delete_favorite(request: FavoriteRequest):
+async def delete_favorite(request: DeleteFavoriteRequest):
     if request.session_id not in active_sessions:
         raise HTTPException(status_code=401, detail="Invalid session ID")
     

@@ -14,5 +14,8 @@ class SearchRequest(BaseModel):
     type: str
 class FavoriteRequest(BaseModel):
     session_id: str
-    facilityID: int
+    facilityID: str
     categoryID: int
+class DeleteFavoriteRequest(BaseModel):
+    session_id: str
+    facilityID: str
