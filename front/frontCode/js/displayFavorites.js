@@ -63,7 +63,7 @@ async function deleteFavorite(facilityID, categoryID) {
             },
             body: JSON.stringify({
                 session_id: session_id,
-                facilityID: facilityID
+                facilityID: String(facilityID)
             })
         });
 
