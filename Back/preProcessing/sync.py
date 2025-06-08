@@ -1,4 +1,5 @@
 import pandas as pd
+import aiomysql # 필수수
 import asyncio
 import os
 from dotenv import load_dotenv
