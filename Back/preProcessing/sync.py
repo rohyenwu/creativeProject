@@ -1,4 +1,5 @@
 import pandas as pd
+import aiomysql # 필수수
 import asyncio
 import os
 from dotenv import load_dotenv
@@ -259,7 +260,7 @@ async def sync_public_table(csv_path):
 
 if __name__ == "__main__":
     load_dotenv()
-    # asyncio.run(sync_hospital_table("csv/hospitalFacilities.csv"))
+    asyncio.run(sync_hospital_table("csv/hospitalFacilities.csv"))
     # asyncio.run(sync_outing_table("csv/outingFacilities.csv"))
     # asyncio.run(sync_leisure_table("csv/leisureFacilities.csv"))
-    asyncio.run(sync_public_table("csv/publicFacilities.csv"))
+    # asyncio.run(sync_public_table("csv/publicFacilities.csv"))
