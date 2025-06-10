@@ -79,6 +79,7 @@ function toggleDropdowns() {
 
 document.addEventListener("DOMContentLoaded", function () {
     const sessionId = sessionStorage.getItem("session_id");
+    const logoutBtn = document.getElementById("logoutBtn");
 
     if (sessionId) {
         document.getElementById("favoriteMenu").style.display = "block";
@@ -91,7 +92,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     if (logoutBtn) {
         logoutBtn.addEventListener("click", function () {
-
+            try{
+                const response = fetch("http://localhost:8000/logout", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ sessionId: sessionId })
+                });
+                if(response.message === "True") {
+                    alert("로그아웃 되었습니다.");
+                    console.log("Logout successful");
+                }
+            } catch (error) {
+                console.error("Logout Error:", error);
+            }
             sessionStorage.removeItem("session_id");
             window.location.href = "mainPage.html";
         });

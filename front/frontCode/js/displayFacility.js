@@ -663,7 +663,7 @@ function displayHospitalFacilitiesBelowMap(hospitalFacilityList) {
         const card = document.createElement("div");
         card.className = "card shadow border-0 rounded-4 mb-5";
 
-        const hospitalName = hospital.hospitalName || '이름 정보 없음';
+        const hospitalName = hospital.name || '이름 정보 없음';
         const medicalDepartments = hospital.medicalDepartment || '진료과목 정보 없음';
         const address = hospital.address || '주소 정보 없음';
         const hospitalID = hospital.ID;
