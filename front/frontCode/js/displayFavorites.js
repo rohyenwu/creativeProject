@@ -77,7 +77,7 @@ async function deleteFavorite(facilityID, categoryID) {
         alert("삭제 완료되었습니다.")
         
         // 즐겨찾기 리스트를 갱신해주는 기능 추가
-        location.reload(); // 페이지 새로고침으로 리스트를 갱신
+        await fetchFavorites(session_id); // 페이지 새로고침으로 리스트를 갱신
     } catch (error) {
         console.error("즐겨찾기 처리 중 오류:", error.message);
         alert("즐겨찾기 처리 중 오류가 발생했습니다.");
