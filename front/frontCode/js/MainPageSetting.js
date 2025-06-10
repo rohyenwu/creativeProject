@@ -83,10 +83,20 @@ document.addEventListener("DOMContentLoaded", function () {
     if (sessionId) {
         document.getElementById("favoriteMenu").style.display = "block";
         document.getElementById("nonSignInUser").style.display = "none";
+        document.getElementById("logoutMenu").style.display = "block";
     } else {
         document.getElementById("favoriteMenu").style.display = "none";
         document.getElementById("nonSignInUser").style.display = "block";
+        document.getElementById("logoutMenu").style.display = "none";
     }
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", function () {
+
+            sessionStorage.removeItem("session_id");
+            window.location.href = "mainPage.html";
+        });
+    }
+
 });
 
 const sidebar = document.getElementById('sidebar');
