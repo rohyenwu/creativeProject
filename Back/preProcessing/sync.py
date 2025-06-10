@@ -45,7 +45,7 @@ def load_hospital_csv(csv_path):
     df = df.fillna({"경도": 0, "위도": 0, "진료과목내용": ""})
     df = df.rename(columns={
         "번호": "ID",
-        "사업장명": "hospitalName",
+        "사업장명": "name",
         "업태구분명": "type",
         "도로명전체주소": "address",
         "경도": "longitude",
@@ -107,11 +107,11 @@ async def sync_hospital_table(csv_path):
             print(f"➕ 삽입: ID={row['ID']}")
             await cursor.execute("""
                 INSERT INTO hospital (
-                    ID, hospitalName, type, address, longitude, latitude, medicalDepartment, category_categoryID
+                    ID, name, type, address, longitude, latitude, medicalDepartment, category_categoryID
                 ) VALUES (%s, %s, %s, %s, %s, %s, %s, 4)
             """, (
                 int(row["ID"]),
-                row["hospitalName"],
+                row["name"],
                 row["type"],
                 row["address"],
                 float(row["longitude"]),
