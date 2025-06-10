@@ -44,7 +44,7 @@ async def main():
         autocommit=True
     )
 
-    # await insert_categories(pool)
+    await insert_categories(pool)
     await insert_userCategory(pool)
 
     pool.close()

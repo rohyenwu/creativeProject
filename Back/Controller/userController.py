@@ -12,7 +12,7 @@ active_sessions = {}
 
 @router.post("/membership")
 async def membership(request: MembershipRequest):
-    await UserModel.insert_user(request.userID, request.password, request.userName, request.userGrade)
+    await UserModel.insert_user(request.userID, request.password, request.userName, 1)
     return JSONResponse(content={"message": True})
 
 @router.post("/login")
