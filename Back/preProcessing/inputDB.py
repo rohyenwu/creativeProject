@@ -103,7 +103,7 @@ async def insert_hospital_facilities(hospital_facilities):
                 print(f"👉 hospital 삽입 중... {idx + 1}번째")  # ★ 여기!
                 await cursor.execute("""
                     INSERT INTO hospital (
-                       ID,hospitalName,type,address,longitude,latitude,medicalDepartment,category_categoryID
+                       ID,name,type,address,longitude,latitude,medicalDepartment,category_categoryID
                     ) VALUES (%s, %s, %s, %s, %s, %s, %s, 4 )
                 """, (
                     safe(row["번호"]),
