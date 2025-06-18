@@ -675,12 +675,13 @@ function displayHospitalFacilitiesBelowMap(hospitalFacilityList) {
                         <div class="bg-light p-4 rounded-4">
                             <div class="text-danger fw-bolder mb-2">${hospitalName}</div>
                             <div class="mb-2">
-                                <div class="small fw-bolder">${medicalDepartments}</div>
                             </div>                    
                         </div>
                     </div>
-                     ${hospital.type ? `<div class="small text-muted">${hospital.type}</div>` : ''}
-                    <div class="col-lg-8"><div>${address}</div></div>
+                     ${hospital.type ? `<div class="text-muted">${hospital.type}</div>` : ''}
+                    <div class="col-lg-8">
+                    <div>${address}</div>
+                    </div>
                 </div>
             </div>
         `;
