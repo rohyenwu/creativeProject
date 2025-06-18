@@ -5,7 +5,7 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema creativeProject
+-- Schema mydb
 -- -----------------------------------------------------
 -- -----------------------------------------------------
 -- Schema creativeproject
@@ -49,6 +49,9 @@ CREATE TABLE IF NOT EXISTS `creativeproject`.`users` (
   `userID` VARCHAR(45) NOT NULL,
   `password` VARCHAR(45) NOT NULL,
   `userCategory_ID` INT NOT NULL DEFAULT '1',
+  `address` VARCHAR(255) NULL DEFAULT NULL,
+  `longitude` DOUBLE NULL DEFAULT NULL,
+  `latitude` DOUBLE NULL DEFAULT NULL,
   PRIMARY KEY (`userID`),
   INDEX `fk_users_userCategory1_idx` (`userCategory_ID` ASC) VISIBLE,
   CONSTRAINT `fk_users_userCategory1`
@@ -64,7 +67,7 @@ DEFAULT CHARACTER SET = utf8mb3;
 CREATE TABLE IF NOT EXISTS `creativeproject`.`favorites` (
   `favoritesID` INT NOT NULL AUTO_INCREMENT,
   `users_userID` VARCHAR(45) NOT NULL,
-  `placeID` INT NOT NULL,
+  `placeID` VARCHAR(255) NULL DEFAULT NULL,
   `categoryID` INT NOT NULL,
   PRIMARY KEY (`favoritesID`),
   INDEX `fk_favorites_users_idx` (`users_userID` ASC) VISIBLE,
@@ -72,6 +75,7 @@ CREATE TABLE IF NOT EXISTS `creativeproject`.`favorites` (
     FOREIGN KEY (`users_userID`)
     REFERENCES `creativeproject`.`users` (`userID`))
 ENGINE = InnoDB
+AUTO_INCREMENT = 9
 DEFAULT CHARACTER SET = utf8mb3;
 
 
@@ -80,12 +84,12 @@ DEFAULT CHARACTER SET = utf8mb3;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `creativeproject`.`hospital` (
   `ID` INT NOT NULL,
-  `hospitalName` VARCHAR(45) NOT NULL,
-  `type` VARCHAR(45) NOT NULL,
-  `address` VARCHAR(45) NOT NULL,
+  `name` VARCHAR(255) NULL DEFAULT NULL,
+  `type` VARCHAR(500) NULL DEFAULT NULL,
+  `address` TEXT NULL DEFAULT NULL,
   `longitude` DOUBLE NOT NULL,
   `latitude` DOUBLE NOT NULL,
-  `medicalDepartment` VARCHAR(45) NOT NULL,
+  `medicalDepartment` VARCHAR(500) NULL DEFAULT NULL,
   `category_categoryID` INT NOT NULL,
   PRIMARY KEY (`ID`),
   INDEX `fk_hospital_category1_idx` (`category_categoryID` ASC) VISIBLE,
@@ -139,7 +143,7 @@ DEFAULT CHARACTER SET = utf8mb3;
 -- Table `creativeproject`.`public`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `creativeproject`.`public` (
-  `ID` INT NOT NULL,
+  `ID` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NULL DEFAULT NULL,
   `closedDays` VARCHAR(255) NULL DEFAULT NULL,
   `weekOpenTime` TIME NULL DEFAULT NULL,
@@ -147,19 +151,21 @@ CREATE TABLE IF NOT EXISTS `creativeproject`.`public` (
   `weekendOpenTime` TIME NULL DEFAULT NULL,
   `weekendClosedTime` TIME NULL DEFAULT NULL,
   `isPayed` TINYINT NULL DEFAULT NULL,
-  `address` VARCHAR(45) NULL DEFAULT NULL,
+  `address` VARCHAR(500) NULL DEFAULT NULL,
   `latitude` FLOAT NULL DEFAULT NULL,
   `longitude` FLOAT NULL DEFAULT NULL,
-  `call` VARCHAR(45) NULL DEFAULT NULL,
+  `call` VARCHAR(500) NULL DEFAULT NULL,
   `homepageAddress` VARCHAR(255) NULL DEFAULT NULL,
   `mangementName` VARCHAR(255) NULL DEFAULT NULL,
   `category_categoryID` INT NOT NULL,
+  `type` VARCHAR(100) NULL DEFAULT NULL,
   PRIMARY KEY (`ID`),
   INDEX `fk_public_category1_idx` (`category_categoryID` ASC) VISIBLE,
   CONSTRAINT `fk_public_category1`
     FOREIGN KEY (`category_categoryID`)
     REFERENCES `creativeproject`.`category` (`categoryID`))
 ENGINE = InnoDB
+AUTO_INCREMENT = 6743
 DEFAULT CHARACTER SET = utf8mb3;
 
 
