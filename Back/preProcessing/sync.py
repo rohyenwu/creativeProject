@@ -257,10 +257,13 @@ async def sync_public_table(csv_path):
 
 
 # 실행
-
 if __name__ == "__main__":
     load_dotenv()
-    asyncio.run(sync_hospital_table("csv/hospitalFacilities.csv"))
-    # asyncio.run(sync_outing_table("csv/outingFacilities.csv"))
-    # asyncio.run(sync_leisure_table("csv/leisureFacilities.csv"))
-    # asyncio.run(sync_public_table("csv/publicFacilities.csv"))
+
+    async def main():
+        await sync_hospital_table("csv/hospitalFacilities.csv")
+        await sync_outing_table("csv/outingFacilities.csv")
+        await sync_leisure_table("csv/leisureFacilities.csv")
+        await sync_public_table("csv/publicFacilities.csv")
+
+    asyncio.run(main())
