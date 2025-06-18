@@ -65,9 +65,9 @@ DEFAULT CHARACTER SET = utf8mb3;
 -- Table `creativeproject`.`favorites`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `creativeproject`.`favorites` (
-  `favoritesID` VARCHAR(100) NOT NULL,
+  `favoritesID` INT NOT NULL AUTO_INCREMENT,
   `users_userID` VARCHAR(45) NOT NULL,
-  `placeID` INT NOT NULL,
+  `placeID` VARCHAR(255) NULL DEFAULT NULL,
   `categoryID` INT NOT NULL,
   PRIMARY KEY (`favoritesID`),
   INDEX `fk_favorites_users_idx` (`users_userID` ASC) VISIBLE,
@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS `creativeproject`.`favorites` (
     FOREIGN KEY (`users_userID`)
     REFERENCES `creativeproject`.`users` (`userID`))
 ENGINE = InnoDB
+AUTO_INCREMENT = 9
 DEFAULT CHARACTER SET = utf8mb3;
 
 
@@ -164,7 +165,7 @@ CREATE TABLE IF NOT EXISTS `creativeproject`.`public` (
     FOREIGN KEY (`category_categoryID`)
     REFERENCES `creativeproject`.`category` (`categoryID`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 13530
+AUTO_INCREMENT = 6743
 DEFAULT CHARACTER SET = utf8mb3;
 
 
