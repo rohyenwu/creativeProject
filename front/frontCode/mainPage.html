@@ -134,7 +134,17 @@
                                             <button type="button" class="btn btn-primary" onclick="searchAddress()">주소 검색</button>
                                             <input type="text" class="form-control" id="location" placeholder="ex) 경북 구미시 대학로 61" readonly onclick="searchAddress()">
                                         </div>
+                                        <!-- 👇 [추가] 기본 위치 저장/삭제 UI -->
+                                        <div class="mt-2 d-flex justify-content-end">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm me-2" onclick="saveDefaultAddress()">
+                                                <i class="bi bi-pin-angle"></i> 이 위치를 기본으로 저장
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="clearDefaultAddress()">
+                                                <i class="bi bi-x-circle"></i> 기본 위치 삭제
+                                            </button>
+                                        </div>
                                     </div>
+
                                     <!-- 검색 버튼 -->
                                     <div class="d-grid">
                                         <button type="button" class="btn btn-primary btn-lg" onclick="requestFacilities()">검색</button>

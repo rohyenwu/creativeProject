@@ -144,3 +144,40 @@ window.addEventListener('mouseup', function () {
     isResizing = false;
     document.body.style.cursor = '';
 });
+
+
+function saveDefaultAddress() {
+    const address = document.getElementById("location").value;
+    if (!address) {
+        alert("먼저 주소를 검색하거나 입력해주세요.");
+        return;
+    }
+
+    // 'defaultAddress' 라는 이름으로 주소 저장
+    localStorage.setItem('defaultAddress', address);
+    alert('"' + address + '" 주소가 기본 위치로 저장되었습니다.');
+}
+
+
+function clearDefaultAddress() {
+    if (localStorage.getItem('defaultAddress')) {
+        localStorage.removeItem('defaultAddress');
+        document.getElementById("location").value = '';
+        alert("저장된 기본 위치가 삭제되었습니다.");
+    } else {
+        alert("저장된 기본 위치가 없습니다.");
+    }
+}
+
+function loadDefaultAddress() {
+    const savedAddress = localStorage.getItem('defaultAddress');
+    if (savedAddress) {
+        document.getElementById("location").value = savedAddress;
+        console.log("저장된 기본 위치를 불러왔습니다: " + savedAddress);
+        searchLocation();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadDefaultAddress();
+});
