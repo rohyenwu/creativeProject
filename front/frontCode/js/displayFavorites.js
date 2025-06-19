@@ -112,8 +112,8 @@ function createFacilityCard(favorite) {
         <div class="card-body p-5" id="${favorite.ID}">
             <button class="position-absolute top-0 end-0 m-3 btn btn-light border-0"
                     onclick="deleteFavorite('${favorite.ID}', '${favorite.category_categoryID}')"
-                    title="즐겨찾기 삭제" style="font-size: 1.5rem; line-height: 1;">
-                즐겨찾기 삭제
+                    title="즐겨찾기 삭제" style="font-size: 0.95rem; line-height: 1;">
+                삭제
             </button>
             <div class="row align-items-center gx-5">
                 <div class="col text-center text-lg-start mb-4 mb-lg-0">
@@ -142,8 +142,8 @@ function createOutingCard(favorite) {
         <div class="card-body p-5" id="${favorite.ID}">
             <button class="position-absolute top-0 end-0 m-3 btn btn-light border-0"
                     onclick="deleteFavorite('${favorite.ID}', '${favorite.category_categoryID}')"
-                    title="즐겨찾기 삭제" style="font-size: 1.5rem; line-height: 1;">
-                즐겨찾기 삭제
+                    title="즐겨찾기 삭제" style="font-size: 0.95rem; line-height: 1;">
+                삭제
             </button>
             <div class="row align-items-center gx-5">
                 <div class="col text-center text-lg-start mb-4 mb-lg-0">
@@ -166,8 +166,8 @@ function createLeisureCard(favorite) {
         <div class="card-body p-5" id="${favorite.ID}">
             <button class="position-absolute top-0 end-0 m-3 btn btn-light border-0"
                     onclick="deleteFavorite('${favorite.ID}', '${favorite.category_categoryID}')"
-                    title="즐겨찾기 삭제" style="font-size: 1.5rem; line-height: 1;">
-                즐겨찾기 삭제
+                    title="즐겨찾기 삭제" style="font-size: 0.95rem; line-height: 1;">
+                삭제
             </button>
             <div class="row align-items-center gx-5">
                 <div class="col text-center text-lg-start mb-4 mb-lg-0">
