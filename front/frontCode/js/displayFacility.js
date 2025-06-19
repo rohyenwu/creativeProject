@@ -1,3 +1,17 @@
+window.addEventListener('pageshow', function(event) {
+    // 1. sessionStorage에 새로고침 신호가 있는지 확인합니다.
+    if (sessionStorage.getItem('mainPageNeedsRefresh') === 'true') {
+
+        console.log("즐겨찾기 변경 감지. 메인 페이지를 새로고침합니다.");
+
+        // 2. 신호를 사용했으므로 즉시 삭제하여 반복 새로고침을 방지합니다.
+        sessionStorage.removeItem('mainPageNeedsRefresh');
+
+        // 3. 페이지를 새로고침합니다.
+        window.location.reload();
+    }
+});
+
 let favoriteFacilityIds = new Set();
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -298,10 +312,6 @@ function displayFacilitiesOnMap(response) {
  * @param {string} facilityID - 시설 ID
  * @param {HTMLElement} buttonElement - 클릭된 버튼 요소 (this)
  */
-// displayFacility.js
-
-// 이 파일 어딘가에 API_BASE_URL이 선언되어 있어야 합니다.
-// const API_BASE_URL = "http://127.0.0.1:8000";
 
 async function addFavorite(facilityID, categoryID, buttonElement) {
     const session_id = sessionStorage.getItem("session_id");
@@ -377,13 +387,10 @@ async function removeFavorite(facilityID, categoryID, buttonElement) {
     const session_id = sessionStorage.getItem("session_id");
     if (!session_id) {
         alert("로그인이 필요합니다.");
-        window.location.href = '/login.html'; // 로그인 페이지로 이동
         return;
     }
 
     try {
-        // [수정 1] FastAPI 엔드포인트 경로('/deleteFavorite')와 일치시킵니다.
-        // [수정 2] 하드코딩된 주소 대신 API_BASE_URL을 사용합니다.
         const response = await fetch(`${API_BASE_URL}/deleteFavorite`, {
             // [수정 3] FastAPI가 @router.post로 정의되어 있으므로 'POST' 메소드를 사용합니다.
             method: "POST",
@@ -507,8 +514,8 @@ function displayFacilitiesBelowMap1(facilityList, categoryID) {
         const starColor = isFavorite ? '#ffc107' : '#6c757d';
         const buttonTitle = isFavorite ? '즐겨찾기 제거' : '즐겨찾기 추가';
         const onClickAction = isFavorite
-            ? `removeFavorite('${facility.ID}', this)`
-            : `addFavorite('${facility.ID}', ${categoryID}, this)`;
+            ? `removeFavorite('${facility.ID}', '${categoryID}', this)`
+            : `addFavorite('${facility.ID}', '${categoryID}', this)`;
 
         const card = document.createElement("div");
         card.className = "card shadow border-0 rounded-4 mb-5";
@@ -631,8 +638,8 @@ function displayOutingFacilitiesBelowMap3(facilityList, categoryID) {
         const starColor = isFavorite ? '#ffc107' : '#6c757d';
         const buttonTitle = isFavorite ? '즐겨찾기 제거' : '즐겨찾기 추가';
         const onClickAction = isFavorite
-            ? `removeFavorite('${facility.ID}', this)`
-            : `addFavorite('${facility.ID}', ${categoryID}, this)`;
+            ? `removeFavorite('${facility.ID}', '${categoryID}', this)`
+            : `addFavorite('${facility.ID}', '${categoryID}', this)`;
 
         const card = document.createElement("div");
         card.className = "card shadow border-0 rounded-4 mb-5";

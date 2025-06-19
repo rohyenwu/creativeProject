@@ -37,7 +37,7 @@ async function fetchFavorites(sessionId) {
         alert("즐겨찾기를 불러오는 데 실패했습니다.");
     }
 }
-// 즐겨찾기 삭제
+
 async function deleteFavorite(facilityID, categoryID) {
     const session_id = sessionStorage.getItem("session_id");
     if (!session_id) {
@@ -47,6 +47,7 @@ async function deleteFavorite(facilityID, categoryID) {
 
     try {
         const response = await fetch(`${API_BASE_URL}/deleteFavorite`, {
+            // ... (기존 fetch 로직은 동일)
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -56,21 +57,24 @@ async function deleteFavorite(facilityID, categoryID) {
         });
 
         if (!response.ok) {
-            const err = await response.json();
+            const err = await response.json().catch(() => ({ detail: "서버 응답 파싱 실패" }));
             throw new Error(err.detail || "요청 실패");
         }
 
-        const result = await response.json();
-        console.log("즐겨찾기 삭제:", result);
-        alert("삭제 완료되었습니다.");
+        console.log("즐겨찾기 삭제 성공");
+        alert("즐겨찾기에서 삭제되었습니다.");
 
-        await fetchFavorites(session_id);
+        // [핵심 수정 1] mainPage를 새로고침해야 한다는 신호를 저장합니다.
+        sessionStorage.setItem('mainPageNeedsRefresh', 'true');
+
+        // [핵심 수정 2] 현재 favorite.html 페이지도 새로고침하여 삭제된 항목을 즉시 반영합니다.
+        window.location.reload();
+
     } catch (error) {
-        console.error("즐겨찾기 처리 중 오류:", error.message);
-        alert("즐겨찾기 처리 중 오류가 발생했습니다.");
+        console.error("즐겨찾기 삭제 중 오류:", error.message);
+        alert(error.message || "즐겨찾기 삭제 중 오류가 발생했습니다.");
     }
 }
-
 // 즐겨찾기 카드 렌더링
 function renderFavorites(favoritesall) {
     const facilityContainer = document.getElementById("facilityCard");
