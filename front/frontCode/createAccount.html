@@ -6,6 +6,12 @@
         <meta name="description" content />
         <meta name="author" content />
         <title>돌봄 나침반</title>
+        <style>
+            #wrapper {
+                height: 100%;
+                overflow-y: auto; /* 스크롤 영역 */
+            }
+        </style>
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="assets/—Pngtree—chongyang%20festival%20old%20man%20holding_3801893.png" />
         <!-- Custom Google font-->
@@ -17,7 +23,8 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
     </head>
-    <body class="d-flex flex-column">
+    <div id="wrapper">
+        <body class="d-flex flex-column">
         <main class="flex-shrink-0">
             <!-- Navigation-->
             <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
@@ -99,5 +106,6 @@
         <!-- Core theme JS-->
         <script src="js/createAccount.js"></script>
 
-    </body>
+        </body>
+    </div>
 </html>
