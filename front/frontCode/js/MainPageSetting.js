@@ -78,9 +78,11 @@ function toggleDropdowns() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+    const API_BASE_URL = "http://127.0.0.1:8000";
     const sessionId = sessionStorage.getItem("session_id");
     const logoutBtn = document.getElementById("logoutBtn");
 
+    // 로그인/비로그인 상태에 따른 메뉴 표시
     if (sessionId) {
         document.getElementById("favoriteMenu").style.display = "block";
         document.getElementById("nonSignInUser").style.display = "none";
@@ -90,26 +92,42 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("nonSignInUser").style.display = "block";
         document.getElementById("logoutMenu").style.display = "none";
     }
+
     if (logoutBtn) {
-        logoutBtn.addEventListener("click", function () {
-            try{
-                const response = fetch("http://localhost:8000/logout", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ sessionId: sessionId })
-                });
-                if(response.message === "True") {
-                    alert("로그아웃 되었습니다.");
-                    console.log("Logout successful");
+        logoutBtn.addEventListener("click", async function (event) {
+            event.preventDefault();
+
+            const sessionId = sessionStorage.getItem("session_id");
+
+            try {
+                if (sessionId) {
+                    const bodyData = JSON.stringify({
+                        session_id: sessionId
+                    });
+
+                    const response = await fetch("http://localhost:8000/logout", {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: bodyData,
+                    });
+
+                    if (response.ok) {
+                        console.log("Server logout processed successfully.");
+                    } else {
+                        console.error("Server logout failed:", response.statusText);
+                    }
                 }
             } catch (error) {
-                console.error("Logout Error:", error);
+                console.error("Error sending logout request:", error);
+            } finally {
+                sessionStorage.removeItem("session_id");
+                alert("로그아웃 되었습니다.");
+                window.location.reload();
             }
-            sessionStorage.removeItem("session_id");
-            window.location.href = "mainPage.html";
         });
     }
-
 });
 
 const sidebar = document.getElementById('sidebar');
@@ -157,7 +175,6 @@ function saveDefaultAddress() {
     localStorage.setItem('defaultAddress', address);
     alert('"' + address + '" 주소가 기본 위치로 저장되었습니다.');
 }
-
 
 function clearDefaultAddress() {
     if (localStorage.getItem('defaultAddress')) {

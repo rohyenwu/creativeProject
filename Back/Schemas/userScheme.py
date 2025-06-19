@@ -18,3 +18,5 @@ class FavoriteRequest(BaseModel):
 class DeleteFavoriteRequest(BaseModel):
     session_id: str
     facilityID: str
+class LogoutRequest(BaseModel):
+    session_id: str

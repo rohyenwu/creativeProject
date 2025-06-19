@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse
 from Back.Model.userModel import UserModel
-from Back.Schemas.userScheme import LoginRequest, MembershipRequest, SearchRequest, FavoriteRequest, DeleteFavoriteRequest
+from Back.Schemas.userScheme import LoginRequest, MembershipRequest, SearchRequest, FavoriteRequest, DeleteFavoriteRequest, LogoutRequest
 from Back.Service.searchService import searchService
 from Back.Model.favoriteModel import FavoriteModel
 from Back.Service.adminService import adminService
@@ -27,9 +27,10 @@ async def login(request: LoginRequest):
     return response
 
 @router.post("/logout")
-async def logout(session_id: str):
-    active_sessions.pop(session_id, None)
+async def logout(request: LogoutRequest):
+    active_sessions.pop(request.session_id, None)
     return {"message": True}
+
 
 @router.post("/search")
 async def search(request: SearchRequest):
