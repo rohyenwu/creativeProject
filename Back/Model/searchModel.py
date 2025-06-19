@@ -41,10 +41,10 @@ class searchModel:
         conn = await DBConnection.DBConnection.get_db_connection()
         try:
             if type == "all":
-                query = "SELECT * FROM Leisure WHERE latitude >= %s AND latitude <= %s AND longitude >= %s AND longitude <= %s"
+                query = "SELECT * FROM leisure WHERE latitude >= %s AND latitude <= %s AND longitude >= %s AND longitude <= %s"
                 params = (min_lat, max_lat, min_lon, max_lon)
             else:
-                query = "SELECT * FROM Leisure WHERE latitude >= %s AND latitude <= %s AND longitude >= %s AND longitude <= %s AND smallLeisure = %s"
+                query = "SELECT * FROM leisure WHERE latitude >= %s AND latitude <= %s AND longitude >= %s AND longitude <= %s AND smallLeisure = %s"
                 params = (min_lat, max_lat, min_lon, max_lon, type)
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(query, params)
@@ -59,7 +59,7 @@ class searchModel:
     async def get_leisure_by_id(LeisureID):
         conn = await DBConnection.DBConnection.get_db_connection()
         try:
-            query = "SELECT * FROM Leisure WHERE ID = %s"
+            query = "SELECT * FROM leisure WHERE ID = %s"
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(query, (LeisureID,))
                 result = await cursor.fetchone()
