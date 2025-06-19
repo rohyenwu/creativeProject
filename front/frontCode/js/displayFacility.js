@@ -47,7 +47,6 @@ async function fetchFavorites(sessionId) {
         console.log("현재 사용자의 즐겨찾기 ID 목록:", favoriteFacilityIds);
     } catch (error) {
         console.error(error);
-        alert("즐겨찾기를 불러오는 데 실패했습니다.");
     }
 }
 
