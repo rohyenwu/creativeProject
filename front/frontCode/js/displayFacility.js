@@ -2,24 +2,15 @@ let favoriteFacilityIds = new Set();
 
 document.addEventListener("DOMContentLoaded", () => {
     const sessionId = sessionStorage.getItem("session_id");
-    const userName = sessionStorage.getItem("userName");
 
-    if (!sessionId) {
-        alert("로그인이 필요합니다.");
-        window.location.href = "login.html";
-        return;
+    if(sessionId){
+        fetchFavorites(sessionId);
+    }else {
+        alert("비회원으로 접속하셨습니다.");
     }
-
-    async function initializePageData() {
-        const userNameElement = document.querySelector("h1.display-5 span.text-gradient");
-        if (userNameElement) {
-            userNameElement.textContent = `${userName} 님의 즐겨찾기`; // 이 페이지가 즐겨찾기 페이지가 아니라면 문구를 맞게 수정하세요.
-        }
-
-        await fetchFavorites(sessionId);
-    }
-    initializePageData();
 });
+
+const API_BASE_URL = "http://127.0.0.1:8000";
 
 async function fetchFavorites(sessionId) {
     try {
@@ -27,12 +18,16 @@ async function fetchFavorites(sessionId) {
         if (!response.ok) {
             throw new Error("즐겨찾기 가져오기 실패");
         }
-        const favorites = await response.json();
+        const favoritesByCategory = await response.json();
+
+        const allFavorites = favoritesByCategory.flat();
 
         favoriteFacilityIds.clear();
-        if (Array.isArray(favorites)) {
-            favorites.forEach(fav => {
-                favoriteFacilityIds.add(fav.ID.toString());
+        if (Array.isArray(allFavorites)) {
+            allFavorites.forEach(fav => {
+                if (fav && fav.ID !== undefined) {
+                    favoriteFacilityIds.add(fav.ID.toString());
+                }
             });
         }
         console.log("현재 사용자의 즐겨찾기 ID 목록:", favoriteFacilityIds);
@@ -41,9 +36,6 @@ async function fetchFavorites(sessionId) {
         alert("즐겨찾기를 불러오는 데 실패했습니다.");
     }
 }
-
-
-
 
 function getSelectedDropdownValue() {
     // 공공시설 드롭다운
@@ -306,6 +298,11 @@ function displayFacilitiesOnMap(response) {
  * @param {string} facilityID - 시설 ID
  * @param {HTMLElement} buttonElement - 클릭된 버튼 요소 (this)
  */
+// displayFacility.js
+
+// 이 파일 어딘가에 API_BASE_URL이 선언되어 있어야 합니다.
+// const API_BASE_URL = "http://127.0.0.1:8000";
+
 async function addFavorite(facilityID, categoryID, buttonElement) {
     const session_id = sessionStorage.getItem("session_id");
     if (!session_id) {
@@ -313,8 +310,16 @@ async function addFavorite(facilityID, categoryID, buttonElement) {
         return;
     }
 
+    // [개선점] categoryID가 유효한지 확인하는 로직 추가
+    if (categoryID === undefined || categoryID === null) {
+        console.error("즐겨찾기 추가 실패: categoryID가 없습니다.");
+        alert("시설의 카테고리 정보가 없어 즐겨찾기를 추가할 수 없습니다.");
+        return;
+    }
+
     try {
-        const response = await fetch("http://localhost:8000/addFavorite", {
+        // [개선점 1] 하드코딩된 URL을 API_BASE_URL 상수로 교체
+        const response = await fetch(`${API_BASE_URL}/addFavorite`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -327,98 +332,105 @@ async function addFavorite(facilityID, categoryID, buttonElement) {
         });
 
         if (!response.ok) {
-            const err = await response.json();
+            // 서버에서 보낸 에러 메시지를 우선적으로 사용
+            const err = await response.json().catch(() => ({ detail: "서버 응답을 JSON으로 파싱할 수 없습니다." }));
             throw new Error(err.detail || "즐겨찾기 추가 요청 실패");
         }
 
         const result = await response.json();
-        console.log("즐겨찾기 추가:", result);
+        console.log("즐겨찾기 추가 성공:", result.message);
 
-        // --- ▼ [UI 업데이트 로직 추가] ▼ ---
+        // --- UI 업데이트 로직 ---
 
         // 1. 전역 즐겨찾기 Set에 현재 시설 ID 추가
         favoriteFacilityIds.add(String(facilityID));
 
         // 2. 버튼 아이콘을 채워진 별로 변경
         const icon = buttonElement.querySelector('i');
-        icon.classList.remove('bi-star');
-        icon.classList.add('bi-star-fill');
+        if (icon) {
+            icon.classList.remove('bi-star');
+            icon.classList.add('bi-star-fill');
+        }
 
-        // 3. 버튼 색상을 노란색으로 변경
+        // 3. 버튼 색상을 노란색으로 변경 (또는 클래스로 제어)
         buttonElement.style.color = '#ffc107';
 
-        // 4. 버튼의 title 속성 변경
+        // 4. 버튼의 title 속성 변경 (툴팁)
         buttonElement.title = '즐겨찾기 제거';
 
-        // 5. 버튼의 onclick 이벤트를 'removeFavorite'으로 변경
-        buttonElement.setAttribute('onclick', `removeFavorite('${facilityID}', this)`);
-
-        // 사용자에게 성공 알림 (필요시 사용)
-        // alert("즐겨찾기에 추가되었습니다.");
+        // 5. [개선점 2] 버튼의 onclick 이벤트를 'removeFavorite'으로 변경 (categoryID 포함)
+        buttonElement.setAttribute('onclick', `removeFavorite('${facilityID}', '${categoryID}', this)`);
 
     } catch (error) {
         console.error("즐겨찾기 추가 중 오류:", error);
-        alert("즐겨찾기 추가 중 오류가 발생했습니다.");
+        // 사용자에게 받은 에러 메시지를 그대로 보여주는 것이 더 직관적입니다.
+        alert(error.message || "즐겨찾기 추가 중 알 수 없는 오류가 발생했습니다.");
     }
 }
 
-async function removeFavorite(facilityID, buttonElement) {
+// displayFacility.js
+
+// 이 파일 어딘가에 API_BASE_URL이 선언되어 있어야 합니다.
+// const API_BASE_URL = "http://127.0.0.1:8000";
+
+async function removeFavorite(facilityID, categoryID, buttonElement) {
     const session_id = sessionStorage.getItem("session_id");
     if (!session_id) {
         alert("로그인이 필요합니다.");
+        window.location.href = '/login.html'; // 로그인 페이지로 이동
         return;
     }
 
-    // ★ 중요: addFavorite으로 되돌리려면 categoryID가 필요합니다.
-    // HTML 렌더링 시 data 속성에 저장해 둔 값을 가져옵니다. (아래 3번 항목 참조)
-    const categoryID = buttonElement.dataset.categoryId;
-
     try {
-        // 서버 API가 DELETE 방식일 경우
-        const response = await fetch("http://localhost:8000/removeFavorite", {
-            method: "DELETE", // RESTful API에서는 DELETE 메소드 사용을 권장
+        // [수정 1] FastAPI 엔드포인트 경로('/deleteFavorite')와 일치시킵니다.
+        // [수정 2] 하드코딩된 주소 대신 API_BASE_URL을 사용합니다.
+        const response = await fetch(`${API_BASE_URL}/deleteFavorite`, {
+            // [수정 3] FastAPI가 @router.post로 정의되어 있으므로 'POST' 메소드를 사용합니다.
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
+            // FastAPI의 DeleteFavoriteRequest가 받는 데이터에 맞게 body를 구성합니다.
             body: JSON.stringify({
                 session_id: session_id,
                 facilityID: facilityID,
+                // 참고: 현재 백엔드에서는 categoryID를 받지 않으므로 보내지 않습니다.
             })
         });
 
         if (!response.ok) {
-            const err = await response.json();
+            const err = await response.json().catch(() => ({ detail: "서버 응답 파싱 실패" }));
             throw new Error(err.detail || "즐겨찾기 제거 요청 실패");
         }
 
         const result = await response.json();
-        console.log("즐겨찾기 제거:", result);
+        console.log("즐겨찾기 제거 성공:", result.message);
 
-        // --- ▼ [UI 업데이트 로직 추가] ▼ ---
+        // --- UI 업데이트 로직 ---
 
         // 1. 전역 즐겨찾기 Set에서 현재 시설 ID 제거
         favoriteFacilityIds.delete(String(facilityID));
 
         // 2. 버튼 아이콘을 빈 별로 변경
         const icon = buttonElement.querySelector('i');
-        icon.classList.remove('bi-star-fill');
-        icon.classList.add('bi-star');
+        if (icon) {
+            icon.classList.remove('bi-star-fill');
+            icon.classList.add('bi-star');
+        }
 
-        // 3. 버튼 색상을 회색으로 변경
+        // 3. 버튼 색상을 원래 색상으로 변경 (예: 회색)
         buttonElement.style.color = '#6c757d';
 
         // 4. 버튼의 title 속성 변경
         buttonElement.title = '즐겨찾기 추가';
 
-        // 5. 버튼의 onclick 이벤트를 다시 'addFavorite'으로 변경
-        buttonElement.setAttribute('onclick', `addFavorite('${facilityID}', ${categoryID}, this)`);
-
-        // 사용자에게 성공 알림 (필요시 사용)
-        // alert("즐겨찾기에서 제거되었습니다.");
+        // 5. [중요] 버튼의 onclick 이벤트를 다시 'addFavorite'으로 변경
+        // categoryID가 있어야 즐겨찾기를 다시 추가할 수 있으므로, 매개변수로 받아온 값을 그대로 사용합니다.
+        buttonElement.setAttribute('onclick', `addFavorite('${facilityID}', '${categoryID}', this)`);
 
     } catch (error) {
         console.error("즐겨찾기 제거 중 오류:", error);
-        alert("즐겨찾기 제거 중 오류가 발생했습니다.");
+        alert(error.message || "즐겨찾기 제거 중 오류가 발생했습니다.");
     }
 }
 
@@ -478,6 +490,7 @@ function displayTotalFacilitesBlowMap(facilityList) {
         }
     });
 }
+
 
 function displayFacilitiesBelowMap1(facilityList, categoryID) {
     const publicFacilities = facilityList[1];
@@ -544,7 +557,6 @@ function displayFacilitiesBelowMap1(facilityList, categoryID) {
 }
 
 
-
 function displayLeisureFacilitiesBelowMap2(facilityList, categoryID) {
     const leisureFacilities = facilityList[1];
     const container = document.getElementById("outingCardsContainer");
@@ -560,8 +572,8 @@ function displayLeisureFacilitiesBelowMap2(facilityList, categoryID) {
         const starColor = isFavorite ? '#ffc107' : '#6c757d';
         const buttonTitle = isFavorite ? '즐겨찾기 제거' : '즐겨찾기 추가';
         const onClickAction = isFavorite
-            ? `removeFavorite('${facility.ID}', this)`
-            : `addFavorite('${facility.ID}', ${categoryID}, this)`;
+            ? `removeFavorite('${facility.ID}', '${categoryID}', this)`
+            : `addFavorite('${facility.ID}', '${categoryID}', this)`;
 
         const card = document.createElement("div");
         card.className = "card shadow border-0 rounded-4 mb-5";
