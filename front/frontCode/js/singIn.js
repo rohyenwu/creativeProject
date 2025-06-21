@@ -59,13 +59,6 @@ document.addEventListener("DOMContentLoaded", function() {
         event.preventDefault(); // form의 기본 제출 동작 막기
         handleLogin();
     });
-
-    // 관리자용 로그인 버튼 클릭 시에도 동일한 통합 로그인 함수 실행
-    adminLoginBtn.addEventListener("click", function(event) {
-        event.preventDefault();
-        handleLogin();
-    });
-
     // 비회원 버튼
     nonMemberButton.addEventListener("click", function() {
         window.location.href = "mainPage.html";
