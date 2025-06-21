@@ -14,11 +14,64 @@ window.addEventListener('pageshow', function(event) {
 
 let favoriteFacilityIds = new Set();
 
+/**
+ * [디버깅 버전] 서버에서 보낸 데이터를 그대로 출력하여 형식을 확인합니다.
+ */
+async function fetchUserDefaultAddress(sessionId) {
+    const url = `http://localhost:8000/defaultAddress?session_id=${sessionId}`;
+    console.log("서버에 기본 주소 정보를 요청합니다. URL:", url);
+
+    try {
+        const response = await fetch(url);
+        console.log("서버로부터 응답을 받았습니다. 상태 코드:", response.status);
+
+        if (response.ok) {
+            const data = await response.json();
+
+            // --- [가장 중요한 디버깅 코드] ---
+            // 서버가 보낸 원본 데이터를 그대로 콘솔에 출력합니다.
+            console.log("서버로부터 받은 원본 데이터:", data);
+            // ------------------------------------
+
+            // 이 데이터의 key가 'lat', 'lon'인지 'latitude', 'longitude'인지 확인하세요!
+
+            if (data.address === "__CLEARED__") {
+                console.log("저장된 기본 주소가 삭제된 상태입니다.");
+                return;
+            }
+
+            // 아래 코드는 'Uncaught TypeError'를 유발할 수 있으므로,
+            // 원본 데이터를 확인한 후 올바른 키로 수정해야 합니다.
+            document.getElementById("location").value = data.address;
+            currentLat = data.latitude; // data에 'latitude'가 없으면 undefined가 됩니다.
+            currentLng = data.longitude; // data에 'longitude'가 없으면 undefined가 됩니다.
+
+            console.log(`(시도) 주소: ${data.address}, 위도: ${currentLat}, 경도: ${currentLng}`);
+
+            if (typeof searchLocation === 'function' && currentLat && currentLng) {
+                searchLocation();
+            }
+
+        } else {
+            if (response.status === 404) {
+                console.log("설정된 기본 주소가 없습니다.");
+            } else {
+                const errorText = await response.text();
+                console.error("기본 주소를 불러오는 데 실패했습니다:", errorText);
+            }
+        }
+    } catch (error) {
+        console.error("네트워크 오류 또는 서버에 연결할 수 없습니다:", error);
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const sessionId = sessionStorage.getItem("session_id");
 
     if(sessionId){
+        fetchUserDefaultAddress(sessionId);
         fetchFavorites(sessionId);
+
     }else {
         alert("비회원으로 접속하셨습니다.");
     }
@@ -74,9 +127,6 @@ function getSelectedDropdownValue() {
 async function requestFacilities() {
     const dropdownValue = getSelectedDropdownValue();
     try {
-        console.log("위도, 경도 : " + currentLat + " " + currentLng);
-        console.log("카테고리id : " + currCategory)
-        console.log("세부정보 : " + dropdownValue)
         const payload = {
             lat: parseFloat(currentLat),
             lon: parseFloat(currentLng),
@@ -377,7 +427,6 @@ async function addFavorite(facilityID, categoryID, buttonElement) {
     }
 }
 
-// displayFacility.js
 
 // 이 파일 어딘가에 API_BASE_URL이 선언되어 있어야 합니다.
 // const API_BASE_URL = "http://127.0.0.1:8000";

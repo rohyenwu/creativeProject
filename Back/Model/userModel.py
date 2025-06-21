@@ -29,6 +29,7 @@ class UserModel:
     async def get_user_default_address(userID):
         conn = await DBConnection.DBConnection.get_db_connection()
         try:
+            await conn.rollback()
             query = "SELECT address, longitude, latitude FROM users WHERE userID = %s"
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(query, (userID,))
