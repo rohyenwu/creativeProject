@@ -163,38 +163,92 @@ window.addEventListener('mouseup', function () {
     document.body.style.cursor = '';
 });
 
-
-function saveDefaultAddress() {
-    const address = document.getElementById("location").value;
-    if (!address) {
-        alert("먼저 주소를 검색하거나 입력해주세요.");
+async function saveDefaultAddress() {
+    const sessionId = sessionStorage.getItem("session_id");
+    if (!sessionId) {
+        alert("로그인 후 이용 가능한 기능입니다.");
         return;
     }
 
-    // 'defaultAddress' 라는 이름으로 주소 저장
-    localStorage.setItem('defaultAddress', address);
-    alert('"' + address + '" 주소가 기본 위치로 저장되었습니다.');
-}
+    const address = document.getElementById("location").value;
 
-function clearDefaultAddress() {
-    if (localStorage.getItem('defaultAddress')) {
-        localStorage.removeItem('defaultAddress');
-        document.getElementById("location").value = '';
-        alert("저장된 기본 위치가 삭제되었습니다.");
-    } else {
-        alert("저장된 기본 위치가 없습니다.");
+    if (!address || typeof currentLat === 'undefined' || typeof currentLng === 'undefined') {
+        alert("먼저 주소를 검색해주세요. 저장할 위치 정보가 없습니다.");
+        return;
+    }
+
+    const requestBody = {
+        session_id: sessionId,
+        address: address,
+        lat: currentLat,
+        lon: currentLng
+    };
+
+    try {
+        // --- 수정된 부분 ---
+        const response = await fetch('http://localhost:8000/defaultAddress', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (response.ok) {
+            alert('"' + address + '" 주소가 기본 위치로 저장되었습니다.');
+        } else {
+            // CORS 에러 등이 발생할 수 있으므로, 에러를 JSON이 아닌 텍스트로 먼저 확인합니다.
+            const errorText = await response.text();
+            console.error("저장 실패 응답:", errorText);
+            alert(`저장에 실패했습니다. 개발자 콘솔을 확인해주세요.`);
+        }
+    } catch (error) {
+        console.error("기본 주소 저장 중 네트워크 오류 발생. CORS 정책을 확인해주세요.", error);
+        alert("서버와 통신 중 오류가 발생했습니다.");
     }
 }
 
-function loadDefaultAddress() {
-    const savedAddress = localStorage.getItem('defaultAddress');
-    if (savedAddress) {
-        document.getElementById("location").value = savedAddress;
-        console.log("저장된 기본 위치를 불러왔습니다: " + savedAddress);
-        searchLocation();
+async function clearDefaultAddress() {
+    const sessionId = sessionStorage.getItem("session_id");
+    if (!sessionId) {
+        alert("로그인 후 이용 가능한 기능입니다.");
+        return;
+    }
+
+    if (!confirm("저장된 기본 주소를 삭제하시겠습니까?")) {
+        return;
+    }
+
+    const requestBody = {
+        session_id: sessionId,
+        address: "__CLEARED__",
+        lat: 0,
+        lon: 0
+    };
+
+    try {
+        // 기존의 /defaultAddress POST 엔드포인트를 그대로 사용합니다.
+        const response = await fetch('http://localhost:8000/defaultAddress', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (response.ok) {
+            document.getElementById("location").value = '';
+            alert("저장된 기본 위치가 삭제되었습니다.");
+
+            // 전역 좌표 변수도 초기화
+            currentLat = undefined;
+            currentLng = undefined;
+        } else {
+            const errorData = await response.json();
+            alert(`삭제에 실패했습니다: ${errorData.detail || '알 수 없는 오류'}`);
+        }
+    } catch (error) {
+        console.error("기본 주소 삭제 중 네트워크 오류 발생:", error);
+        alert("서버와 통신 중 오류가 발생했습니다.");
     }
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    loadDefaultAddress();
-});
