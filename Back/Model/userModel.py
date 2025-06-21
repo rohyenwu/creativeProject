@@ -18,6 +18,7 @@ class UserModel:
     async def get_user_by_credentials(userID, password):
         conn = await DBConnection.DBConnection.get_db_connection()
         try:
+            await conn.rollback()  # Rollback to ensure no uncommitted changes
             query = "SELECT * FROM users WHERE userID = %s AND password = %s"
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(query, (userID, password))
