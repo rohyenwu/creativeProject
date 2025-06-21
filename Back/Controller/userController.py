@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse
 from Back.Model.userModel import UserModel
-from Back.Schemas.userScheme import LoginRequest, MembershipRequest, SearchRequest, FavoriteRequest, DeleteFavoriteRequest, LogoutRequest
+from Back.Schemas.userScheme import LoginRequest, MembershipRequest, SearchRequest, FavoriteRequest, DeleteFavoriteRequest, LogoutRequest, DefaultAddressRequest
 from Back.Service.searchService import searchService
 from Back.Model.favoriteModel import FavoriteModel
 from Back.Service.adminService import adminService
@@ -79,3 +79,23 @@ async def upload_admin_files(
     await adminService.DB_Update(public, outing, leisure, hospital)
 
     return {"message": "Files passed to DB_Update"}
+
+@router.get("/defaultAddress")
+async def default_address(session_id: str):
+    # 기본 주소를 반환하는 엔드포인트
+    if session_id not in active_sessions:
+        raise HTTPException(status_code=401, detail="Invalid session ID")
+    userID = active_sessions[session_id]["userID"]
+    default_address = await UserModel.get_user_default_address(userID)
+    if not default_address:
+        raise HTTPException(status_code=404, detail="Default address not found")
+    return default_address
+
+@router.post("/defaultAddress")
+async def default_address(request: DefaultAddressRequest):
+    # 기본 주소를 설정하는 엔드포인트
+    if request.session_id not in active_sessions:
+        raise HTTPException(status_code=401, detail="Invalid session ID")
+    userID = active_sessions[request.session_id]["userID"]
+    await UserModel.update_user_default_address(userID, request.address, request.lat, request.lon)
+    return {"message": "Default address updated successfully"}

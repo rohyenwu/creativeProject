@@ -20,3 +20,8 @@ class DeleteFavoriteRequest(BaseModel):
     facilityID: str
 class LogoutRequest(BaseModel):
     session_id: str
+class DefaultAddressRequest(BaseModel):
+    session_id: str
+    address: str
+    lat: float
+    lon: float
