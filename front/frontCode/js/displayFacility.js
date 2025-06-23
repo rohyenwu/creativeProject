@@ -738,17 +738,7 @@ function displayHospitalFacilitiesBelowMap(hospitalFacilityList, categoryID = 4)
                 </div>
             </div>`;
 
-        // ⭐ 즐겨찾기 버튼 삽입
-        const button = createFavoriteButton(hospital.ID, categoryID, isFavorite);
-        card.querySelector(".card-body").appendChild(button);
 
-        card.addEventListener("click", () => {
-            const targetMarker = window.markers && window.markers.find(marker => marker.facilityId === hospital.ID);
-            if (targetMarker && typeof map !== 'undefined') {
-                map.setCenter(targetMarker.getPosition());
-                kakao.maps.event.trigger(targetMarker, 'click');
-            }
-        });
 
         container.appendChild(card);
     });
