@@ -1,16 +1,13 @@
+// 3. 페이지 로드 시 즐겨찾기 새로고침 확인 (메인 페이지)
 window.addEventListener('pageshow', function(event) {
-    // 1. sessionStorage에 새로고침 신호가 있는지 확인합니다.
+    // 기존 새로고림 로직
     if (sessionStorage.getItem('mainPageNeedsRefresh') === 'true') {
-
         console.log("즐겨찾기 변경 감지. 메인 페이지를 새로고침합니다.");
-
-        // 2. 신호를 사용했으므로 즉시 삭제하여 반복 새로고침을 방지합니다.
         sessionStorage.removeItem('mainPageNeedsRefresh');
-
-        // 3. 페이지를 새로고침합니다.
         window.location.reload();
     }
 });
+
 
 let favoriteFacilityIds = new Set();
 
@@ -65,14 +62,20 @@ async function fetchUserDefaultAddress(sessionId) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const sessionId = sessionStorage.getItem("session_id");
 
-    if(sessionId){
-        fetchUserDefaultAddress(sessionId);
-        fetchFavorites(sessionId);
+    if (sessionId) {
+        await fetchFavorites(sessionId); // ⭐ 즐겨찾기 정보를 먼저 확실하게 받아온다
+        await fetchUserDefaultAddress(sessionId); // ⬅ 위치 기반 검색이 여기에 종속되면 이것도 기다리기
 
-    }else {
+        // 여기에 searchLocation() 또는 requestFacilities() 같은 검색 시작 함수가 있어야 합니다.
+        // 예: 위치를 기반으로 시설 검색해서 displayFacilitiesBelowMap1() 호출 유도
+        if (typeof searchLocation === 'function') {
+            searchLocation();
+        }
+
+    } else {
         alert("비회원으로 접속하셨습니다.");
     }
 });
@@ -86,20 +89,20 @@ async function fetchFavorites(sessionId) {
             throw new Error("즐겨찾기 가져오기 실패");
         }
         const favoritesByCategory = await response.json();
-
         const allFavorites = favoritesByCategory.flat();
 
+        // Set 초기화 및 재구성
         favoriteFacilityIds.clear();
         if (Array.isArray(allFavorites)) {
             allFavorites.forEach(fav => {
                 if (fav && fav.ID !== undefined) {
-                    favoriteFacilityIds.add(fav.ID.toString());
+                    favoriteFacilityIds.add(String(fav.ID)); // 항상 문자열로 저장
                 }
             });
         }
-        console.log("현재 사용자의 즐겨찾기 ID 목록:", favoriteFacilityIds);
+        console.log("현재 사용자의 즐겨찾기 ID 목록:", Array.from(favoriteFacilityIds));
     } catch (error) {
-        console.error(error);
+        console.error("즐겨찾기 로드 오류:", error);
     }
 }
 
@@ -362,6 +365,7 @@ function displayFacilitiesOnMap(response) {
  * @param {HTMLElement} buttonElement - 클릭된 버튼 요소 (this)
  */
 
+// 1. 즐겨찾기 추가 함수 수정
 async function addFavorite(facilityID, categoryID, buttonElement) {
     const session_id = sessionStorage.getItem("session_id");
     if (!session_id) {
@@ -369,7 +373,6 @@ async function addFavorite(facilityID, categoryID, buttonElement) {
         return;
     }
 
-    // [개선점] categoryID가 유효한지 확인하는 로직 추가
     if (categoryID === undefined || categoryID === null) {
         console.error("즐겨찾기 추가 실패: categoryID가 없습니다.");
         alert("시설의 카테고리 정보가 없어 즐겨찾기를 추가할 수 없습니다.");
@@ -377,7 +380,6 @@ async function addFavorite(facilityID, categoryID, buttonElement) {
     }
 
     try {
-        // [개선점 1] 하드코딩된 URL을 API_BASE_URL 상수로 교체
         const response = await fetch(`${API_BASE_URL}/addFavorite`, {
             method: "POST",
             headers: {
@@ -391,7 +393,6 @@ async function addFavorite(facilityID, categoryID, buttonElement) {
         });
 
         if (!response.ok) {
-            // 서버에서 보낸 에러 메시지를 우선적으로 사용
             const err = await response.json().catch(() => ({ detail: "서버 응답을 JSON으로 파싱할 수 없습니다." }));
             throw new Error(err.detail || "즐겨찾기 추가 요청 실패");
         }
@@ -399,38 +400,34 @@ async function addFavorite(facilityID, categoryID, buttonElement) {
         const result = await response.json();
         console.log("즐겨찾기 추가 성공:", result.message);
 
-        // --- UI 업데이트 로직 ---
-
-        // 1. 전역 즐겨찾기 Set에 현재 시설 ID 추가
+        // ✅ 전역 즐겨찾기 Set에 현재 시설 ID 추가
         favoriteFacilityIds.add(String(facilityID));
 
-        // 2. 버튼 아이콘을 채워진 별로 변경
+        // ✅ UI 업데이트
         const icon = buttonElement.querySelector('i');
         if (icon) {
             icon.classList.remove('bi-star');
             icon.classList.add('bi-star-fill');
         }
-
-        // 3. 버튼 색상을 노란색으로 변경 (또는 클래스로 제어)
         buttonElement.style.color = '#ffc107';
-
-        // 4. 버튼의 title 속성 변경 (툴팁)
         buttonElement.title = '즐겨찾기 제거';
-
-        // 5. [개선점 2] 버튼의 onclick 이벤트를 'removeFavorite'으로 변경 (categoryID 포함)
         buttonElement.setAttribute('onclick', `removeFavorite('${facilityID}', '${categoryID}', this)`);
+
+        // ✅ 즐겨찾기 페이지 새로고침 신호 설정
+        sessionStorage.setItem('favoritePageNeedsRefresh', 'true');
 
     } catch (error) {
         console.error("즐겨찾기 추가 중 오류:", error);
-        // 사용자에게 받은 에러 메시지를 그대로 보여주는 것이 더 직관적입니다.
         alert(error.message || "즐겨찾기 추가 중 알 수 없는 오류가 발생했습니다.");
     }
 }
 
 
+
 // 이 파일 어딘가에 API_BASE_URL이 선언되어 있어야 합니다.
 // const API_BASE_URL = "http://127.0.0.1:8000";
 
+// 2. 즐겨찾기 제거 함수 수정
 async function removeFavorite(facilityID, categoryID, buttonElement) {
     const session_id = sessionStorage.getItem("session_id");
     if (!session_id) {
@@ -440,16 +437,13 @@ async function removeFavorite(facilityID, categoryID, buttonElement) {
 
     try {
         const response = await fetch(`${API_BASE_URL}/deleteFavorite`, {
-            // [수정 3] FastAPI가 @router.post로 정의되어 있으므로 'POST' 메소드를 사용합니다.
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            // FastAPI의 DeleteFavoriteRequest가 받는 데이터에 맞게 body를 구성합니다.
             body: JSON.stringify({
                 session_id: session_id,
                 facilityID: facilityID,
-                // 참고: 현재 백엔드에서는 categoryID를 받지 않으므로 보내지 않습니다.
             })
         });
 
@@ -461,33 +455,28 @@ async function removeFavorite(facilityID, categoryID, buttonElement) {
         const result = await response.json();
         console.log("즐겨찾기 제거 성공:", result.message);
 
-        // --- UI 업데이트 로직 ---
-
-        // 1. 전역 즐겨찾기 Set에서 현재 시설 ID 제거
+        // ✅ 전역 즐겨찾기 Set에서 현재 시설 ID 제거
         favoriteFacilityIds.delete(String(facilityID));
 
-        // 2. 버튼 아이콘을 빈 별로 변경
+        // ✅ UI 업데이트
         const icon = buttonElement.querySelector('i');
         if (icon) {
             icon.classList.remove('bi-star-fill');
             icon.classList.add('bi-star');
         }
-
-        // 3. 버튼 색상을 원래 색상으로 변경 (예: 회색)
         buttonElement.style.color = '#6c757d';
-
-        // 4. 버튼의 title 속성 변경
         buttonElement.title = '즐겨찾기 추가';
-
-        // 5. [중요] 버튼의 onclick 이벤트를 다시 'addFavorite'으로 변경
-        // categoryID가 있어야 즐겨찾기를 다시 추가할 수 있으므로, 매개변수로 받아온 값을 그대로 사용합니다.
         buttonElement.setAttribute('onclick', `addFavorite('${facilityID}', '${categoryID}', this)`);
+
+        // ✅ 즐겨찾기 페이지 새로고침 신호 설정
+        sessionStorage.setItem('favoritePageNeedsRefresh', 'true');
 
     } catch (error) {
         console.error("즐겨찾기 제거 중 오류:", error);
         alert(error.message || "즐겨찾기 제거 중 오류가 발생했습니다.");
     }
 }
+
 
 /**
  * @param {Array} facilityList - 서버에서 받은 전체 시설 목록 데이터
@@ -545,8 +534,34 @@ function displayTotalFacilitesBlowMap(facilityList) {
         }
     });
 }
+function createFavoriteButton(facilityID, categoryID, isFavorite) {
+const button = document.createElement("button");
+button.className = "position-absolute top-0 end-0 m-3 btn border-0";
+button.style.fontSize = "1rem";
+button.style.lineHeight = "1";
+button.title = isFavorite ? "즐겨찾기 제거" : "즐겨찾기 추가";
+button.style.color = isFavorite ? "#ffc107" : "#6c757d";
+
+const icon = document.createElement("i");
+icon.className = `bi ${isFavorite ? "bi-star-fill" : "bi-star"}`;
+button.appendChild(icon);
+
+button.addEventListener("click", async (event) => {
+    event.stopPropagation();
+    const currentlyFavorite = favoriteFacilityIds.has(String(facilityID));
+
+    if (currentlyFavorite) {
+        await removeFavorite(String(facilityID), categoryID, button);
+    } else {
+        await addFavorite(String(facilityID), categoryID, button);
+    }
+});
+
+return button;
+}
 
 
+// ✅ 공공시설 카드 렌더링 함수 (onClick 제거 후 버튼 삽입)
 function displayFacilitiesBelowMap1(facilityList, categoryID) {
     const publicFacilities = facilityList[1];
     const container = document.getElementById("publicFacilityCardsContainer");
@@ -558,28 +573,14 @@ function displayFacilitiesBelowMap1(facilityList, categoryID) {
 
     publicFacilities.forEach(facility => {
         const isFavorite = favoriteFacilityIds.has(String(facility.ID));
-        const starIcon = isFavorite ? 'bi-star-fill' : 'bi-star';
-        const starColor = isFavorite ? '#ffc107' : '#6c757d';
-        const buttonTitle = isFavorite ? '즐겨찾기 제거' : '즐겨찾기 추가';
-        const onClickAction = isFavorite
-            ? `removeFavorite('${facility.ID}', '${categoryID}', this)`
-            : `addFavorite('${facility.ID}', '${categoryID}', this)`;
 
         const card = document.createElement("div");
         card.className = "card shadow border-0 rounded-4 mb-5";
         card.innerHTML = `
             <div class="card-body p-5" id="${facility.ID}">
-                <button
-                    data-category-id="${categoryID}" 
-                    class="position-absolute top-0 end-0 m-3 btn border-0" 
-                    onclick="${onClickAction}"
-                    title="${buttonTitle}"
-                    style="font-size: 1rem; line-height: 1; color: ${starColor};">
-                    <i class="bi ${starIcon}"></i>
-                </button>
                 <div class="row align-items-center gx-5">
                     <div class="col text-center text-lg-start mb-4 mb-lg-0">
-                        <div class="bg-light p-4 rounded-4" >
+                        <div class="bg-light p-4 rounded-4">
                             <div class="text-primary fw-bolder mb-2">${facility.name}</div>
                             <div class="small fw-bolder">유형: ${facility.type || '정보 없음'}</div>
                             <div class="small text-muted">휴관일: ${facility.closedDays || '없음'}</div>
@@ -593,12 +594,14 @@ function displayFacilitiesBelowMap1(facilityList, categoryID) {
                         <div><strong>유료 여부:</strong> ${facility.isPayed === 1 ? "유료" : "무료"}</div>
                     </div>
                 </div>
-            </div>
-        `;
+            </div>`;
+
+        // ⭐ 즐겨찾기 버튼 삽입
+        const button = createFavoriteButton(facility.ID, categoryID, isFavorite);
+        card.querySelector(".card-body").appendChild(button);
 
         card.addEventListener("click", () => {
-            const targetMarker = window.markers.find(marker => marker.facilityId === facility.ID); // ✅ 수정됨
-
+            const targetMarker = window.markers.find(marker => marker.facilityId === facility.ID);
             if (targetMarker) {
                 map.setCenter(targetMarker.getPosition());
                 kakao.maps.event.trigger(targetMarker, 'click');
@@ -612,6 +615,7 @@ function displayFacilitiesBelowMap1(facilityList, categoryID) {
 }
 
 
+
 function displayLeisureFacilitiesBelowMap2(facilityList, categoryID) {
     const leisureFacilities = facilityList[1];
     const container = document.getElementById("outingCardsContainer");
@@ -623,26 +627,11 @@ function displayLeisureFacilitiesBelowMap2(facilityList, categoryID) {
 
     leisureFacilities.forEach(facility => {
         const isFavorite = favoriteFacilityIds.has(String(facility.ID));
-        const starIcon = isFavorite ? 'bi-star-fill' : 'bi-star';
-        const starColor = isFavorite ? '#ffc107' : '#6c757d';
-        const buttonTitle = isFavorite ? '즐겨찾기 제거' : '즐겨찾기 추가';
-        const onClickAction = isFavorite
-            ? `removeFavorite('${facility.ID}', '${categoryID}', this)`
-            : `addFavorite('${facility.ID}', '${categoryID}', this)`;
 
         const card = document.createElement("div");
         card.className = "card shadow border-0 rounded-4 mb-5";
-
         card.innerHTML = `
             <div class="card-body p-5" id="${facility.ID}">
-                <button
-                    class="position-absolute top-0 end-0 m-3 btn border-0" 
-                    data-category-id="${categoryID}" 
-                    onclick="${onClickAction}"
-                    title="${buttonTitle}"
-                    style="font-size: 1rem; line-height: 1; color: ${starColor};">
-                    <i class="bi ${starIcon}"></i>
-                </button>
                 <div class="row align-items-center gx-5">
                     <div class="col text-center text-lg-start mb-4 mb-lg-0">
                         <div class="bg-light p-4 rounded-4">
@@ -653,16 +642,17 @@ function displayLeisureFacilitiesBelowMap2(facilityList, categoryID) {
                         <div class="mb-2"><strong>주소:</strong> ${facility.address || '정보 없음'}</div>
                     </div>
                 </div>
-            </div>
-        `;
+            </div>`;
+
+        // ⭐ 즐겨찾기 버튼 삽입
+        const button = createFavoriteButton(facility.ID, categoryID, isFavorite);
+        card.querySelector(".card-body").appendChild(button);
 
         card.addEventListener("click", () => {
-            const targetMarker = window.markers.find(marker => marker.facilityId === facility.ID); // 고침: facilityId
+            const targetMarker = window.markers.find(marker => marker.facilityId === facility.ID);
             if (targetMarker) {
                 map.setCenter(targetMarker.getPosition());
                 kakao.maps.event.trigger(targetMarker, 'click');
-            } else {
-                console.error(`시설 ID ${facility.ID}에 해당하는 마커를 찾을 수 없습니다.`);
             }
         });
 
@@ -682,26 +672,11 @@ function displayOutingFacilitiesBelowMap3(facilityList, categoryID) {
 
     outingFacilities.forEach(facility => {
         const isFavorite = favoriteFacilityIds.has(String(facility.ID));
-        const starIcon = isFavorite ? 'bi-star-fill' : 'bi-star';
-        const starColor = isFavorite ? '#ffc107' : '#6c757d';
-        const buttonTitle = isFavorite ? '즐겨찾기 제거' : '즐겨찾기 추가';
-        const onClickAction = isFavorite
-            ? `removeFavorite('${facility.ID}', '${categoryID}', this)`
-            : `addFavorite('${facility.ID}', '${categoryID}', this)`;
 
         const card = document.createElement("div");
         card.className = "card shadow border-0 rounded-4 mb-5";
-
         card.innerHTML = `
             <div class="card-body p-5" id="${facility.ID}">
-                <button
-                    class="position-absolute top-0 end-0 m-3 btn border-0" 
-                    data-category-id="${categoryID}" 
-                    onclick="${onClickAction}"
-                    title="${buttonTitle}"
-                    style="font-size: 1rem; line-height: 1; color: ${starColor};">
-                    <i class="bi ${starIcon}"></i>
-                </button>
                 <div class="row align-items-center gx-5">
                     <div class="col text-center text-lg-start mb-4 mb-lg-0">
                         <div class="bg-light p-4 rounded-4">
@@ -715,16 +690,17 @@ function displayOutingFacilitiesBelowMap3(facilityList, categoryID) {
                         <div>${facility.address || '주소 없음'}</div>
                     </div>
                 </div>
-            </div>
-        `;
+            </div>`;
+
+        // ⭐ 즐겨찾기 버튼 삽입
+        const button = createFavoriteButton(facility.ID, categoryID, isFavorite);
+        card.querySelector(".card-body").appendChild(button);
 
         card.addEventListener("click", () => {
-            const targetMarker = window.markers.find(marker => marker.facilityId === facility.ID); // 고침: facilityId
+            const targetMarker = window.markers.find(marker => marker.facilityId === facility.ID);
             if (targetMarker) {
                 map.setCenter(targetMarker.getPosition());
                 kakao.maps.event.trigger(targetMarker, 'click');
-            } else {
-                console.error(`시설 ID ${facility.ID}에 해당하는 마커를 찾을 수 없습니다.`);
             }
         });
 
@@ -733,65 +709,47 @@ function displayOutingFacilitiesBelowMap3(facilityList, categoryID) {
 }
 
 
-function displayHospitalFacilitiesBelowMap(hospitalFacilityList) {
+function displayHospitalFacilitiesBelowMap(hospitalFacilityList, categoryID = 4) {
     const hospitals = hospitalFacilityList[1];
     const container = document.getElementById("hospitalResultContainer");
 
     if (!Array.isArray(hospitals) || hospitals.length === 0) return;
 
     document.getElementById("hospitalResultSection").style.display = "block";
-
     container.innerHTML = "";
 
     hospitals.forEach(hospital => {
+        const isFavorite = favoriteFacilityIds.has(String(hospital.ID));
+
         const card = document.createElement("div");
         card.className = "card shadow border-0 rounded-4 mb-5";
-
-        const hospitalName = hospital.name || '이름 정보 없음';
-        const medicalDepartments = hospital.medicalDepartment || '진료과목 정보 없음';
-        const address = hospital.address || '주소 정보 없음';
-        const hospitalID = hospital.ID;
-
         card.innerHTML = `
-            <div class="card-body p-5" id="${hospitalID}">
+            <div class="card-body p-5" id="${hospital.ID}">
                 <div class="row align-items-center gx-5">
                     <div class="col text-center text-lg-start mb-4 mb-lg-0">
                         <div class="bg-light p-4 rounded-4">
-                            <div class="text-danger fw-bolder mb-2">${hospitalName}</div>
-                            <div class="mb-2">
-                            </div>                    
+                            <div class="text-danger fw-bolder mb-2">${hospital.name || '이름 정보 없음'}</div>
+                            ${hospital.type ? `<div class="text-muted">${hospital.type}</div>` : ''}
                         </div>
                     </div>
-                     ${hospital.type ? `<div class="text-muted">${hospital.type}</div>` : ''}
                     <div class="col-lg-8">
-                    <div>${address}</div>
+                        <div>${hospital.address || '주소 정보 없음'}</div>
                     </div>
                 </div>
-            </div>
-        `;
+            </div>`;
+
+        // ⭐ 즐겨찾기 버튼 삽입
+        const button = createFavoriteButton(hospital.ID, categoryID, isFavorite);
+        card.querySelector(".card-body").appendChild(button);
 
         card.addEventListener("click", () => {
-            const targetMarker = window.markers && window.markers.find(marker => marker.facilityId === hospitalID);
-
-            if (targetMarker && typeof map !== 'undefined' && typeof kakao !== 'undefined') {
+            const targetMarker = window.markers && window.markers.find(marker => marker.facilityId === hospital.ID);
+            if (targetMarker && typeof map !== 'undefined') {
                 map.setCenter(targetMarker.getPosition());
-
-                const markerInfoWindow = new kakao.maps.InfoWindow({
-                    content: `<div style="padding:5px; font-size:12px; white-space: nowrap;">${hospitalName}</div>`,
-                });
-                markerInfoWindow.open(map, targetMarker);
-            } else {
-                if (!targetMarker) {
-                    console.error(`병원 ID ${hospitalID} (${hospitalName})에 해당하는 마커를 찾을 수 없습니다. window.markers를 확인하세요.`);
-                }
-                if (typeof map === 'undefined') {
-                    console.error("Kakao Map object 'map' is not defined.");
-                }
-                if (typeof kakao === 'undefined') {
-                    console.error("Kakao Maps SDK 'kakao' is not defined.");
-                }
+                kakao.maps.event.trigger(targetMarker, 'click');
             }
         });
+
         container.appendChild(card);
     });
 }
