@@ -61,50 +61,43 @@ async function fetchUserDefaultAddress(sessionId) {
         console.error("네트워크 오류 또는 서버에 연결할 수 없습니다:", error);
     }
 }
-
 document.addEventListener("DOMContentLoaded", async () => {
     const sessionId = sessionStorage.getItem("session_id");
 
     if (sessionId) {
-        await fetchFavorites(sessionId); // ⭐ 즐겨찾기 정보를 먼저 확실하게 받아온다
-        await fetchUserDefaultAddress(sessionId); // ⬅ 위치 기반 검색이 여기에 종속되면 이것도 기다리기
+        await fetchFavorites(sessionId); // ⭐ favoriteFacilityIds 세팅
+        await fetchUserDefaultAddress(sessionId);
 
-        // 여기에 searchLocation() 또는 requestFacilities() 같은 검색 시작 함수가 있어야 합니다.
-        // 예: 위치를 기반으로 시설 검색해서 displayFacilitiesBelowMap1() 호출 유도
         if (typeof searchLocation === 'function') {
             searchLocation();
         }
-
     } else {
         alert("비회원으로 접속하셨습니다.");
     }
 });
 
+
 const API_BASE_URL = "http://127.0.0.1:8000";
 
+// ✅ 4. fetchFavorites 함수 (Set 동기화 보장)
 async function fetchFavorites(sessionId) {
     try {
         const response = await fetch(`${API_BASE_URL}/favorite?session_id=${sessionId}`);
-        if (!response.ok) {
-            throw new Error("즐겨찾기 가져오기 실패");
-        }
-        const favoritesByCategory = await response.json();
-        const allFavorites = favoritesByCategory.flat();
+        if (!response.ok) throw new Error("즐겨찾기 가져오기 실패");
 
-        // Set 초기화 및 재구성
-        favoriteFacilityIds.clear();
-        if (Array.isArray(allFavorites)) {
-            allFavorites.forEach(fav => {
-                if (fav && fav.ID !== undefined) {
-                    favoriteFacilityIds.add(String(fav.ID)); // 항상 문자열로 저장
-                }
-            });
-        }
-        console.log("현재 사용자의 즐겨찾기 ID 목록:", Array.from(favoriteFacilityIds));
+        const favorites = await response.json();
+        const flatFavorites = favorites.flat();
+
+        // ✅ Set 동기화
+        favoriteFacilityIds = new Set(flatFavorites.map(item => String(item.ID)));
+
+        console.log("⭐ 즐겨찾기 목록 동기화 완료:", favoriteFacilityIds);
     } catch (error) {
-        console.error("즐겨찾기 로드 오류:", error);
+        console.error("❌ 즐겨찾기 불러오기 실패:", error);
+        favoriteFacilityIds = new Set(); // 안전 초기화
     }
 }
+
 
 function getSelectedDropdownValue() {
     // 공공시설 드롭다운
@@ -127,44 +120,27 @@ function getSelectedDropdownValue() {
     return "전체 선택";
 }
 
+// ✅ 2. requestFacilities 수정됨
+// ✅ 2. requestFacilities 수정됨
 async function requestFacilities() {
     const dropdownValue = getSelectedDropdownValue();
-    try {
-        const payload = {
-            lat: parseFloat(currentLat),
-            lon: parseFloat(currentLng),
-            categoryID: currCategory,
-            type: dropdownValue // 적절한 타입 문자열 입력 (예: 'hospital', 'restaurant' 등)
-        };
-        if (dropdownValue === "전체 선택") {
-            payload.type = "all"
-        }
-        const response = await fetch("http://localhost:8000/search", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
-        });
+    const payload = {
+        lat: parseFloat(currentLat),
+        lon: parseFloat(currentLng),
+        categoryID: currCategory,
+        type: dropdownValue === "전체 선택" ? "all" : dropdownValue
+    };
+    const response = await fetch(`${API_BASE_URL}/search`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+    const facilityList = await response.json();
 
-        console.log(payload);
+    const sessionId = sessionStorage.getItem("session_id");
+    if (sessionId) await fetchFavorites(sessionId); // ⭐ 즐겨찾기 상태 최신화
 
-        if (!response.ok) throw new Error("서버 요청 실패");
-
-        const facilityList = await response.json();
-
-        const categoryID = facilityList[0];
-
-        if (categoryID >= 1 && categoryID <= 4) {
-            document.getElementById('totalFacilityResultsSection').style.display = "none";
-            document.getElementById("publicFacilityResultsSection").style.display = "none";
-            document.getElementById("cultureFestivalResultsSection").style.display = "none";
-            document.getElementById("outingResultsSection").style.display = "none";
-            document.getElementById("hospitalResultSection").style.display = "none";
-        }
-
-        window.facilities = facilityList;
-        if (facilityList[0] === 1) {
+  if (facilityList[0] === 1) {
             displayFacilitiesOnMap(facilityList);
             displayFacilitiesBelowMap1(facilityList, 1);
         } else if (facilityList[0] === 2) {
@@ -175,16 +151,13 @@ async function requestFacilities() {
             displayOutingFacilitiesBelowMap3(facilityList, 3);
         } else if (facilityList[0] === 4) {
             displayFacilitiesOnMap(facilityList);
-            displayHospitalFacilitiesBelowMap(facilityList, 4);
+            displayHospitalFacilitiesBelowMap4(facilityList, 4);
         } else if (facilityList[0] === 0) {
             displayTotalFacilitiesOnMap(facilityList)
             displayTotalFacilitesBlowMap(facilityList);
         }
-
-    } catch (error) {
-        console.error("시설 데이터를 불러오지 못했습니다:", error);
-    }
 }
+
 
 function displayTotalFacilitiesOnMap(serverResponse) {
     const categoryFacilityPairs = serverResponse[1];
@@ -482,11 +455,20 @@ async function removeFavorite(facilityID, categoryID, buttonElement) {
  * @param {Array} facilityList - 서버에서 받은 전체 시설 목록 데이터
  */
 function displayTotalFacilitesBlowMap(facilityList) {
-    // 1. 시작 전 모든 결과 섹션을 숨겨서 초기화합니다.
+  // ✅ 모든 섹션 숨기기
     document.getElementById('publicFacilityResultsSection').style.display = "none";
     document.getElementById("cultureFestivalResultsSection").style.display = "none";
     document.getElementById("outingResultsSection").style.display = "none";
     document.getElementById("hospitalResultSection").style.display = "none";
+    document.getElementById('totalFacilityResultsSection').style.display = "block";
+
+    // ✅ 모든 카드 컨테이너 초기화 (이게 꼭 필요함!)
+    document.getElementById("publicFacilityCardsContainer").innerHTML = "";
+    document.getElementById("outingCardsContainer").innerHTML = "";
+    document.getElementById("cultureFestivalCardsContainer").innerHTML = "";
+    document.getElementById("hospitalResultContainer").innerHTML = "";
+    document.getElementById("totalFacilityCardsContainer").innerHTML = "";
+;
     // ※ 'totalFacilityResultsSection'은 전체를 감싸는 wrapper div라면 그대로 두거나,
     // 이 섹션도 독립적인 UI를 가진다면 여기서 보이게 처리합니다.
     document.getElementById('totalFacilityResultsSection').style.display = "block"; // Wrapper를 보여줌
@@ -517,52 +499,110 @@ function displayTotalFacilitesBlowMap(facilityList) {
 
         switch (categoryId) {
             case 1:
-                displayFacilitiesBelowMap1(packagedData, 1);
+                displayFacilitiesBelowMap1(packagedData, 1, false);  // ✅ reset 하지 않음
                 break;
             case 2:
-                // 함수 이름이 'displayLeisureFacilitiesBelowMap2'라고 가정
-                displayLeisureFacilitiesBelowMap2(packagedData, 2);
+                displayLeisureFacilitiesBelowMap2(packagedData, 2, false);
                 break;
             case 3:
-                // 함수 이름이 'displayOutingFacilitiesBelowMap3'라고 가정
-                displayOutingFacilitiesBelowMap3(packagedData, 3);
+                displayOutingFacilitiesBelowMap3(packagedData, 3, false);
                 break;
             case 4:
-                // 함수 이름이 'displayHospitalFacilitiesBelowMap'라고 가정
-                displayHospitalFacilitiesBelowMap(packagedData, 4);
+                displayHospitalFacilitiesBelowMap4(packagedData, 4, false);
                 break;
         }
     });
 }
-function createFavoriteButton(facilityID, categoryID, isFavorite) {
-const button = document.createElement("button");
-button.className = "position-absolute top-0 end-0 m-3 btn border-0";
-button.style.fontSize = "1rem";
-button.style.lineHeight = "1";
-button.title = isFavorite ? "즐겨찾기 제거" : "즐겨찾기 추가";
-button.style.color = isFavorite ? "#ffc107" : "#6c757d";
+// ✅ 1. createFavoriteButton (완전히 새로 작성됨)
+function createFavoriteButton(facilityID, categoryID) {
+    const button = document.createElement("button");
+    button.className = "position-absolute top-0 end-0 m-3 btn border-0";
+    button.style.fontSize = "1rem";
+    button.style.lineHeight = "1";
+    button.style.color = "#6c757d";
 
-const icon = document.createElement("i");
-icon.className = `bi ${isFavorite ? "bi-star-fill" : "bi-star"}`;
-button.appendChild(icon);
+    const icon = document.createElement("i");
+    icon.className = "bi bi-star";
+    button.appendChild(icon);
 
-button.addEventListener("click", async (event) => {
-    event.stopPropagation();
-    const currentlyFavorite = favoriteFacilityIds.has(String(facilityID));
-
-    if (currentlyFavorite) {
-        await removeFavorite(String(facilityID), categoryID, button);
-    } else {
-        await addFavorite(String(facilityID), categoryID, button);
+    function updateButtonUI() {
+        const isFav = favoriteFacilityIds.has(String(facilityID));
+        icon.className = `bi ${isFav ? "bi-star-fill" : "bi-star"}`;
+        button.style.color = isFav ? "#ffc107" : "#6c757d";
+        button.title = isFav ? "즐겨찾기 제거" : "즐겨찾기 추가";
     }
-});
 
-return button;
+    updateButtonUI();  // 처음 상태 설정
+
+    button.addEventListener("click", async (event) => {
+        event.stopPropagation();
+        const session_id = sessionStorage.getItem("session_id");
+        if (!session_id) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+
+        const isFavNow = favoriteFacilityIds.has(String(facilityID)); // 최신 상태 반영
+
+        try {
+            if (isFavNow) {
+                const res = await fetch(`${API_BASE_URL}/deleteFavorite`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        session_id: String(session_id),
+                        facilityID: String(facilityID)
+                    })
+                });
+                if (!res.ok) throw new Error("즐겨찾기 제거 실패");
+
+                favoriteFacilityIds.delete(String(facilityID));
+            } else {
+                const res = await fetch(`${API_BASE_URL}/addFavorite`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        session_id: String(session_id),
+                        facilityID: String(facilityID),
+                        categoryID: parseInt(categoryID)
+                    })
+                });
+                if (!res.ok) throw new Error("즐겨찾기 추가 실패");
+
+                favoriteFacilityIds.add(String(facilityID));
+            }
+
+            updateButtonUI(); // ⭐ 반드시 최신 상태로 다시 렌더링
+            sessionStorage.setItem("favoritePageNeedsRefresh", "true");
+
+        } catch (err) {
+            console.error("즐겨찾기 처리 오류:", err);
+            alert("즐겨찾기 처리 중 오류가 발생했습니다.");
+        }
+    });
+
+    return button;
+}
+
+function resetAllResultSectionsAndCards() {
+    document.getElementById('publicFacilityResultsSection').style.display = "none";
+    document.getElementById("cultureFestivalResultsSection").style.display = "none";
+    document.getElementById("outingResultsSection").style.display = "none";
+    document.getElementById("hospitalResultSection").style.display = "none";
+    document.getElementById("totalFacilityResultsSection").style.display = "none";
+
+    document.getElementById("publicFacilityCardsContainer").innerHTML = "";
+    document.getElementById("outingCardsContainer").innerHTML = "";
+    document.getElementById("cultureFestivalCardsContainer").innerHTML = "";
+    document.getElementById("hospitalResultContainer").innerHTML = "";
+    document.getElementById("totalFacilityCardsContainer").innerHTML = "";
 }
 
 
+
 // ✅ 공공시설 카드 렌더링 함수 (onClick 제거 후 버튼 삽입)
-function displayFacilitiesBelowMap1(facilityList, categoryID) {
+function displayFacilitiesBelowMap1(facilityList, categoryID, shouldReset = true) {
+    if (shouldReset) resetAllResultSectionsAndCards(); // 조건부 실행 ✅
     const publicFacilities = facilityList[1];
     const container = document.getElementById("publicFacilityCardsContainer");
 
@@ -616,7 +656,8 @@ function displayFacilitiesBelowMap1(facilityList, categoryID) {
 
 
 
-function displayLeisureFacilitiesBelowMap2(facilityList, categoryID) {
+function displayLeisureFacilitiesBelowMap2(facilityList, categoryID, shouldReset = true) {
+    if (shouldReset) resetAllResultSectionsAndCards(); // 조건부 실행 ✅
     const leisureFacilities = facilityList[1];
     const container = document.getElementById("outingCardsContainer");
 
@@ -661,7 +702,8 @@ function displayLeisureFacilitiesBelowMap2(facilityList, categoryID) {
 }
 
 
-function displayOutingFacilitiesBelowMap3(facilityList, categoryID) {
+function displayOutingFacilitiesBelowMap3(facilityList, categoryID, shouldReset = true) {
+    if (shouldReset) resetAllResultSectionsAndCards(); // 조건부 실행 ✅
     const outingFacilities = facilityList[1];
     const container = document.getElementById("cultureFestivalCardsContainer");
 
@@ -709,7 +751,8 @@ function displayOutingFacilitiesBelowMap3(facilityList, categoryID) {
 }
 
 
-function displayHospitalFacilitiesBelowMap(hospitalFacilityList, categoryID = 4) {
+function displayHospitalFacilitiesBelowMap4(hospitalFacilityList, categoryID = 4, shouldReset = true) {
+    if (shouldReset) resetAllResultSectionsAndCards(); // 조건부 실행 ✅
     const hospitals = hospitalFacilityList[1];
     const container = document.getElementById("hospitalResultContainer");
 

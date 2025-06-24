@@ -93,41 +93,40 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("logoutMenu").style.display = "none";
     }
 
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", async function (event) {
-            event.preventDefault();
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", async function (event) {
+        event.preventDefault();
 
-            const sessionId = sessionStorage.getItem("session_id");
+        const sessionId = sessionStorage.getItem("session_id");
 
-            try {
-                if (sessionId) {
-                    const bodyData = JSON.stringify({
-                        session_id: sessionId
-                    });
+        try {
+            if (sessionId) {
+                const bodyData = JSON.stringify({ session_id: sessionId });
 
-                    const response = await fetch("http://localhost:8000/logout", {
-                        method: "POST",
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: bodyData,
-                    });
+                const response = await fetch("http://localhost:8000/logout", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: bodyData,
+                });
 
-                    if (response.ok) {
-                        console.log("Server logout processed successfully.");
-                    } else {
-                        console.error("Server logout failed:", response.statusText);
-                    }
+                if (response.ok) {
+                    console.log("✅ 서버 로그아웃 성공");
+                } else {
+                    console.error("❌ 서버 로그아웃 실패:", response.statusText);
                 }
-            } catch (error) {
-                console.error("Error sending logout request:", error);
-            } finally {
-                sessionStorage.removeItem("session_id");
-                alert("로그아웃 되었습니다.");
-                window.location.reload();
             }
-        });
-    }
+        } catch (error) {
+            console.error("❌ 로그아웃 요청 중 오류 발생:", error);
+        } finally {
+            // ✅ 세션스토리지 전체 초기화 후 로그인 페이지 이동
+            sessionStorage.clear();
+            alert("로그아웃 되었습니다.");
+            window.location.reload();  // ✅ 페이지 새로고침
+        }
+    });
+}
 });
 
 const sidebar = document.getElementById('sidebar');
